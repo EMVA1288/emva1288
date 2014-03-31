@@ -5,7 +5,8 @@ from scipy.ndimage import convolve
 
 
 class Results1288(object):
-    def __init__(self, data,
+    def __init__(self,
+                 data,
                  index_u_ysat=None,
                  loglevel=logging.DEBUG):
 
@@ -13,10 +14,9 @@ class Results1288(object):
         self.log = logging.getLogger('Results')
         self.log.setLevel(loglevel)
 
-        self.data = data
-        self.temporal = self.data.temporal
-        self.spatial = self.data.spatial
-        self.name = self.data.name
+        self.temporal = data['temporal']
+        self.spatial = data['spatial']
+        self.name = data['name']
         self._s2q = 1.0 / 12.0
         self._index_start = 0
         self._index_sensitivity_min = 0

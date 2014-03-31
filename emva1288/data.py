@@ -13,21 +13,17 @@ class Data1288(object):
                  data,
                  loglevel=logging.DEBUG):
 
-        self.data = data
-
-        self.w = self.data['format']['width']
-        self.h = self.data['format']['height']
-        self.pixels = self.w * self.h
-        self.name = self.data.get('name', 'Unkown')
+        self.pixels = data['format']['width'] * data['format']['height']
 
         logging.basicConfig()
         self.log = logging.getLogger('Data')
         self.log.setLevel(loglevel)
 
-        self.temporal = {}
-        self.spatial = {}
-        self._fill_temporal()
-        self._fill_spatial()
+        self.data = {}
+        self.data['name'] = data.get('name', 'Unkown')
+        self.data['format'] = data['format']
+        self.data['temporal'] = self._get_temporal(data['temporal'])
+        self.data['spatial'] = self._get_spatial(data['spatial'])
 
     def _get_float_keys(self, d, depth=2):
         r = {}
@@ -38,20 +34,21 @@ class Data1288(object):
                 r[float(k)] = d[k]
         return r
 
-    def _fill_temporal(self):
+    def _get_temporal(self, data):
         '''
         Fill the temporal dict, with the stuff that we need.
         Compute the averages and variances from the sums (sum and pvar)
         '''
+        temporal = {}
 
-        bright = self._get_float_keys(self.data['temporal']['bright'])
-        dark = self._get_float_keys(self.data['temporal']['dark'], depth=1)
+        bright = self._get_float_keys(data['bright'])
+        dark = self._get_float_keys(data['dark'], depth=1)
 
         assert not set(bright.keys()) - set(dark.keys()), \
             'Dark and bright must have same exposures'
 
         texp = np.asarray(sorted(bright.keys()))
-        self.temporal['texp'] = texp
+        temporal['texp'] = texp
 
         u_p = []
         u_y = []
@@ -71,26 +68,28 @@ class Data1288(object):
             u_ydark.append(d['mean'])
             s2_ydark.append(d['var'])
 
-        self.temporal['u_p'] = np.asarray(u_p)
-        self.temporal['u_y'] = np.asarray(u_y)
-        self.temporal['s2_y'] = np.asarray(s2_y)
-        self.temporal['u_ydark'] = np.asarray(u_ydark)
-        self.temporal['s2_ydark'] = np.asarray(s2_ydark)
+        temporal['u_p'] = np.asarray(u_p)
+        temporal['u_y'] = np.asarray(u_y)
+        temporal['s2_y'] = np.asarray(s2_y)
+        temporal['u_ydark'] = np.asarray(u_ydark)
+        temporal['s2_ydark'] = np.asarray(s2_ydark)
 
         #In case we have only one exposure, we need arrays with the
         #same length as the up
         #we just repeat the same value over and over
-        if len(self.temporal['texp']) == 1:
-            l = len(self.temporal['u_p'])
+        if len(temporal['texp']) == 1:
+            l = len(temporal['u_p'])
 
-            v = self.temporal['texp'][0]
-            self.temporal['texp'] = np.asarray([v for _i in range(l)])
+            v = temporal['texp'][0]
+            temporal['texp'] = np.asarray([v for _i in range(l)])
 
-            v = self.temporal['u_ydark'][0]
-            self.temporal['u_ydark'] = np.asarray([v for _i in range(l)])
+            v = temporal['u_ydark'][0]
+            temporal['u_ydark'] = np.asarray([v for _i in range(l)])
 
-            v = self.temporal['s2_ydark'][0]
-            self.temporal['s2_ydark'] = np.asarray([v for _i in range(l)])
+            v = temporal['s2_ydark'][0]
+            temporal['s2_ydark'] = np.asarray([v for _i in range(l)])
+
+        return temporal
 
     def _get_temporal_data(self, d):
         '''Convert temporal image data to mean and variance
@@ -105,19 +104,20 @@ class Data1288(object):
         var_ = d['pvar'] / (4.0 * self.pixels)
         return {'mean': mean_, 'var': var_}
 
-    def _fill_spatial(self):
+    def _get_spatial(self, data):
         '''Fill the spatial dict
         The images (sum and pvar) are preserved, they are needed for processing
         '''
+        spatial = {}
 
-        bright = self._get_float_keys(self.data['spatial']['bright'])
-        dark = self._get_float_keys(self.data['spatial']['dark'], depth=1)
+        bright = self._get_float_keys(data['bright'])
+        dark = self._get_float_keys(data['dark'], depth=1)
 
         assert not set(bright.keys()) - set(dark.keys()), \
             'Dark and bright must have same exposures'
 
         texp = np.asarray(sorted(bright.keys()))
-        self.spatial['texp'] = texp
+        spatial['texp'] = texp
 
         u_p = []
         _sum = []
@@ -153,18 +153,20 @@ class Data1288(object):
             _avg_dark.append(d['avg'])
             _var_dark.append(d['var'])
 
-        self.spatial['u_p'] = np.asarray(u_p)
-        self.spatial['sum'] = np.asarray(_sum)
-        self.spatial['pvar'] = np.asarray(_pvar)
-        self.spatial['L'] = np.asarray(_L)
-        self.spatial['avg'] = np.asarray(_avg)
-        self.spatial['var'] = np.asarray(_var)
+        spatial['u_p'] = np.asarray(u_p)
+        spatial['sum'] = np.asarray(_sum)
+        spatial['pvar'] = np.asarray(_pvar)
+        spatial['L'] = np.asarray(_L)
+        spatial['avg'] = np.asarray(_avg)
+        spatial['var'] = np.asarray(_var)
 
-        self.spatial['sum_dark'] = np.asarray(_sum_dark)
-        self.spatial['pvar_dark'] = np.asarray(_pvar_dark)
-        self.spatial['L_dark'] = np.asarray(_L_dark)
-        self.spatial['avg_dark'] = np.asarray(_avg_dark)
-        self.spatial['var_dark'] = np.asarray(_var_dark)
+        spatial['sum_dark'] = np.asarray(_sum_dark)
+        spatial['pvar_dark'] = np.asarray(_pvar_dark)
+        spatial['L_dark'] = np.asarray(_L_dark)
+        spatial['avg_dark'] = np.asarray(_avg_dark)
+        spatial['var_dark'] = np.asarray(_var_dark)
+
+        return spatial
 
     def _get_spatial_data(self, d):
         '''Add the mean and variance to the spatial image data
