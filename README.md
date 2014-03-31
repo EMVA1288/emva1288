@@ -32,8 +32,11 @@ parser.ParseEmvaDescriptorFile
 ------------------------------
 This class takes an EMVA1288 descriptor file and loads its content into a python dictionary.
 
-Note: An EMVA1288 descriptor file is a file that contains the description
+An EMVA1288 descriptor file is a file that contains the description
 of an EMVA1288 test including exposure times, photon count and corresponding images
+
+An example of a descriptor file can be found at `examples/EMVA1288_Descriptor_File.txt`
+
 
 loader.LoadImageData
 --------------------
@@ -58,6 +61,16 @@ This class takes a `results.Results1288` object and produces all the plots neede
 a reference datasheet of the EMVA1288 test
 
 
+Usage
+=====
+To use the code, you need to have a set of images that correspond to an EMVA1288 test.
+There are some sample image sets provided by the standard development group.
+[Example datasets](https://emva1288.plan.io/projects/emva1288-standard-public/files).
+
+Download one or all of these datasets, extract its content, and use it as in
+the example shown below.
+
+
 Example
 =======
 A simple example to obtain EMVA1288 results from a dataset is
@@ -72,7 +85,7 @@ fname = 'EMVA1288_ReferenceSet_001_CCD_12Bit/EMVA1288_Data.txt'
 info = parser.ParseEmvaDescriptorFile(os.path.join(dir_, fname))
 imgs = loader.LoadImageData(info.info)
 dat = data.Data1288(imgs.data)
-res = results.Results1288(dat)
+res = results.Results1288(dat.data)
 res.results()
 plot = plotting.Plotting1288(res)
 plot.plot()
