@@ -1,3 +1,14 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2014 The EMVA1288 Authors. All rights reserved.
+# Use of this source code is governed by a GNU GENERAL PUBLIC LICENSE that can be
+# found in the LICENSE file.
+
+"""Plot the results 
+This class takes a results.Results1288 object and produces all the plots needed to 
+create a reference datasheet of the EMVA1288 test
+
+"""
+
 import types
 import matplotlib.pyplot as plt
 import numpy as np

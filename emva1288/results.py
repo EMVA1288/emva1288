@@ -1,3 +1,13 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2014 The EMVA1288 Authors. All rights reserved.
+# Use of this source code is governed by a GNU GENERAL PUBLIC LICENSE that can be
+# found in the LICENSE file.
+
+"""Compute EMVA1288 values from data
+This class takes the data from data.Data1288 and compute the actual EMVA1288 values.
+
+"""
+
 import logging
 import numpy as np
 from emva1288 import routines
