@@ -9,6 +9,7 @@ values.
 
 """
 
+from __future__ import print_function
 import logging
 import numpy as np
 from emva1288 import routines
@@ -75,7 +76,7 @@ class Results1288(object):
         # we have to loop backwards because sometimes we have some
         # noise pics that really bother the computation
         s2_y = self.temporal['s2_y']
-        for i in xrange(len(s2_y) - 1, -1, -1):
+        for i in range(len(s2_y) - 1, -1, -1):
             # Check that is not a local max
             if (s2_y[i] >= max_) or \
                (s2_y[abs(i - 1)] >= max_):
@@ -798,15 +799,15 @@ class Results1288(object):
     def results(self):
         d = routines.obj_to_dict(self)
         for section in d.keys():
-            print '*' * 50
-            print section
-            print '*' * 50
+            print('*' * 50)
+            print(section)
+            print('*' * 50)
 
             for method in d[section].keys():
                 s = d[section][method]
                 if s.get('Value', False):
-                    print '{:<50}{:<30}{:>10}'.format(s['Short'],
+                    print('{:<50}{:<30}{:>10}'.format(s['Short'],
                                                       s['Symbol'],
-                                                      s['Value'])
-        print '*' * 50
-        print ' '
+                                                      s['Value']))
+        print('*' * 50)
+        print(' ')

@@ -9,7 +9,7 @@ needed to create a reference datasheet of the EMVA1288 test
 
 """
 
-import types
+from __future__ import print_function
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -47,7 +47,7 @@ class Plotting1288(object):
         self._titles = kwargs.pop('titles', True)
 
         # Get data
-        self.tests = self.get_data(*args)
+        self.tests = args
 
         ##########################
         # Make sure each test have a reference to be able to identify it
@@ -69,44 +69,13 @@ class Plotting1288(object):
 
         for i in plots:
             if i not in range(len(self.plots)):
-                print 'Error ', i, 'is not valid index'
-                print 'Plot has to be integer in ', range(len(self.plots))
+                print('Error ', i, 'is not valid index')
+                print('Plot has to be integer in ', range(len(self.plots)))
             else:
                 fig = getattr(self, 'plot_' + self.plots[i])()
                 self.figures[self.plots[i]] = fig
                 if not self._titles:
                     fig.canvas.set_window_title('Fig %d' % (i + 1))
-
-    def get_data(self, *args):
-        '''
-        Receive a list or a tuple.
-        * If it is a list or a tuple, call get_data and append to
-        list_instances his return.
-        Accepts only Results1288 instances
-
-        Return list_instances.
-        '''
-
-        list_instances = []
-
-        for a in args:
-
-            if isinstance(a, types.TupleType):
-                temp = self.get_data(a)
-                list_instances = list_instances + temp
-                del temp
-
-            elif isinstance(a, types.ListType):
-                temp = self.get_data(a)
-                list_instances = list_instances + temp
-                del temp
-
-            # we assume it is an instance of Results1288
-            else:
-                list_instances.append(a)
-                del a
-
-        return list_instances
 
     def set_legend(self, ax):
         '''
