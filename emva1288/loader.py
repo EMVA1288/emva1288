@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2014 The EMVA1288 Authors. All rights reserved.
-# Use of this source code is governed by a GNU GENERAL PUBLIC LICENSE that can be
-# found in the LICENSE file.
+# Use of this source code is governed by a GNU GENERAL PUBLIC LICENSE that can
+# be found in the LICENSE file.
 
 """Load image data
-This class takes a dictionary (product of parser.ParseEmvaDescriptorFile). 
-Load the related images and reduce it's data to the minimum possible, 
+This class takes a dictionary (product of parser.ParseEmvaDescriptorFile).
+Load the related images and reduce it's data to the minimum possible,
 preserving all relevant image data in as integers
 
 """
@@ -39,12 +39,12 @@ class LoadImageData(object):
                  path=None):
 
         self.data = {'version': None,
-                    'format': {},  # bits, witdth, height
-                    'name': None,
-                    'info': {},
-                    'temporal': {'dark': {}, 'bright': {}},
-                    'spatial': {'dark': {}, 'bright': {}},
-                    }
+                     'format': {},  # bits, witdth, height
+                     'name': None,
+                     'info': {},
+                     'temporal': {'dark': {}, 'bright': {}},
+                     'spatial': {'dark': {}, 'bright': {}},
+                     }
         self._fload = fload
         self._fload_args = fload_args
         self._fload_kwargs = fload_kwargs
@@ -74,7 +74,7 @@ class LoadImageData(object):
             b_exp = set(info[kind]['bright'].keys())
             d_exp = set(info[kind]['dark'].keys())
 
-            if  b_exp - d_exp:
+            if b_exp - d_exp:
                 raise SyntaxError('%s Bright and dark must have the '
                                   'same exposures' % kind)
 
@@ -95,10 +95,10 @@ class LoadImageData(object):
         '''
         arr_imgs = self._load_imgs(fnames)
         imgs = routines.get_int_imgs(arr_imgs)
-        #For spatial we want the images
+        # For spatial we want the images
         if kind != 'temporal':
             return imgs
-        #For temporal, we want numbers
+        # For temporal, we want numbers
         d = {}
         d['sum'] = np.sum(imgs['sum'])
         d['pvar'] = np.sum(imgs['pvar'])

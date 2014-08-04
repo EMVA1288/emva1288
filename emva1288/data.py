@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2014 The EMVA1288 Authors. All rights reserved.
-# Use of this source code is governed by a GNU GENERAL PUBLIC LICENSE that can be
-# found in the LICENSE file.
+# Use of this source code is governed by a GNU GENERAL PUBLIC LICENSE that can
+# be found in the LICENSE file.
 
 """Transform image data into data
-This class takes a dictionary with image data (product of loader.LoadImageData) 
-and transforms it into data that can be used for the EMVA1288 computations. 
-It is important to note, that this is separate from LoadImageData because this step, 
-produces float values that are not easily transportable (db, json, etc...) without loosing accuracy.
+This class takes a dictionary with image data (product of loader.LoadImageData)
+and transforms it into data that can be used for the EMVA1288 computations.
+It is important to note, that this is separate from LoadImageData because this
+step, produces float values that are not easily transportable (db, json,
+etc...) without loosing accuracy.
 
 """
 
@@ -87,9 +88,9 @@ class Data1288(object):
         temporal['u_ydark'] = np.asarray(u_ydark)
         temporal['s2_ydark'] = np.asarray(s2_ydark)
 
-        #In case we have only one exposure, we need arrays with the
-        #same length as the up
-        #we just repeat the same value over and over
+        # In case we have only one exposure, we need arrays with the
+        # same length as the up
+        # we just repeat the same value over and over
         if len(temporal['texp']) == 1:
             l = len(temporal['u_p'])
 

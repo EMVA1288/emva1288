@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2014 The EMVA1288 Authors. All rights reserved.
-# Use of this source code is governed by a GNU GENERAL PUBLIC LICENSE that can be
-# found in the LICENSE file.
+# Use of this source code is governed by a GNU GENERAL PUBLIC LICENSE that can
+# be found in the LICENSE file.
 
 """EMVA 1288 descriptor parser
-This class takes an EMVA1288 descriptor file and loads its content into a python dictionary.
+This class takes an EMVA1288 descriptor file and loads its content into a
+python dictionary.
 
-An EMVA1288 descriptor file is a file that contains the description of an EMVA1288 test
-including exposure times, photon count and corresponding images
+An EMVA1288 descriptor file is a file that contains the description of an
+EMVA1288 test including exposure times, photon count and corresponding images
 
 """
 
@@ -23,10 +24,10 @@ class ParseEmvaDescriptorFile(object):
     '''
 
     def __init__(self, filename, loglevel=logging.DEBUG):
-        #For dark the items are in the form of
-        #exposure:{[fname1, fname2, ...]}
-        #for bright the items are in the form of
-        #exposure:{photons:[fname1, fname2,...]}, photons....}
+        # For dark the items are in the form of
+        # exposure:{[fname1, fname2, ...]}
+        # for bright the items are in the form of
+        # exposure:{photons:[fname1, fname2,...]}, photons....}
 
         self.info = {'filename': None,
                      'path': None,
@@ -57,8 +58,8 @@ class ParseEmvaDescriptorFile(object):
             line = self._lines.pop()
             l = self._split_line(line)
             if l[0] != 'i':
-                #Ups, to the end of images, reappend last line that is not an
-                #image line
+                # Ups, to the end of images, reappend last line that is not an
+                # image line
                 self._lines.append(line)
                 break
             if len(l) != 2:
@@ -165,7 +166,7 @@ class ParseEmvaDescriptorFile(object):
 
                 continue
 
-            #Data for datasheet operation point starts with o
+            # Data for datasheet operation point starts with o
             if l[0] == 'o':
                 if len(l) < 2:
                     raise SyntaxError('Wrong format: %s should be "l varname '
@@ -173,7 +174,7 @@ class ParseEmvaDescriptorFile(object):
                 self.info['operation_point_info'][l[1]] = ' '.join(l[2:])
                 continue
 
-            #Data for datasheet camera starts with c
+            # Data for datasheet camera starts with c
             if l[0] == 'c':
                 if len(l) < 2:
                     raise SyntaxError('Wrong format: %s should be "l varname '
@@ -201,7 +202,7 @@ class ParseEmvaDescriptorFile(object):
         self.log.debug('Opening ' + filename)
         f = open(filename, 'r')
 
-        #To add location when opening images
+        # To add location when opening images
         path = os.path.realpath(filename)
         self.info['path'] = os.path.dirname(path)
         self.info['filename'] = os.path.basename(path)

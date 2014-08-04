@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2014 The EMVA1288 Authors. All rights reserved.
-# Use of this source code is governed by a GNU GENERAL PUBLIC LICENSE that can be
-# found in the LICENSE file.
+# Use of this source code is governed by a GNU GENERAL PUBLIC LICENSE that can
+# be found in the LICENSE file.
 
-"""Plot the results 
-This class takes a results.Results1288 object and produces all the plots needed to 
-create a reference datasheet of the EMVA1288 test
+"""Plot the results
+This class takes a results.Results1288 object and produces all the plots
+needed to create a reference datasheet of the EMVA1288 test
 
 """
 
@@ -40,31 +40,30 @@ class Plotting1288(object):
         descriptive report compliant with EMVA Standard 1288 version 3.1.
         '''
         self.figures = {}
-        #Constants
-        #Number of bins for Defect Pixel Characterization's histograms
+        # Constants
+        # Number of bins for Defect Pixel Characterization's histograms
         self.Q = 25
 
         self._titles = kwargs.pop('titles', True)
 
-        #Get data
+        # Get data
         self.tests = self.get_data(*args)
 
         ##########################
-        #Make sure each test have a reference to be able to identify it
-        #visually.
+        # Make sure each test have a reference to be able to identify it
+        # visually.
         for i in range(len(self.tests)):
-#            print self.tests[i].data.data
             if not self.tests[i].name:
                 self.tests[i].name = i
         ##########################
 
     def show(self):
-        #Show plots
+        # Show plots
         plt.show()
 
     def plot(self, *plots):
 
-        #Create plots
+        # Create plots
         if not plots:
             plots = range(len(self.plots))
 
@@ -102,7 +101,7 @@ class Plotting1288(object):
                 list_instances = list_instances + temp
                 del temp
 
-            #we assume it is an instance of Results1288
+            # we assume it is an instance of Results1288
             else:
                 list_instances.append(a)
                 del a
@@ -161,7 +160,7 @@ class Plotting1288(object):
                     marker='o',
                     gid='dataset/%s:data/fits/range' % test.name)
 
-            #To do : Standard EMVA3 asks to print on graph $\mu_{y.dark}$.
+            # To do : Standard EMVA3 asks to print on graph $\mu_{y.dark}$.
 
         self.set_legend(ax)
 
@@ -236,14 +235,14 @@ class Plotting1288(object):
                      X[test.index_sensitivity_max]),
                     (Y[test.index_sensitivity_min],
                      Y[test.index_sensitivity_max]),
-                     linestyle='None',
-                     marker='o',
-                     label='Fit range',
-                     gid='dataset.%s|fits.range' % test.name)
+                    linestyle='None',
+                    marker='o',
+                    label='Fit range',
+                    gid='dataset.%s|fits.range' % test.name)
 
-            #To do : Standard EMVA3 asks to print on graph
-            #$\sigma^2_{y.dark}$ and K with its one-sigma statistical
-            #uncertainty.
+            # Todo : Standard EMVA3 asks to print on graph
+            # $\sigma^2_{y.dark}$ and K with its one-sigma statistical
+            # uncertainty.
         self.set_legend(ax)
         ax.set_title('Photon Transfer')
         ax.set_xlabel('$\mu_y - \mu_{y.dark}$ [DN]')
@@ -267,8 +266,8 @@ class Plotting1288(object):
             X = np.arange(test.u_p_min, test.u_p_sat,
                           (test.u_p_sat - test.u_p_min) / 100.0)
 
-            #remove the zeros on the denominator, at saturation the temporal
-            #noise is zero!
+            # remove the zeros on the denominator, at saturation the temporal
+            # noise is zero!
             nz = np.nonzero(test.temporal['s2_y'])
             ax.plot(test.temporal['u_p'][nz],
                     (test.temporal['u_y'] - test.temporal['u_ydark'])[nz] /
@@ -341,7 +340,7 @@ class Plotting1288(object):
                     gid='dataset.%s' % test.name)
 
             ax.plot(X,
-                    test.linearity()['fit_slope'] * \
+                    test.linearity()['fit_slope'] *
                     X + test.linearity()['fit_offset'],
                     linestyle='--',
                     label='Fit',
@@ -405,11 +404,11 @@ class Plotting1288(object):
         ax = fig.add_subplot(111)
 
         for test in self.tests:
-            #In Release 3.2, there is no subtraction of the residue.
-#            print np.shape(test.spatial['avg'])
+            # In Release 3.2, there is no subtraction of the residue.
             spectrogram = routines.FFT1288(test.spatial['avg'][0])
 
-            ax.plot(routines.GetFrecs(spectrogram[:(np.shape(spectrogram)[0] / 2)]),
+            ax.plot(routines.GetFrecs(spectrogram[:(np.shape(spectrogram)[0] /
+                                                    2)]),
                     (np.sqrt(spectrogram[:(np.shape(spectrogram)[0] / 2)])),
                     label='Data',
                     gid='dataset.%s' % test.name)
@@ -419,7 +418,7 @@ class Plotting1288(object):
                        linestyle='--',
                        gid='dataset.%s|other.variance' % test.name)
 
-            #To do : Standard EMVA3 asks to print on graph s_w and F.
+            # TODO: Standard EMVA3 asks to print on graph s_w and F.
 
         self.set_legend(ax)
         ax.set_yscale('log')
@@ -427,7 +426,7 @@ class Plotting1288(object):
         ax.set_xlabel('cycles [periods/pixel]')
         ax.set_ylabel('standard deviation and relative presence of each '
                       'cycle [DN]')
-        #TODO: shorthen the ylabel
+        # TODO: shorthen the ylabel
 
         return fig
 
@@ -442,9 +441,10 @@ class Plotting1288(object):
         ax = fig.add_subplot(111)
 
         for test in self.tests:
-            #In release 3.2, there is no subtraction of the residue.
+            # In release 3.2, there is no subtraction of the residue.
             spectrogram = routines.FFT1288(test.spatial['avg_dark'][0])
-            ax.plot(routines.GetFrecs(spectrogram[:(np.shape(spectrogram)[0] / 2)]),
+            ax.plot(routines.GetFrecs(spectrogram[:(np.shape(spectrogram)[0] /
+                                                    2)]),
                     np.sqrt(spectrogram[:(np.shape(spectrogram)[0] / 2)]),
                     label='Data',
                     gid='dataset.%s' % test.name)
@@ -460,7 +460,7 @@ class Plotting1288(object):
         ax.set_xlabel('cycles [periods/pixel]')
         ax.set_ylabel('standard deviation and relative presence of each '
                       'cycle [DN]')
-        #TODO: shorthen the ylabel
+        # TODO: shorthen the ylabel
         return fig
 
     def plot_vertical_spectrogram_PRNU(self):
@@ -474,10 +474,11 @@ class Plotting1288(object):
         ax = fig.add_subplot(111)
 
         for test in self.tests:
-            #In release 3.2, there is no subtraction of the residue.
+            # In release 3.2, there is no subtraction of the residue.
             spectrogram = routines.FFT1288(test.spatial['avg'][0], rotate=True)
 
-            ax.plot((routines.GetFrecs(spectrogram[:(np.shape(spectrogram)[0] / 2)])),
+            ax.plot((routines.GetFrecs(spectrogram[:(np.shape(spectrogram)[0] /
+                                                     2)])),
                     (np.sqrt(spectrogram[:(np.shape(spectrogram)[0] / 2)])),
                     label='Data',
                     gid='dataset.%s' % test.name)
@@ -493,7 +494,7 @@ class Plotting1288(object):
         ax.set_xlabel('cycles [periods/pixel]')
         ax.set_ylabel('standard deviation and relative presence of each '
                       'cycle [DN]')
-        #TODO: shorthen the ylabel
+        # TODO: shorthen the ylabel
         return fig
 
     def plot_vertical_spectrogram_DSNU(self):
@@ -507,10 +508,11 @@ class Plotting1288(object):
         ax = fig.add_subplot(111)
 
         for test in self.tests:
-            #In release 3.2, there is no subtraction of the residue.
+            # In release 3.2, there is no subtraction of the residue.
             spectrogram = routines.FFT1288(test.spatial['avg_dark'][0],
                                            rotate=True)
-            ax.plot(routines.GetFrecs(spectrogram[:(np.shape(spectrogram)[0] / 2)]),
+            ax.plot(routines.GetFrecs(spectrogram[:(np.shape(spectrogram)[0] /
+                                                    2)]),
                     np.sqrt(spectrogram[:(np.shape(spectrogram)[0] / 2)]),
                     label='Data',
                     gid='dataset.%s' % test.name)
@@ -526,7 +528,7 @@ class Plotting1288(object):
         ax.set_xlabel('cycles [periods/pixel]')
         ax.set_ylabel('standard deviation and relative presence of each '
                       'cycle [DN]')
-        #TODO: shorthen the ylabel
+        # TODO: shorthen the ylabel
         return fig
 
     def plot_logarithmic_histogram_DSNU(self):
@@ -614,7 +616,7 @@ class Plotting1288(object):
         ax.set_xlabel('Minimal deviation from the mean [DN]')
         ax.set_ylabel('Percentage of pixels deviating from the mean at '
                       'least of : ')
-        #TODO: shorthen the ylabel
+        # TODO: shorthen the ylabel
         return fig
 
     def plot_accumulated_log_histogram_PRNU(self):
@@ -642,7 +644,7 @@ class Plotting1288(object):
         ax.set_xlabel('Minimal deviation from the mean [%]')
         ax.set_ylabel('Percentage of pixels deviating from the mean at '
                       'least of : ')
-        #TODO: shorthen the ylabel
+        # TODO: shorthen the ylabel
         return fig
 
     def plot_horizontal_profile(self):
@@ -707,23 +709,20 @@ class Plotting1288(object):
             dmin.append(0.9 * avg_)
 
             ax2.plot(x_dark, profile_dark_mid,
-                    label='Dark mid',
-                    gid='dataset.%s|illumination.dark.mid' % test.name)
+                     label='Dark mid',
+                     gid='dataset.%s|illumination.dark.mid' % test.name)
             ax2.plot(x_dark, profile_dark_min,
-                    label='Dark min',
-                    gid='dataset.%s|illumination.dark.min' % test.name)
+                     label='Dark min',
+                     gid='dataset.%s|illumination.dark.min' % test.name)
             ax2.plot(x_dark, profile_dark_max,
-                    label='Dark max',
-                    gid='dataset.%s|illumination.dark.max' % test.name)
+                     label='Dark max',
+                     gid='dataset.%s|illumination.dark.max' % test.name)
             ax2.plot(x_dark, profile_dark,
-                    label='Dark mean',
-                    gid='dataset.%s|illumination.dark.mean' % test.name)
+                     label='Dark mean',
+                     gid='dataset.%s|illumination.dark.mean' % test.name)
 
-#        self.set_legend(ax)
-#        self.set_legend(ax2)
         fig.suptitle('Horizontal profile')
         ax.set_title('PRNU')
-#        ax.set_xlabel('Index of the line')
         ax.set_ylabel('Vertical line [DN]')
         ax2.set_title('DSNU')
         ax2.set_xlabel('Index of the line')
@@ -768,17 +767,17 @@ class Plotting1288(object):
             bmin.append(0.9 * avg_)
 
             ax2.plot(profile_mid, y,
-                    label='50% mid',
-                    gid='dataset.%s|illumination.50.mid' % test.name)
+                     label='50% mid',
+                     gid='dataset.%s|illumination.50.mid' % test.name)
             ax2.plot(profile_min, y,
-                    label='50% min',
-                    gid='dataset.%s|illumination.50.min' % test.name)
+                     label='50% min',
+                     gid='dataset.%s|illumination.50.min' % test.name)
             ax2.plot(profile_max, y,
-                    label='50% max',
-                    gid='dataset.%s|illumination.50.max' % test.name)
+                     label='50% max',
+                     gid='dataset.%s|illumination.50.max' % test.name)
             ax2.plot(profile, y,
-                    label='50% mean',
-                    gid='dataset.%s|illumination.50.mean' % test.name)
+                     label='50% mean',
+                     gid='dataset.%s|illumination.50.mean' % test.name)
 
             img = test.spatial['avg_dark'][0]
             profile_dark = np.mean(img, axis=1)
@@ -818,4 +817,3 @@ class Plotting1288(object):
         ax.axis(xmin=min(dmin), xmax=max(dmax), ymax=max(length))
 
         return fig
-
