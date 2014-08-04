@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2014 The EMVA1288 Authors. All rights reserved.
-# Use of this source code is governed by a GNU GENERAL PUBLIC LICENSE that can be
-# found in the LICENSE file.
+# Use of this source code is governed by a GNU GENERAL PUBLIC LICENSE that can
+# be found in the LICENSE file.
 
 """Utils functions
 
@@ -36,13 +36,13 @@ def get_int_imgs(imgs):
     sum_ = 0
     sq_ = 0
     for img in imgs:
-        #we force the images as int64 to make sure we do not clip
+        # we force the images as int64 to make sure we do not clip
         i = img.astype(np.int64)
         sum_ += i
         sq_ += np.square(i)
 
-    #the pseudo variance can be computed from the sum image and the sum of
-    #the square images
+    # the pseudo variance can be computed from the sum image and the sum of
+    # the square images
     var_ = L * (L * sq_ - np.square(sum_))
 
     return {'L': L, 'sum': sum_, 'pvar': var_}
@@ -52,24 +52,26 @@ def LinearB0(Xi, Yi):
     X = np.asfarray(Xi)
     Y = np.asfarray(Yi)
 
-    #we want a function y = m * x
-    fp = lambda v, x: x * v[0]
+    # we want a function y = m * x
+    def fp(v, x):
+        return x * v[0]
 
-    #the error of the function e = x - y
-    e = lambda v, x, y: (fp(v, x) - y)
+    # the error of the function e = x - y
+    def e(v, x, y):
+        return (fp(v, x) - y)
 
-    #the initial value of m, we choose 1, because we thought YODA would
-    #have chosen 1
+    # the initial value of m, we choose 1, because we thought YODA would
+    # have chosen 1
     v0 = [1.0]
 
     vr, _success = leastsq(e, v0, args=(X, Y))
 
-    #compute the R**2 (sqrt of the mean of the squares of the errors)
+    # compute the R**2 (sqrt of the mean of the squares of the errors)
     err = np.sqrt(sum(np.square(e([vr], X, Y))) / (len(X) * len(X)))
 
-    #Some versions of leastsq returns an array, other a scalar, so here we
-    #make sure
-    #it is an array
+    # Some versions of leastsq returns an array, other a scalar, so here we
+    # make sure
+    # it is an array
     val = np.array([vr]).flatten()
 
     return val, err
@@ -79,19 +81,21 @@ def LinearB(Xi, Yi):
     X = np.asfarray(Xi)
     Y = np.asfarray(Yi)
 
-    #we want a function y = m * x
-    fp = lambda v, x: x * v[0] + v[1]
+    # we want a function y = m * x
+    def fp(v, x):
+        return x * v[0] + v[1]
 
-    #the error of the function e = x - y
-    e = lambda v, x, y: (fp(v, x) - y)
+    # the error of the function e = x - y
+    def e(v, x, y):
+        return (fp(v, x) - y)
 
-    #the initial value of m, we choose 1, because we thought YODA would
-    #have chosen 1
+    # the initial value of m, we choose 1, because we thought YODA would
+    # have chosen 1
     v0 = np.array([1.0, 1.0])
 
     vr, _success = leastsq(e, v0, args=(X, Y))
 
-    #compute the R**2 (sqrt of the mean of the squares of the errors)
+    # compute the R**2 (sqrt of the mean of the squares of the errors)
     err = np.sqrt(sum(np.square(e(vr, X, Y))) / (len(X) * len(X)))
 
 #    print vr, success, err
@@ -116,12 +120,12 @@ def FFT1288(m, rotate=False):
 
     _rows, cols = GetImgShape(mm)
 
-    #This is just in case we are talking about really small or really
-    #big arrays
+    # This is just in case we are talking about really small or really
+    # big arrays
     if (cols < 10) or (cols > 50000):
         return []
 
-    #Substract the mean of the image
+    # Substract the mean of the image
     mm = mm - np.mean(mm)
 
     # perform the fft in the x direction
@@ -150,36 +154,35 @@ def Histogram1288(img, Qmax):
     ymin = np.min(y)
     ymax = np.max(y)
 
-    #Because we are working with integers, minimum binwidth is 1
+    # Because we are working with integers, minimum binwidth is 1
     W = 1
     q = ymax - ymin
     Q = q + 1
 
-    #When too many bins, create a new integer binwidth
+    # When too many bins, create a new integer binwidth
     if Q > Qmax:
-        #We want the number of bins as close as possible to Qmax (256)
+        # We want the number of bins as close as possible to Qmax (256)
         W = int(np.ceil(1. * q / (Qmax - 1)))
         Q = int(np.floor(1. * q / W)) + 1
 
-
-    #The bins
-    #we need one more value for the numpy histogram computation
-    #numpy used bin limits
-    #in our interpretation we use the lower limit of the bin
+    # The bins
+    # we need one more value for the numpy histogram computation
+    # numpy used bin limits
+    # in our interpretation we use the lower limit of the bin
     B = [ymin + (i * W) for i in range(Q + 1)]
 
-    #Normal distribution with the original sigma, and mean
+    # Normal distribution with the original sigma, and mean
     mu = np.mean(y)
     sigma = np.std(y)
     normal = ((1. * (ymax - ymin) / Q) *
-          np.size(y) / (np.sqrt(2 * np.pi) * sigma) *
-          np.exp(-0.5 * (1. / sigma * (B[:-1] - mu)) ** 2))
+              np.size(y) / (np.sqrt(2 * np.pi) * sigma) *
+              np.exp(-0.5 * (1. / sigma * (B[:-1] - mu)) ** 2))
 
 
 #############################################
 #
-##    Reference algorithm, it's pretty slow
-##    the numpy version gives the same results
+#   # Reference algorithm, it's pretty slow
+#   # the numpy version gives the same results
 #
 #     #The histogram container
 #     H = np.zeros((Q,), dtype=np.int64)
@@ -190,7 +193,7 @@ def Histogram1288(img, Qmax):
 #         H[q] += 1
 #############################################
 
-    H, _b  = np.histogram(y, B, range=(ymin, ymax))
+    H, _b = np.histogram(y, B, range=(ymin, ymax))
 
     return {'bins': np.asfarray(B[:-1]), 'values': H, 'model': normal}
 
@@ -209,41 +212,41 @@ def cls_1288_info(cls):
 
     d = {}
     for i, v in cls.__dict__.items():
-        #Extract the doc from the Processing methods
+        # Extract the doc from the Processing methods
         doc = v.__doc__
         if not doc:
             continue
 
-        #All the lines in the docstring
+        # All the lines in the docstring
         lines = [s.strip() for s in doc.splitlines()]
 
-        #to store the relevant tag lines
+        # to store the relevant tag lines
         tag_lines = []
 
         for line in lines:
-            #Get only those that are relevant (start with **)
+            # Get only those that are relevant (start with **)
             if line.startswith('**'):
                 tag_lines.append(line[2:])
-        #if there are not relevant lines skip and go to next method
+        # if there are not relevant lines skip and go to next method
         if not tag_lines:
             continue
 
-        #To store the info from the doc
+        # To store the info from the doc
         method_info = {}
         for line in tag_lines:
             tags = [x.strip() for x in line.split(':')]
-            #Each valid tag has to be xx:yy
+            # Each valid tag has to be xx:yy
             if len(tags) != 2:
                 continue
-            #Fill the dict
+            # Fill the dict
             method_info[tags[0]] = tags[1]
 
-        #extract the section, or put it as 'other'
+        # extract the section, or put it as 'other'
         section = method_info.pop('Section', 'other')
 
-        #Add or get the current section branch of the dict
+        # Add or get the current section branch of the dict
         s = d.setdefault(section, {})
-        #Add the method info to the section in the final dict
+        # Add the method info to the section in the final dict
         s[i] = method_info
     return d
 
@@ -262,7 +265,7 @@ def obj_to_dict(obj):
     for section in d.keys():
         for methodname in d[section].keys():
 
-            #Get the value for the given method
+            # Get the value for the given method
             val = getattr(obj, methodname)
             if callable(val):
                 val = val()
@@ -288,18 +291,18 @@ def dict_to_xml(d, root='results', filename=None):
         '''
         for k in d.keys():
             e = etree.SubElement(r, k)
-            #when the value for the key is a dict, call the function again
+            # when the value for the key is a dict, call the function again
             if isinstance(d[k], dict):
                 r.append(key_to_xml(d[k], e))
 
-            #if the value is an array
-            #add the values of the array as a string separated by whitespaces
-            #Note to self: add other array types as needed
+            # if the value is an array
+            # add the values of the array as a string separated by whitespaces
+            # Note to self: add other array types as needed
             elif isinstance(d[k], np.ndarray):
                 a = [str(x) for x in d[k]]
                 e.text = ' '.join(a)
 
-            #if something else, just add the corresponding string value
+            # if something else, just add the corresponding string value
             else:
                 e.text = str(d[k])
         return r
@@ -307,11 +310,6 @@ def dict_to_xml(d, root='results', filename=None):
     tree = etree.Element(root)
     xml = key_to_xml(d, tree)
 
-#    if not filename:
-#        return etree.tostring(xml, pretty_print=True)
-#
-#    e1 = etree.ElementTree(tree)
-#    e1.write(filename, pretty_print=True)
     t = etree.tostring(xml, pretty_print=True)
     if filename is None:
         return t
@@ -342,8 +340,8 @@ def xml_to_dict(xml):
         dout = {}
         for child in r:
             if list(child):
-                #if the element has children call the function again with
-                #children as r
+                # if the element has children call the function again with
+                # children as r
                 dout[child.tag] = element_to_dict(child)
             else:
                 dout[child.tag] = child.text
@@ -351,7 +349,7 @@ def xml_to_dict(xml):
 
     root = tree.getroot()
     d = element_to_dict(root)
-    #loop to reconstruct arrays from strings in Data elements
+    # loop to reconstruct arrays from strings in Data elements
     for section, method in d.items():
         for methodname, value in method.items():
             if 'Data' in value:
@@ -361,9 +359,9 @@ def xml_to_dict(xml):
                     v = v.split()
                     d[section][methodname]['Data'][data] = np.asfarray(v)
             else:
-                #sometimes the decimal point is written with , instead of .
+                # sometimes the decimal point is written with , instead of .
                 v = value['Value'].replace(',', '.')
-                #special cases, None, etc...
+                # special cases, None, etc...
                 if v == 'None':
                     v = None
                 else:
@@ -385,25 +383,25 @@ round_array = np.vectorize(round_significant)
 
 
 def compare_xml(x1, x2):
-    #load the xml into dicts
+    # load the xml into dicts
     f1 = xml_to_dict(x1)
     f2 = xml_to_dict(x2)
 
-    #if something is wrong abort
+    # if something is wrong abort
     if f1 is None or f2 is None:
         return
 
     c1 = f1.keys()
     c2 = f2.keys()
 
-    #loop throught the combined categories
+    # loop throught the combined categories
     for category in set(c1) | set(c2):
         print ''
         print '*' * 70
         print category
         print '*' * 70
-        #check if missing category in one of the dicts
-        if category not in c1 or category  not in c2:
+        # check if missing category in one of the dicts
+        if category not in c1 or category not in c2:
             t1 = category in c1
             t2 = category in c2
             print '{0:<35}'.format('PRESENT'),
@@ -412,15 +410,15 @@ def compare_xml(x1, x2):
 
         m1 = f1[category].keys()
         m2 = f2[category].keys()
-        #loop throught the combined methodnames
+        # loop throught the combined methodnames
         for methodname in set(m1) | set(m2):
             print '{0:<35}'.format(methodname),
 
-            #check if methodname in dict
+            # check if methodname in dict
             if methodname not in m1:
                 v1 = None
                 a2 = None
-            #get the value and the data
+            # get the value and the data
             else:
                 v1 = f1[category][methodname].get('Value', None)
                 a1 = f1[category][methodname].get('Data', None)
@@ -432,9 +430,9 @@ def compare_xml(x1, x2):
                 v2 = f2[category][methodname].get('Value', None)
                 a2 = f2[category][methodname].get('Data', None)
 
-            #first we check for values and then for data
-            #if both present only values will be taken in count for comparison
-            #If both are values
+            # first we check for values and then for data
+            # if both present only values will be taken in count for comparison
+            # If both are values
             if v1 is not None and v2 is not None:
                 try:
                     r = (round_significant(v1) - round_significant(v2)) == 0.0
@@ -443,18 +441,18 @@ def compare_xml(x1, x2):
                 t1 = v1
                 t2 = v2
 
-            #if both are arrays
+            # if both are arrays
             elif a1 is not None and a2 is not None:
                 k1 = a1.keys()
                 k2 = a2.keys()
                 t1 = 'Array'
                 t2 = 'Array'
 
-                #if different keys, is invalid
+                # if different keys, is invalid
                 if (set(k1) ^ set(k2)):
                     r = False
                 else:
-                    #loop throught the keys
+                    # loop throught the keys
                     for k in k1:
                         try:
                             r = np.max(np.abs(round_array(a1[k]) -

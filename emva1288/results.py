@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2014 The EMVA1288 Authors. All rights reserved.
-# Use of this source code is governed by a GNU GENERAL PUBLIC LICENSE that can be
-# found in the LICENSE file.
+# Use of this source code is governed by a GNU GENERAL PUBLIC LICENSE that can
+# be found in the LICENSE file.
 
 """Compute EMVA1288 values from data
-This class takes the data from data.Data1288 and compute the actual EMVA1288 values.
+This class takes the data from data.Data1288 and compute the actual EMVA1288
+values.
 
 """
 
@@ -32,17 +33,17 @@ class Results1288(object):
         self._index_sensitivity_min = 0
 
         self._histogram_Qmax = 256  # Maximum number of bins in histograms
-        #Convolution kernel for high pass filter in defect pixel
+        # Convolution kernel for high pass filter in defect pixel
         self._histogram_high_pass_box = (-1) * np.ones((5, 5), dtype=np.int64)
         self._histogram_high_pass_box[2, 2] = 24
 
-        #Sometimes we need to force the saturation point
-        #in those cases pass the index in the initialization of Results1288
+        # Sometimes we need to force the saturation point
+        # in those cases pass the index in the initialization of Results1288
         self._index_u_ysat = index_u_ysat
 
     @property
     def s2q(self):
-        return  self._s2q
+        return self._s2q
 
     @property
     def index_start(self):
@@ -71,17 +72,17 @@ class Results1288(object):
         max_ = 0
         max_i = 0
 
-        #we have to loop backwards because sometimes we have some
-        #noise pics that really bother the computation
+        # we have to loop backwards because sometimes we have some
+        # noise pics that really bother the computation
         s2_y = self.temporal['s2_y']
         for i in xrange(len(s2_y) - 1, -1, -1):
-            #Check that is not a local max
+            # Check that is not a local max
             if (s2_y[i] >= max_) or \
-                (s2_y[abs(i - 1)] >= max_):
+               (s2_y[abs(i - 1)] >= max_):
                 max_ = s2_y[i]
                 max_i = i
             elif (s2_y[i] < max_) and \
-                (s2_y[abs(i - 1)] < max_):
+                 (s2_y[abs(i - 1)] < max_):
                 break
 
         self._index_u_ysat = max_i
@@ -100,9 +101,6 @@ class Results1288(object):
         Y = self.temporal['u_y'] - self.temporal['u_ydark']
         m = 0.7 * (Y[self.index_u_ysat])
         return max(np.argwhere(Y <= m))[0]
-
-#     index_sensitivity_max.section = 'sensitivity'
-#     index_sensitivity_max.short = 'Sensitivity fit maximum index'
 
     @property
     def index_sensitivity_min(self):
@@ -130,8 +128,8 @@ class Results1288(object):
 
         val, _error = routines.LinearB0(X[self.index_sensitivity_min:
                                           self.index_sensitivity_max + 1],
-                              Y[self.index_sensitivity_min:
-                                self.index_sensitivity_max + 1])
+                                        Y[self.index_sensitivity_min:
+                                          self.index_sensitivity_max + 1])
 
         return val[0]
 
@@ -146,13 +144,13 @@ class Results1288(object):
         **LatexName:K
         """
 
-        X = self.temporal['u_y']  - self.temporal['u_ydark']
+        X = self.temporal['u_y'] - self.temporal['u_ydark']
         Y = self.temporal['s2_y'] - self.temporal['s2_ydark']
 
         val, _error = routines.LinearB0(X[self.index_sensitivity_min:
                                           self.index_sensitivity_max + 1],
-                              Y[self.index_sensitivity_min:
-                                self.index_sensitivity_max + 1])
+                                        Y[self.index_sensitivity_min:
+                                          self.index_sensitivity_max + 1])
 
         return val[0]
 
@@ -199,9 +197,9 @@ class Results1288(object):
                                            self.temporal['s2_ydark'])
             s2_ydark = fit[1]
 
-        #Lower limit for the temporal dark noise
-        #The temporal dark noise in this range is dominated by the
-        #quantization noise
+        # Lower limit for the temporal dark noise
+        # The temporal dark noise in this range is dominated by the
+        # quantization noise
         if s2_ydark < 0.24:
             s2_ydark = 0.24
 
@@ -377,7 +375,7 @@ class Results1288(object):
         Y = self.temporal['u_y'] - self.temporal['u_ydark']
         X = self.temporal['u_p']
 
-        #The maximum index has to be included, this is the reason for the +1
+        # The maximum index has to be included, this is the reason for the +1
         imax = self.index_linearity_max + 1
         imin = self.index_linearity_min
 
@@ -520,7 +518,8 @@ class Results1288(object):
         **Unit:DN2
         """
 
-        return self.s_2_y_measured - self.sigma_2_y_stack / self.spatial['L'][0]
+        return self.s_2_y_measured - (self.sigma_2_y_stack /
+                                      self.spatial['L'][0])
 
     @property
     def s_2_y_dark(self):
@@ -619,7 +618,7 @@ class Results1288(object):
         **Unit: \%
         **LatexName: PRNU
         """
-#        print self.s_2_y, self.s_2_y_dark
+
         return (np.sqrt(self.s_2_y - self.s_2_y_dark) * 100 /
                 (np.mean(self.spatial['avg'][0]) -
                  np.mean(self.spatial['avg_dark'][0])))
@@ -660,12 +659,12 @@ class Results1288(object):
         **Unit:
         """
 
-        #For prnu, perform the convolution
+        # For prnu, perform the convolution
         y = self.spatial['sum'][0] - self.spatial['sum_dark'][0]
         y = convolve(y, self._histogram_high_pass_box)[2:-2, 2:-2]
 
         h = routines.Histogram1288(y, self._histogram_Qmax)
-        #Rescale the bins
+        # Rescale the bins
         h['bins'] /= (self.spatial['L'][0] * 25.)
 
         return h
@@ -680,18 +679,18 @@ class Results1288(object):
         **Unit:
         """
 
-        #For prnu, perform the convolution
+        # For prnu, perform the convolution
         y = self.spatial['sum'][0] - self.spatial['sum_dark'][0]
         y = convolve(y, self._histogram_high_pass_box)[2:-2, 2:-2]
 
-        #For the accumulated histogram substract the mean
+        # For the accumulated histogram substract the mean
         y = np.abs(y - int(np.mean(y)))
 
         h = routines.Histogram1288(y, self._histogram_Qmax)
-        #Rescale the bins
+        # Rescale the bins
         h['bins'] /= (self.spatial['L'][0] * 25.)
 
-        #Perform the cumulative summation
+        # Perform the cumulative summation
         h['values'] = np.cumsum(h['values'][::-1])[::-1]
 
         return h
@@ -706,13 +705,13 @@ class Results1288(object):
         **Unit:
         """
 
-        #For dsnu, the image is just the dark image, upscaled to have
-        #only integers
+        # For dsnu, the image is just the dark image, upscaled to have
+        # only integers
         y = self.spatial['sum_dark'][0]
 
         h = routines.Histogram1288(y, self._histogram_Qmax)
-        #Rescale the bins, this is due to upscaling the average image to have
-        #only integers
+        # Rescale the bins, this is due to upscaling the average image to have
+        # only integers
         h['bins'] /= (self.spatial['L_dark'][0] * 25.)
 
         return h
@@ -727,17 +726,17 @@ class Results1288(object):
         **Unit:
         """
 
-        #Dark image upscaled to have only integers
+        # Dark image upscaled to have only integers
         y = self.spatial['sum_dark'][0]
-        #For the accumulated dsnu histogram, substract the mean from the image
+        # For the accumulated dsnu histogram, substract the mean from the image
         y = np.abs(y - int(np.mean(y)))
 
         h = routines.Histogram1288(y, self._histogram_Qmax)
-        #Rescale the bins
+        # Rescale the bins
         h['bins'] /= (self.spatial['L_dark'][0] * 25.)
 
-        #Perform the cumulative summation (the ::-1 means backwars)
-        #because the cumsum function is performed contrary to what we need
+        # Perform the cumulative summation (the ::-1 means backwars)
+        # because the cumsum function is performed contrary to what we need
         h['values'] = np.cumsum(h['values'][::-1])[::-1]
 
         return h
