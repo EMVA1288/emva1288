@@ -6,19 +6,22 @@
 """Utils functions
 
 """
-
+from __future__ import print_function
 import numpy as np
 import os
 from scipy.optimize import leastsq
 from lxml import etree
-import cv2
+from PIL import Image
+
 
 SIGNIFICANT_DIGITS = 7
 
 
 def load_image(fname):
-    img = cv2.imread(fname, cv2.CV_LOAD_IMAGE_UNCHANGED)
-    img = cv2.split(img)[0]
+    img = Image.open(fname)
+    img = np.asarray(img.split()[0])
+#     img = cv2.imread(fname, cv2.CV_LOAD_IMAGE_UNCHANGED)
+#     img = cv2.split(img)[0]
     return img
 
 
@@ -330,7 +333,7 @@ def xml_to_dict(xml):
         else:
             tree = etree.ElementTree.fromstring(xml)
     except:
-        print 'Problems loading XML'
+        print('Problems loading XML')
         return None
 
     def element_to_dict(r):
@@ -396,23 +399,23 @@ def compare_xml(x1, x2):
 
     # loop throught the combined categories
     for category in set(c1) | set(c2):
-        print ''
-        print '*' * 70
-        print category
-        print '*' * 70
+        print('')
+        print('*' * 70)
+        print(category)
+        print('*' * 70)
         # check if missing category in one of the dicts
         if category not in c1 or category not in c2:
             t1 = category in c1
             t2 = category in c2
-            print '{0:<35}'.format('PRESENT'),
-            print '{0:<20}{1:<20}FAIL'.format(str(t1), str(t2))
+            print('{0:<35}'.format('PRESENT'), end=" ")
+            print('{0:<20}{1:<20}FAIL'.format(str(t1), str(t2)))
             continue
 
         m1 = f1[category].keys()
         m2 = f2[category].keys()
         # loop throught the combined methodnames
         for methodname in set(m1) | set(m2):
-            print '{0:<35}'.format(methodname),
+            print('{0:<35}'.format(methodname), end=" ")
 
             # check if methodname in dict
             if methodname not in m1:
@@ -463,8 +466,8 @@ def compare_xml(x1, x2):
                         if not r:
                             break
 
-            print '{0:<20}{1:<20}'.format(t1, t2),
+            print('{0:<20}{1:<20}'.format(t1, t2), end=" ")
             if r:
-                print 'OK'
+                print('OK')
             else:
-                print 'FAIL'
+                print('FAIL')
