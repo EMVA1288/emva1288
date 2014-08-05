@@ -42,7 +42,9 @@ loader.LoadImageData
 --------------------
 This class takes a dictionary (product of `parser.ParseEmvaDescriptorFile`). Load the
 related images and reduce it's data to the minimum possible, **preserving all relevant image data in
-as integers**
+as integers**. The resulting data is a Python dictionary.
+
+An example of the reduced data can be found at `examples/EMVA1288_image_data.txt`
 
 data.Data1288
 -------------
