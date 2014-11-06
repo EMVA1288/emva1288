@@ -595,6 +595,8 @@ class Results1288(object):
         **LatexName: DSNU
         """
 
+        if self.s_2_y_dark < 0.:
+            return np.nan
         return np.sqrt(self.s_2_y_dark) / self.K
 
     def DSNU1288_DN(self):
@@ -607,6 +609,8 @@ class Results1288(object):
         **LatexName: DSNUDN
         """
 
+        if self.s_2_y_dark < 0:
+            return np.nan
         return np.sqrt(self.s_2_y_dark)
 
     @property
@@ -796,8 +800,22 @@ class Results1288(object):
 #
 #         return r
 
+    @property
     def results(self):
         d = routines.obj_to_dict(self)
+        results = {}
+        for section in d.keys():
+            results[section] = {}
+            for method in d[section].keys():
+                s = d[section][method]
+                if s.get('Value', False):
+                    results[section][method] = {'short': s['Short'],
+                                                'symbol': s['Symbol'],
+                                                'value': s['Value']}
+        return results
+
+    def print_results(self):
+        d = self.results
         for section in d.keys():
             print('*' * 50)
             print(section)
@@ -805,9 +823,8 @@ class Results1288(object):
 
             for method in d[section].keys():
                 s = d[section][method]
-                if s.get('Value', False):
-                    print('{:<50}{:<30}{:>10}'.format(s['Short'],
-                                                      s['Symbol'],
-                                                      s['Value']))
+                print('{:<50}{:<30}{:>10}'.format(s['short'],
+                                                  s['symbol'],
+                                                  s['value']))
         print('*' * 50)
         print(' ')
