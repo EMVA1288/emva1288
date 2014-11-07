@@ -86,7 +86,7 @@ class Plotting1288(object):
         '''
         handles, labels = ax.get_legend_handles_labels()
         if len(self.tests) > 1:
-            d = len(labels) / len(self.tests)
+            d = int(len(labels) / len(self.tests))
             for j in range(len(labels)):
                 t = int(j / d)
                 labels[j] = 'Dataset: ' + str(self.tests[t].name)
