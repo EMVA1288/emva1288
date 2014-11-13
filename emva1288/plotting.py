@@ -362,9 +362,9 @@ class PlotHorizontalSpectogramPRNU(Emva1288Plot):
         # In Release 3.2, there is no subtraction of the residue.
         spectrogram = routines.FFT1288(test.spatial['avg'][0])
 
-        ax.plot(routines.GetFrecs(spectrogram[:(np.shape(spectrogram)[0] /
+        ax.plot(routines.GetFrecs(spectrogram[:(np.shape(spectrogram)[0] //
                                                 2)]),
-                (np.sqrt(spectrogram[:(np.shape(spectrogram)[0] / 2)])),
+                (np.sqrt(spectrogram[:(np.shape(spectrogram)[0] // 2)])),
                 label='Data',
                 gid='dataset.%s' % test.name)
 
@@ -393,9 +393,9 @@ class PlotHorizontalSpectrogramDSNU(Emva1288Plot):
         ax = self.ax
 
         spectrogram = routines.FFT1288(test.spatial['avg_dark'][0])
-        ax.plot(routines.GetFrecs(spectrogram[:(np.shape(spectrogram)[0] /
+        ax.plot(routines.GetFrecs(spectrogram[:(np.shape(spectrogram)[0] //
                                                 2)]),
-                np.sqrt(spectrogram[:(np.shape(spectrogram)[0] / 2)]),
+                np.sqrt(spectrogram[:(np.shape(spectrogram)[0] // 2)]),
                 label='Data',
                 gid='dataset.%s' % test.name)
 
@@ -425,9 +425,9 @@ class PlotVerticalSpectrogramPRNU(Emva1288Plot):
 
         spectrogram = routines.FFT1288(test.spatial['avg'][0], rotate=True)
 
-        ax.plot((routines.GetFrecs(spectrogram[:(np.shape(spectrogram)[0] /
+        ax.plot((routines.GetFrecs(spectrogram[:(np.shape(spectrogram)[0] //
                                                  2)])),
-                (np.sqrt(spectrogram[:(np.shape(spectrogram)[0] / 2)])),
+                (np.sqrt(spectrogram[:(np.shape(spectrogram)[0] // 2)])),
                 label='Data',
                 gid='dataset.%s' % test.name)
 
@@ -456,9 +456,9 @@ class PlotVerticalSpectrogramDSNU(Emva1288Plot):
 
         spectrogram = routines.FFT1288(test.spatial['avg_dark'][0],
                                        rotate=True)
-        ax.plot(routines.GetFrecs(spectrogram[:(np.shape(spectrogram)[0] /
+        ax.plot(routines.GetFrecs(spectrogram[:(np.shape(spectrogram)[0] //
                                                 2)]),
-                np.sqrt(spectrogram[:(np.shape(spectrogram)[0] / 2)]),
+                np.sqrt(spectrogram[:(np.shape(spectrogram)[0] // 2)]),
                 label='Data',
                 gid='dataset.%s' % test.name)
 
@@ -613,7 +613,7 @@ class PlotHorizontalProfile(Emva1288Plot):
         profile_max = np.max(img, axis=0)
         x = np.arange(np.shape(profile)[0])
         l = np.shape(img)[0]
-        profile_mid = img[l / 2, :]
+        profile_mid = img[l // 2, :]
 
         self.length.append(np.shape(profile)[0])
 
@@ -641,7 +641,7 @@ class PlotHorizontalProfile(Emva1288Plot):
         x_dark = np.arange(np.shape(profile_dark)[0])
 
         l = np.shape(img)[0]
-        profile_dark_mid = img[l / 2, :]
+        profile_dark_mid = img[l // 2, :]
 
         avg_ = np.mean(profile_dark_max)
         self.dmax.append(1.1 * avg_)
@@ -707,7 +707,7 @@ class PlotVerticalProfile(Emva1288Plot):
         profile_min = np.min(img, axis=1)
         profile_max = np.max(img, axis=1)
         l = np.shape(img)[1]
-        profile_mid = img[:, l / 2]
+        profile_mid = img[:, l // 2]
         y = np.arange(np.shape(profile)[0])
 
         self.length.append(np.shape(profile)[0])
@@ -735,7 +735,7 @@ class PlotVerticalProfile(Emva1288Plot):
         y_dark = np.arange(np.shape(profile_dark)[0])
 
         l = np.shape(img)[1]
-        profile_dark_mid = img[:, l / 2]
+        profile_dark_mid = img[:, l // 2]
 
         avg_ = np.mean(profile_dark_max)
         self.dmax.append(1.1 * avg_)

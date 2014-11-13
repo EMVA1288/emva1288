@@ -442,6 +442,8 @@ class Results1288(object):
         fit, _error = routines.LinearB(self.temporal['texp'],
                                        self.temporal['s2_ydark'])
 
+        if fit[0] < 0:
+            return np.nan
         return np.sqrt(fit[0] * (10 ** 9)) / self.K
 
     @property
