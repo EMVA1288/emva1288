@@ -31,12 +31,8 @@ class Emva1288Plot(object):
     xscale = None
     yscale = None
 
-    def __init__(self, figure, title=False):
+    def __init__(self, figure):
         self.figure = figure
-
-        if title:
-            self.figure.canvas.set_window_title(self.name)
-
         self.tests = []
         self.setup_figure()
 
@@ -68,9 +64,13 @@ class Emva1288Plot(object):
         pass
 
     def add_test(self, test):
-        if not test.name:
-            test.name = len(self.tests)
-        self.tests.append(test.name)
+        name = test.name
+        if not name:
+            name = len(self.tests)
+        id_ = getattr(test, 'id', id(test))
+        test.id = id_
+        self.tests.append(name)
+        self.plot(test)
 
     def set_legend(self, ax):
         '''
@@ -79,6 +79,7 @@ class Emva1288Plot(object):
         If more than one test, only label the first plot as Dataset #
         if not then use the labels setted in the different plots
         '''
+
         handles, labels = ax.get_legend_handles_labels()
         if len(self.tests) > 1:
             d = int(len(labels) / len(self.tests))
@@ -96,17 +97,16 @@ class PlotSensitivity(Emva1288Plot):
     ylabel = '$\mu_y - \mu_{y.dark}$ [DN]'
 
     def plot(self, test):
-        self.add_test(test)
         ax = self.ax
         ax.plot(test.temporal['u_p'],
                 test.temporal['u_y'] - test.temporal['u_ydark'],
                 label='Data',
-                gid='dataset/%s:data/raw' % test.name)
+                gid='%d:data' % test.id)
 
         ax.plot(test.temporal['u_p'],
                 test.R * test.temporal['u_p'], '--',
                 label='Fit',
-                gid='dataset/%s:data/fits/data' % test.name)
+                gid='%d:fit' % test.id)
 
         xi = test.temporal['u_p'][test.index_sensitivity_min]
         xf = test.temporal['u_p'][test.index_sensitivity_max]
@@ -119,7 +119,7 @@ class PlotSensitivity(Emva1288Plot):
                 label='Fit range',
                 linestyle='None',
                 marker='o',
-                gid='dataset/%s:data/fits/range' % test.name)
+                gid='%d:marker' % test.id)
 
         # Todo : Standard EMVA3 asks to print on graph $\mu_{y.dark}$.
         self.set_legend(ax)
@@ -137,7 +137,6 @@ class PlotUyDark(Emva1288Plot):
     ylabel = '$\mu_{y.dark}$ [DN]'
 
     def plot(self, test):
-        self.add_test(test)
         ax = self.ax
 
         if np.mean(test.temporal['texp']) == test.temporal['texp'][0]:
@@ -146,12 +145,12 @@ class PlotUyDark(Emva1288Plot):
                     'o',
                     markersize=5,
                     label='Data',
-                    gid='dataset.%s' % test.name)
+                    gid='%d:data' % test.id)
         else:
             ax.plot(test.temporal['texp'],
                     test.temporal['u_ydark'],
                     label='Data',
-                    gid='dataset.%s' % test.name)
+                    gid='%d:data' % test.id)
 
         self.set_legend(ax)
 
@@ -167,25 +166,24 @@ class PlotPTC(Emva1288Plot):
     ylabel = '$\sigma^2_y - \sigma^2_{y.dark}$ [DN$^2$]'
 
     def plot(self, test):
-        self.add_test(test)
         ax = self.ax
 
         X = test.temporal['u_y'] - test.temporal['u_ydark']
         Y = test.temporal['s2_y'] - test.temporal['s2_ydark']
         ax.plot(X, Y,
                 label='Data',
-                gid='dataset.%s' % test.name)
+                gid='%d:data' % test.id)
 
         ax.plot(X, test.K * X,
                 linestyle='--',
                 label='Fit',
-                gid='dataset.%s|fits.data' % test.name)
+                gid='%d:fit' % test.id)
 
         ax.plot((X[test.index_u_ysat], ), (Y[test.index_u_ysat], ),
                 marker='o',
                 linestyle='None',
                 label='Saturation',
-                gid='dataset.%s|other.saturation' % test.name)
+                gid='%d:marker' % test.id)
 
         ax.plot((X[test.index_sensitivity_min],
                  X[test.index_sensitivity_max]),
@@ -194,7 +192,7 @@ class PlotPTC(Emva1288Plot):
                 linestyle='None',
                 marker='o',
                 label='Fit range',
-                gid='dataset.%s|fits.range' % test.name)
+                gid='%d:marker' % test.id)
 
         # Todo : Standard EMVA3 asks to print on graph
         # $\sigma^2_{y.dark}$ and K with its one-sigma statistical
@@ -218,7 +216,6 @@ class PlotSNR(Emva1288Plot):
         self.max_ideal = max_ideal
 
     def plot(self, test):
-        self.add_test(test)
         ax = self.ax
 
         X = np.arange(test.u_p_min, test.u_p_sat,
@@ -231,7 +228,7 @@ class PlotSNR(Emva1288Plot):
                 (test.temporal['u_y'] - test.temporal['u_ydark'])[nz] /
                 np.sqrt(test.temporal['s2_y'][nz]),
                 label='Data',
-                gid='dataset.%s' % test.name)
+                gid='%d:data' % test.id)
 
         ax.plot(X,
                 ((test.QE / 100) * X) /
@@ -240,7 +237,7 @@ class PlotSNR(Emva1288Plot):
                         ((test.QE / 100) * X)),
                 linestyle='--',
                 label='Theoretical',
-                gid='dataset.%s|other.theoretical' % test.name)
+                gid='%d:fit' % test.id)
 
         ideal = np.sqrt(X)
         self.max_ideal.append(ideal[-1])
@@ -248,17 +245,17 @@ class PlotSNR(Emva1288Plot):
                 ideal,
                 linestyle='--',
                 label='Ideal',
-                gid='dataset.%s|other.ideal' % test.name)
+                gid='%d:fit' % test.id)
 
         ax.axvline(test.u_p_min,
                    linestyle='--',
                    label='$\mu_{p.min} = %.1f[p]$' % test.u_p_min,
-                   gid='dataset.%s|other.threshold' % test.name)
+                   gid='%d:marker' % test.id)
 
         ax.axvline(test.u_p_sat,
                    linestyle='--',
                    label='$\mu_{p.sat} = %.1f[p]$' % test.u_p_sat,
-                   gid='dataset.%s|other.saturation' % test.name)
+                   gid='%d:marker' % test.id)
 
         ax.plot(X,
                 ((test.QE / 100) * X) /
@@ -270,7 +267,7 @@ class PlotSNR(Emva1288Plot):
                           (test.QE / 100.) * X) ** 2)),
                 linestyle='--',
                 label='Total SNR',
-                gid='dataset.%s|other.theoretical' % test.name)
+                gid='%d:fit' % test.id)
 
         ax.set_ylim(1, max(self.max_ideal))
         self.set_legend(ax)
@@ -286,28 +283,27 @@ class PlotLinearity(Emva1288Plot):
     ylabel = '$\mu_y - \mu_{y.dark}$ [DN]'
 
     def plot(self, test):
-        self.add_test(test)
         ax = self.ax
 
         X = test.temporal['u_p']
         Y = test.temporal['u_y'] - test.temporal['u_ydark']
         ax.plot(X, Y,
                 label='Data',
-                gid='dataset.%s' % test.name)
+                gid='%d:data' % test.id)
 
         ax.plot(X,
                 test.linearity()['fit_slope'] *
                 X + test.linearity()['fit_offset'],
                 linestyle='--',
                 label='Fit',
-                gid='dataset.%s|fits.data' % test.name)
+                gid='%d:fit' % test.id)
 
         ax.plot((X[test.index_linearity_min], X[test.index_linearity_max]),
                 (Y[test.index_linearity_min], Y[test.index_linearity_max]),
                 label='Fit range',
                 linestyle='None',
                 marker='o',
-                gid='dataset.%s|fits.range' % test.name)
+                gid='%d:marker' % test.id)
 
         self.set_legend(ax)
 
@@ -323,7 +319,6 @@ class PlotDeviationLinearity(Emva1288Plot):
     ylabel = 'Linearity error LE [%]'
 
     def plot(self, test):
-        self.add_test(test)
         ax = self.ax
 
         X = test.temporal['u_p'][test.index_linearity_min:
@@ -332,14 +327,14 @@ class PlotDeviationLinearity(Emva1288Plot):
         Y = deviation[test.index_linearity_min: test.index_linearity_max]
         ax.plot(X, Y,
                 label='Data',
-                gid='dataset.%s' % test.name)
+                gid='%d:data' % test.id)
 
         ax.plot((X[0], X[-1]),
                 (Y[0], Y[-1]),
                 label='Fit range',
                 linestyle='None',
                 marker='o',
-                gid='dataset.%s|fits.range' % test.name)
+                gid='%d:marker' % test.id)
 
         self.set_legend(ax)
 
@@ -356,7 +351,6 @@ class PlotHorizontalSpectogramPRNU(Emva1288Plot):
     yscale = 'log'
 
     def plot(self, test):
-        self.add_test(test)
         ax = self.ax
 
         # In Release 3.2, there is no subtraction of the residue.
@@ -366,12 +360,12 @@ class PlotHorizontalSpectogramPRNU(Emva1288Plot):
                                                 2)]),
                 (np.sqrt(spectrogram[:(np.shape(spectrogram)[0] // 2)])),
                 label='Data',
-                gid='dataset.%s' % test.name)
+                gid='%d:data' % test.id)
 
         ax.axhline(np.sqrt(test.sigma_2_y_stack),
                    label='$\sigma^2_{y.stack}$',
                    linestyle='--',
-                   gid='dataset.%s|other.variance' % test.name)
+                   gid='%d:marker' % test.id)
 
         # TODO: Standard EMVA3 asks to print on graph s_w and F.
         self.set_legend(ax)
@@ -389,7 +383,6 @@ class PlotHorizontalSpectrogramDSNU(Emva1288Plot):
     yscale = 'log'
 
     def plot(self, test):
-        self.add_test(test)
         ax = self.ax
 
         spectrogram = routines.FFT1288(test.spatial['avg_dark'][0])
@@ -397,12 +390,12 @@ class PlotHorizontalSpectrogramDSNU(Emva1288Plot):
                                                 2)]),
                 np.sqrt(spectrogram[:(np.shape(spectrogram)[0] // 2)]),
                 label='Data',
-                gid='dataset.%s' % test.name)
+                gid='%d:data' % test.id)
 
         ax.axhline(np.sqrt(test.sigma_2_y_stack_dark),
                    label='$\sigma^2_{y.stack.dark}$',
                    linestyle='--',
-                   gid='dataset.%s|other.variance' % test.name)
+                   gid='%d:marker' % test.id)
 
         self.set_legend(ax)
 
@@ -419,8 +412,6 @@ class PlotVerticalSpectrogramPRNU(Emva1288Plot):
     yscale = 'log'
 
     def plot(self, test):
-
-        self.add_test(test)
         ax = self.ax
 
         spectrogram = routines.FFT1288(test.spatial['avg'][0], rotate=True)
@@ -429,12 +420,12 @@ class PlotVerticalSpectrogramPRNU(Emva1288Plot):
                                                  2)])),
                 (np.sqrt(spectrogram[:(np.shape(spectrogram)[0] // 2)])),
                 label='Data',
-                gid='dataset.%s' % test.name)
+                gid='%d:data' % test.id)
 
         ax.axhline(np.sqrt(test.sigma_2_y_stack),
                    label='$\sigma^2_{y.stack}$',
                    linestyle='--',
-                   gid='dataset.%s|other.variance' % test.name)
+                   gid='%d:marker' % test.id)
 
         self.set_legend(ax)
 
@@ -451,7 +442,6 @@ class PlotVerticalSpectrogramDSNU(Emva1288Plot):
     yscale = 'log'
 
     def plot(self, test):
-        self.add_test(test)
         ax = self.ax
 
         spectrogram = routines.FFT1288(test.spatial['avg_dark'][0],
@@ -460,12 +450,12 @@ class PlotVerticalSpectrogramDSNU(Emva1288Plot):
                                                 2)]),
                 np.sqrt(spectrogram[:(np.shape(spectrogram)[0] // 2)]),
                 label='Data',
-                gid='dataset.%s' % test.name)
+                gid='%d:data' % test.id)
 
         ax.axhline(np.sqrt(test.sigma_2_y_stack_dark),
                    label='$\sigma^2_{y.stack.dark}$',
                    linestyle='--',
-                   gid='dataset.%s|other.variance' % test.name)
+                   gid='%d:marker' % test.id)
 
         self.set_legend(ax)
 
@@ -482,17 +472,16 @@ class PlotLogarithmicHistogramDSNU(Emva1288Plot):
     yscale = 'log'
 
     def plot(self, test):
-        self.add_test(test)
         ax = self.ax
 
         hist = test.histogram_DSNU
 
         ax.plot(hist['bins'], hist['values'],
-                gid='dataset.%s' % test.name,
+                gid='%d:data' % test.id,
                 label='Data')
         ax.plot(hist['bins'], hist['model'],
                 '--',
-                gid='dataset.%s|other.normal' % test.name,
+                gid='%d:fit' % test.id,
                 label='Model')
 
         self.set_legend(ax)
@@ -512,15 +501,14 @@ class PlotLogarithmicHistogramPRNU(Emva1288Plot):
     yscale = 'log'
 
     def plot(self, test):
-        self.add_test(test)
         ax = self.ax
         hist = test.histogram_PRNU
 
         ax.plot(hist['bins'], hist['values'],
-                gid='dataset.%s' % test.name,
+                gid='%d:data' % test.id,
                 label='Data')
         ax.plot(hist['bins'], hist['model'], '--',
-                gid='dataset.%s|other.normal' % test.name,
+                gid='%d:fit' % test.id,
                 label='Model')
 
         self.set_legend(ax)
@@ -539,12 +527,11 @@ class PlotAccumulatedLogHistogramDSNU(Emva1288Plot):
     yscale = 'log'
 
     def plot(self, test):
-        self.add_test(test)
         ax = self.ax
         hist = test.histogram_DSNU_accumulated
 
         ax.plot(hist['bins'], hist['values'],
-                gid='dataset.%s' % test.name,
+                gid='%d:data' % test.id,
                 label='Data')
 
         self.set_legend(ax)
@@ -562,13 +549,12 @@ class PlotAccumulatedLogHistogramPRNU(Emva1288Plot):
     yscale = 'log'
 
     def plot(self, test):
-        self.add_test(test)
         ax = self.ax
 
         hist = test.histogram_PRNU_accumulated
 
         ax.plot(hist['bins'], hist['values'],
-                gid='dataset.%s' % test.name,
+                gid='%d:data' % test.id,
                 label='Data')
 
         self.set_legend(ax)
@@ -603,7 +589,6 @@ class PlotHorizontalProfile(Emva1288Plot):
         self.ax2 = ax2
 
     def plot(self, test):
-        self.add_test(test)
         ax = self.ax
         ax2 = self.ax2
 
@@ -623,16 +608,16 @@ class PlotHorizontalProfile(Emva1288Plot):
 
         ax.plot(x, profile_mid,
                 label='50% mid',
-                gid='dataset.%s|illumination.50.mid' % test.name)
+                gid='%d:marker' % test.id)
         ax.plot(x, profile_min,
                 label='50% min',
-                gid='dataset.%s|illumination.50.min' % test.name)
+                gid='%d:marker' % test.id)
         ax.plot(x, profile_max,
                 label='50% max',
-                gid='dataset.%s|illumination.50.max' % test.name)
+                gid='%d:marker' % test.id)
         ax.plot(x, profile,
                 label='50% mean',
-                gid='dataset.%s|illumination.50.mean' % test.name)
+                gid='%d:marker' % test.id)
 
         img = test.spatial['avg_dark'][0]
         profile_dark = np.mean(img, axis=0)
@@ -651,16 +636,16 @@ class PlotHorizontalProfile(Emva1288Plot):
 
         ax2.plot(x_dark, profile_dark_mid,
                  label='Dark mid',
-                 gid='dataset.%s|illumination.dark.mid' % test.name)
+                 gid='%d:marker' % test.id)
         ax2.plot(x_dark, profile_dark_min,
                  label='Dark min',
-                 gid='dataset.%s|illumination.dark.min' % test.name)
+                 gid='%d:marker' % test.id)
         ax2.plot(x_dark, profile_dark_max,
                  label='Dark max',
-                 gid='dataset.%s|illumination.dark.max' % test.name)
+                 gid='%d:marker' % test.id)
         ax2.plot(x_dark, profile_dark,
                  label='Dark mean',
-                 gid='dataset.%s|illumination.dark.mean' % test.name)
+                 gid='%d:marker' % test.id)
 
         ax.axis(ymin=min(self.bmin),
                 ymax=max(self.bmax),
@@ -698,7 +683,6 @@ class PlotVerticalProfile(Emva1288Plot):
         self.ax2 = ax2
 
     def plot(self, test):
-        self.add_test(test)
         ax = self.ax
         ax2 = self.ax2
 
@@ -717,16 +701,16 @@ class PlotVerticalProfile(Emva1288Plot):
 
         ax2.plot(profile_mid, y,
                  label='50% mid',
-                 gid='dataset.%s|illumination.50.mid' % test.name)
+                 gid='%d:marker' % test.id)
         ax2.plot(profile_min, y,
                  label='50% min',
-                 gid='dataset.%s|illumination.50.min' % test.name)
+                 gid='%d:marker' % test.id)
         ax2.plot(profile_max, y,
                  label='50% max',
-                 gid='dataset.%s|illumination.50.max' % test.name)
+                 gid='%d:marker' % test.id)
         ax2.plot(profile, y,
                  label='50% mean',
-                 gid='dataset.%s|illumination.50.mean' % test.name)
+                 gid='%d:marker' % test.id)
 
         img = test.spatial['avg_dark'][0]
         profile_dark = np.mean(img, axis=1)
@@ -745,16 +729,16 @@ class PlotVerticalProfile(Emva1288Plot):
 
         ax.plot(profile_dark_mid, y_dark,
                 label='Dark mid',
-                gid='dataset.%s|illumination.dark.mid' % test.name)
+                gid='%d:marker' % test.id)
         ax.plot(profile_dark_min, y_dark,
                 label='Dark min',
-                gid='dataset.%s|illumination.dark.min' % test.name)
+                gid='%d:marker' % test.id)
         ax.plot(profile_dark_max, y_dark,
                 label='Dark max',
-                gid='dataset.%s|illumination.dark.max' % test.name)
+                gid='%d:marker' % test.id)
         ax.plot(profile_dark, y_dark,
                 label='Dark mean',
-                gid='dataset.%s|illumination.dark.mean' % test.name)
+                gid='%d:marker' % test.id)
 
         ax2.axis(xmin=min(self.bmin),
                  xmax=max(self.bmax),
@@ -813,7 +797,7 @@ class Plotting1288(object):
                 plot = EVMA1288plots[i](figure)
 
                 for test in self.tests:
-                    plot.plot(test)
+                    plot.add_test(test)
                 self.figures[i] = figure
 
                 if not self._titles:
