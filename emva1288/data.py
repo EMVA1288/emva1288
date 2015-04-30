@@ -201,3 +201,14 @@ class Data1288(object):
                 'L': L,
                 'avg': avg_,
                 'var': var_}
+
+    def __getitem__(self, key):
+        '''Adds the possibility to pass the object directly to Results1288
+        Instead of using
+        d = Data1288(xxx)
+        r = Results1288(d.data)
+        It is possible to use
+        d = Data1288(xxx)
+        r = Results1288(d)
+        '''
+        return self.data[key]
