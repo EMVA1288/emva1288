@@ -457,7 +457,7 @@ class Results1288(object):
         """
 
         if len(np.unique(self.temporal['texp'])) <= 2:
-            return None
+            return np.nan
 
         fit, _error = routines.LinearB(self.temporal['texp'],
                                        self.temporal['u_ydark'])
