@@ -90,6 +90,11 @@ class Emva1288Plot(object):
         else:
             ax.legend(loc='upper left')
 
+        legend = ax.get_legend()
+        if legend is not None:
+            if getattr(legend, 'draggable', False):
+                legend.draggable(True)
+
 
 class PlotSensitivity(Emva1288Plot):
     name = 'Sensitivity'
@@ -636,16 +641,16 @@ class PlotHorizontalProfile(Emva1288Plot):
 
         ax2.plot(x_dark, profile_dark_mid,
                  label='Dark mid',
-                 gid='%d:marker' % test.id)
+                 gid='%d:data' % test.id)
         ax2.plot(x_dark, profile_dark_min,
                  label='Dark min',
-                 gid='%d:marker' % test.id)
+                 gid='%d:data' % test.id)
         ax2.plot(x_dark, profile_dark_max,
                  label='Dark max',
-                 gid='%d:marker' % test.id)
+                 gid='%d:data' % test.id)
         ax2.plot(x_dark, profile_dark,
                  label='Dark mean',
-                 gid='%d:marker' % test.id)
+                 gid='%d:data' % test.id)
 
         ax.axis(ymin=min(self.bmin),
                 ymax=max(self.bmax),
@@ -772,7 +777,6 @@ class Plotting1288(object):
         Creates and shows all plots necessary to prepare a camera or sensor
         descriptive report compliant with EMVA Standard 1288 version 3.1.
         '''
-        self.figures = {}
 
         self._titles = kwargs.pop('titles', True)
         # Get data
@@ -782,25 +786,39 @@ class Plotting1288(object):
         # Show plots
         plt.show()
 
-    def plot(self, *plots):
-        # Create plots
+    def get_figure(self, i):
+        return plt.figure(i)
+
+    def plots_to_plot(self, *plots):
+        p = []
         if not plots:
             plots = range(len(EVMA1288plots))
-
         for i in plots:
             if i not in range(len(EVMA1288plots)):
                 print('Error ', i, 'is not valid index')
                 print('Plot has to be integer in ', range(len(EVMA1288plots)))
+                continue
+            p.append(i)
+        return p
+
+    def get_figures(self, ids):
+        figures = {}
+        for i in ids:
+            figures[i] = self.get_figure(i)
+        return figures
+
+    def plot(self, *ids, **kwargs):
+        plots = self.plots_to_plot(*ids)
+        figures = self.get_figures(*plots)
+        self.plot_figures(figures)
+
+    def plot_figures(self, figures):
+        for i, figure in figures.items():
+            figure = figures[i]
+            plot = EVMA1288plots[i](figure)
+            for test in self.tests:
+                plot.add_test(test)
+            if not self._titles:
+                figure.canvas.set_window_title('Fig %d' % (i + 1))
             else:
-                figure = plt.figure()
-
-                plot = EVMA1288plots[i](figure)
-
-                for test in self.tests:
-                    plot.add_test(test)
-                self.figures[i] = figure
-
-                if not self._titles:
-                    figure.canvas.set_window_title('Fig %d' % (i + 1))
-                else:
-                    figure.canvas.set_window_title(plot.name)
+                figure.canvas.set_window_title(plot.name)
