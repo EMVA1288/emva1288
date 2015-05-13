@@ -138,7 +138,7 @@ class Results1288(object):
     def K(self):
         """
         **Section: sensitivity
-        **Short:Overall system gain
+        **Short:System gain
         **Symbol:K
         **Comment:Slope of (s2_y - s2_y_dark) Vs (u_y - u_y_dark). Fit with offset = 0
         **Unit: $DN/e^-$
@@ -158,7 +158,7 @@ class Results1288(object):
     def inverse_K(self):
         """
         **Section: sensitivity
-        **Short:Inverse Overall system gain
+        **Short:Inverse system gain
         **Symbol: 1/K
         **Comment:
         **Unit: $e^-/DN$
@@ -184,7 +184,7 @@ class Results1288(object):
     def sigma_y_dark(self):
         """
         **Section: sensitivity
-        **Short: Temporal Dark Noise (DN)
+        **Short: Temporal Dark Noise
         **Symbol: $\sigma_{y.dark}$
         **Comment:
         **Unit: DN
@@ -210,7 +210,7 @@ class Results1288(object):
     def sigma_d(self):
         """
         **Section: sensitivity
-        **Short:Temporal Dark Noise (electrons)
+        **Short: Temporal Dark Noise
         **Symbol:$\sigma_d$
         **Comment:
         **Unit: $e^-$
@@ -223,7 +223,7 @@ class Results1288(object):
     def u_p_min(self):
         """
         **Section: sensitivity
-        **Short:Absolute sensitivity threshold
+        **Short: Sensitivity threshold
         **Symbol:$\mu_{p.min}$
         **Comment:
         **Unit: $p$
@@ -232,11 +232,22 @@ class Results1288(object):
 
         return (100.0 / self.QE) * ((self.sigma_y_dark / self.K) + 0.5)
 
+    def u_e_min(self):
+        """
+        **Section: sensitivity
+        **Short: Sensitivity threshold
+        **Symbol:$\mu_{e.min}$
+        **Comment:
+        **Unit: $e^-$
+        **LatexName: UEMin
+        """
+        return self.QE * self.u_p_min / 100.0
+
     @property
     def u_p_sat(self):
         """
         **Section: sensitivity
-        **Short:Saturation Capacity (photons)
+        **Short:Saturation Capacity
         **Symbol:$\mu_{p.sat}$
         **Comment:
         **Unit: $p$
@@ -249,7 +260,7 @@ class Results1288(object):
     def u_e_sat(self):
         """
         **Section: sensitivity
-        **Short:Saturation Capacity (electrons)
+        **Short:Saturation Capacity
         **Symbol:$\mu_{e.sat}$
         **Comment:Number of electrons at saturation
         **Unit: $e^-$
@@ -323,7 +334,7 @@ class Results1288(object):
     def DR_dB(self):
         """
         **Section: sensitivity
-        **Short: Dynamic Range in dB
+        **Short: Dynamic Range
         **Symbol: $DR_{dB}$
         **Comment:
         **Unit: dB
@@ -335,7 +346,7 @@ class Results1288(object):
     def DR_bit(self):
         """
         **Section: sensitivity
-        **Short: Dynamic Range in bits
+        **Short: Dynamic Range
         **Symbol: $DR_{bit}$
         **Comment:
         **Unit: bit
@@ -813,7 +824,9 @@ class Results1288(object):
                 if s.get('Value', False):
                     results[section][method] = {'short': s['Short'],
                                                 'symbol': s['Symbol'],
-                                                'value': s['Value']}
+                                                'value': s['Value'],
+                                                'unit': s['Unit'],
+                                                'latexname': s.get('LatexName')}
         return results
 
     def print_results(self):
