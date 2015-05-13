@@ -565,7 +565,68 @@ class PlotAccumulatedLogHistogramPRNU(Emva1288Plot):
         self.set_legend(ax)
 
 
-class PlotHorizontalProfile(Emva1288Plot):
+class ProfileBase(Emva1288Plot):
+    def __init__(self, *args, **kwargs):
+        Emva1288Plot.__init__(self, *args, **kwargs)
+        # Dict to keep track of max and min values to adjust the
+        # limit of the axis
+        self.axis_limits = {'bright': {'max': [], 'min': [], 'length': []},
+                            'dark': {'max': [], 'min': [], 'length': []}}
+
+    def _get_extremes(self, mean_, min_, max_):
+        min_min_i = np.argmax(mean_ - min_)
+        min_min = min_[min_min_i]
+        min_perc = np.abs(100. - (min_min * 100. / mean_[min_min_i]))
+        min_label = 'Min ({:.1f} {:.1f}%)'.format(min_min,
+                                                  min_perc)
+
+        max_max_i = np.argmax(max_ - min_)
+        max_max = max_[max_max_i]
+        max_perc = np.abs(100. - (max_max * 100. / mean_[max_max_i]))
+        max_label = 'Max ({:.1f} {:.1f}%)'.format(max_max,
+                                                  max_perc)
+
+        return {'min_deviation': min_min, 'min_precentage': min_perc,
+                'min_label': min_label, 'max_label': max_label,
+                'max_deviation': max_max, 'max_percentage': max_perc}
+
+    def _get_image_profiles(self, image, transpose):
+        if transpose:
+            img = np.transpose(image)
+        else:
+            img = image
+        profile = np.mean(img, axis=0)
+        profile_min = np.min(img, axis=0)
+        profile_max = np.max(img, axis=0)
+
+        mid_i = np.shape(img)[0]
+        profile_mid = img[mid_i // 2, :]
+        length = np.shape(profile)[0]
+
+        extremes = self._get_extremes(profile, profile_min, profile_max)
+
+        d = {'mean': profile, 'min': profile_min,
+             'max': profile_max, 'length': length,
+             'mid': profile_mid}
+        d.update(extremes)
+        return d
+
+    def get_profiles(self, bright, dark, transpose):
+        b_p = self._get_image_profiles(bright, transpose)
+        b_mean = np.mean(b_p['mean'])
+        self.axis_limits['bright']['length'].append(b_p['length'])
+        self.axis_limits['bright']['min'].append(0.9 * b_mean)
+        self.axis_limits['bright']['max'].append(1.1 * b_mean)
+
+        d_p = self._get_image_profiles(dark, transpose)
+        self.axis_limits['dark']['length'].append(d_p['length'])
+        self.axis_limits['dark']['min'].append(0.9 * np.mean(d_p['min']))
+        self.axis_limits['dark']['max'].append(1.1 * np.mean(d_p['max']))
+
+        return {'bright': b_p, 'dark': d_p}
+
+
+class PlotHorizontalProfile(ProfileBase):
     '''
     Create Horizontal profile plot with all instances of Processing in
     self.tests.
@@ -575,92 +636,63 @@ class PlotHorizontalProfile(Emva1288Plot):
     name = 'Horizontal profile'
 
     def setup_figure(self):
-        ax = self.figure.add_subplot(211)
-        ax2 = self.figure.add_subplot(212)
+        self.ax = self.figure.add_subplot(211)
+        self.ax2 = self.figure.add_subplot(212)
         self.figure.suptitle(self.name)
-        ax.set_title('PRNU')
-        ax.set_ylabel('Vertical line [DN]')
-        ax2.set_title('DSNU')
-        ax2.set_xlabel('Index of the line')
-        ax2.set_ylabel('Vertical line [DN]')
-
-        self.bmin = []
-        self.bmax = []
-        self.dmin = []
-        self.dmax = []
-        self.length = []
-
-        self.ax = ax
-        self.ax2 = ax2
+        self.ax.set_title('PRNU')
+        self.ax.set_ylabel('Vertical line [DN]')
+        self.ax2.set_title('DSNU')
+        self.ax2.set_xlabel('Index of the line')
+        self.ax2.set_ylabel('Vertical line [DN]')
 
     def plot(self, test):
         ax = self.ax
         ax2 = self.ax2
 
-        img = test.spatial['avg'][0]
-        profile = np.mean(img, axis=0)
-        profile_min = np.min(img, axis=0)
-        profile_max = np.max(img, axis=0)
-        x = np.arange(np.shape(profile)[0])
-        l = np.shape(img)[0]
-        profile_mid = img[l // 2, :]
+        bimg = test.spatial['avg'][0]
+        dimg = test.spatial['avg_dark'][0]
+        profiles = self.get_profiles(bimg, dimg, False)
 
-        self.length.append(np.shape(profile)[0])
-
-        avg_ = np.mean(img)
-        self.bmax.append(1.1 * avg_)
-        self.bmin.append(0.9 * avg_)
-
-        ax.plot(x, profile_mid,
+        x = np.arange(profiles['bright']['length'])
+        ax.plot(x, profiles['bright']['mid'],
                 label='50% mid',
                 gid='%d:marker' % test.id)
-        ax.plot(x, profile_min,
-                label='50% min',
+        ax.plot(x, profiles['bright']['min'],
+                label=profiles['bright']['min_label'],
                 gid='%d:marker' % test.id)
-        ax.plot(x, profile_max,
-                label='50% max',
+        ax.plot(x, profiles['bright']['max'],
+                label=profiles['bright']['max_label'],
                 gid='%d:marker' % test.id)
-        ax.plot(x, profile,
+        ax.plot(x, profiles['bright']['mean'],
                 label='50% mean',
                 gid='%d:marker' % test.id)
 
-        img = test.spatial['avg_dark'][0]
-        profile_dark = np.mean(img, axis=0)
-        profile_dark_min = np.min(img, axis=0)
-        profile_dark_max = np.max(img, axis=0)
-        x_dark = np.arange(np.shape(profile_dark)[0])
-
-        l = np.shape(img)[0]
-        profile_dark_mid = img[l // 2, :]
-
-        avg_ = np.mean(profile_dark_max)
-        self.dmax.append(1.1 * avg_)
-
-        avg_ = np.mean(profile_dark_min)
-        self.dmin.append(0.9 * avg_)
-
-        ax2.plot(x_dark, profile_dark_mid,
-                 label='Dark mid',
+        x_dark = np.arange(profiles['dark']['length'])
+        ax2.plot(x_dark, profiles['dark']['mid'],
+                 label='mid',
                  gid='%d:data' % test.id)
-        ax2.plot(x_dark, profile_dark_min,
-                 label='Dark min',
+        ax2.plot(x_dark, profiles['dark']['min'],
+                 label=profiles['dark']['min_label'],
                  gid='%d:data' % test.id)
-        ax2.plot(x_dark, profile_dark_max,
-                 label='Dark max',
+        ax2.plot(x_dark, profiles['dark']['max'],
+                 label=profiles['dark']['max_label'],
                  gid='%d:data' % test.id)
-        ax2.plot(x_dark, profile_dark,
-                 label='Dark mean',
+        ax2.plot(x_dark, profiles['dark']['mean'],
+                 label='mean',
                  gid='%d:data' % test.id)
 
-        ax.axis(ymin=min(self.bmin),
-                ymax=max(self.bmax),
-                xmax=max(self.length))
-        ax2.axis(ymin=min(self.dmin),
-                 ymax=max(self.dmax),
-                 xmax=max(self.length))
+        ax.axis(ymin=min(self.axis_limits['bright']['min']),
+                ymax=max(self.axis_limits['bright']['max']),
+                xmax=max(self.axis_limits['bright']['length']))
+        ax2.axis(ymin=min(self.axis_limits['dark']['min']),
+                 ymax=max(self.axis_limits['dark']['max']),
+                 xmax=max(self.axis_limits['dark']['length']))
+
+        self.set_legend(ax)
+        self.set_legend(ax2)
 
 
-class PlotVerticalProfile(Emva1288Plot):
+class PlotVerticalProfile(ProfileBase):
     '''
     Create Vertical profile plot with all instances of Processing in
     self.tests.
@@ -670,93 +702,66 @@ class PlotVerticalProfile(Emva1288Plot):
     name = 'Vertical profile'
 
     def setup_figure(self):
-        ax = self.figure.add_subplot(121)
-        ax2 = self.figure.add_subplot(122)
-
-        self.bmin = []
-        self.bmax = []
-        self.dmin = []
-        self.dmax = []
-        self.length = []
+        self.ax = self.figure.add_subplot(121)
+        self.ax2 = self.figure.add_subplot(122)
         self.figure.suptitle(self.name)
-        ax.set_title('DSNU')
-        ax.set_xlabel('Vertical line [DN]')
-        ax.set_ylabel('Index of the line')
-        ax2.set_title('PRNU')
-        ax2.set_xlabel('Vertical line [DN]')
-        self.ax = ax
-        self.ax2 = ax2
+        self.ax.set_title('DSNU')
+        self.ax.set_xlabel('Vertical line [DN]')
+        self.ax.set_ylabel('Index of the line')
+        self.ax2.set_title('PRNU')
+        self.ax2.set_xlabel('Vertical line [DN]')
 
     def plot(self, test):
         ax = self.ax
         ax2 = self.ax2
 
-        img = test.spatial['avg'][0] - test.spatial['avg_dark'][0]
-        profile = np.mean(img, axis=1)
-        profile_min = np.min(img, axis=1)
-        profile_max = np.max(img, axis=1)
-        l = np.shape(img)[1]
-        profile_mid = img[:, l // 2]
-        y = np.arange(np.shape(profile)[0])
+        bimg = test.spatial['avg'][0] - test.spatial['avg_dark'][0]
+        dimg = test.spatial['avg_dark'][0]
+        profiles = self.get_profiles(bimg, dimg, True)
 
-        self.length.append(np.shape(profile)[0])
-        avg_ = np.mean(img)
-        self.bmax.append(1.1 * avg_)
-        self.bmin.append(0.9 * avg_)
-
-        ax2.plot(profile_mid, y,
+        y = np.arange(profiles['bright']['length'])
+        ax2.plot(profiles['bright']['mid'], y,
                  label='50% mid',
                  gid='%d:marker' % test.id)
-        ax2.plot(profile_min, y,
-                 label='50% min',
+        ax2.plot(profiles['bright']['min'], y,
+                 label=profiles['bright']['min_label'],
                  gid='%d:marker' % test.id)
-        ax2.plot(profile_max, y,
-                 label='50% max',
+        ax2.plot(profiles['bright']['max'], y,
+                 label=profiles['bright']['max_label'],
                  gid='%d:marker' % test.id)
-        ax2.plot(profile, y,
+        ax2.plot(profiles['bright']['mean'], y,
                  label='50% mean',
                  gid='%d:marker' % test.id)
 
-        img = test.spatial['avg_dark'][0]
-        profile_dark = np.mean(img, axis=1)
-        profile_dark_min = np.min(img, axis=1)
-        profile_dark_max = np.max(img, axis=1)
-        y_dark = np.arange(np.shape(profile_dark)[0])
-
-        l = np.shape(img)[1]
-        profile_dark_mid = img[:, l // 2]
-
-        avg_ = np.mean(profile_dark_max)
-        self.dmax.append(1.1 * avg_)
-
-        avg_ = np.mean(profile_dark_min)
-        self.dmin.append(0.9 * avg_)
-
-        ax.plot(profile_dark_mid, y_dark,
+        y_dark = np.arange(profiles['dark']['length'])
+        ax.plot(profiles['dark']['mid'], y_dark,
                 label='Dark mid',
                 gid='%d:marker' % test.id)
-        ax.plot(profile_dark_min, y_dark,
-                label='Dark min',
+        ax.plot(profiles['dark']['min'], y_dark,
+                label=profiles['dark']['min_label'],
                 gid='%d:marker' % test.id)
-        ax.plot(profile_dark_max, y_dark,
-                label='Dark max',
+        ax.plot(profiles['dark']['max'], y_dark,
+                label=profiles['dark']['max_label'],
                 gid='%d:marker' % test.id)
-        ax.plot(profile_dark, y_dark,
+        ax.plot(profiles['dark']['mean'], y_dark,
                 label='Dark mean',
                 gid='%d:marker' % test.id)
 
-        ax2.axis(xmin=min(self.bmin),
-                 xmax=max(self.bmax),
-                 ymax=max(self.length))
-        ax.axis(xmin=min(self.dmin),
-                xmax=max(self.dmax),
-                ymax=max(self.length))
+        ax2.axis(xmin=min(self.axis_limits['bright']['min']),
+                 xmax=max(self.axis_limits['bright']['max']),
+                 ymax=max(self.axis_limits['bright']['length']))
+        ax.axis(xmin=min(self.axis_limits['dark']['min']),
+                xmax=max(self.axis_limits['dark']['max']),
+                ymax=max(self.axis_limits['dark']['length']))
+
+        self.set_legend(ax)
+        self.set_legend(ax2)
 
 
-EVMA1288plots = [PlotSensitivity,
-                 PlotUyDark,
-                 PlotPTC,
+EVMA1288plots = [PlotPTC,
                  PlotSNR,
+                 PlotSensitivity,
+                 PlotUyDark,
                  PlotLinearity,
                  PlotDeviationLinearity,
                  PlotHorizontalSpectogramPRNU,
