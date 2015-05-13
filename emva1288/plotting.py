@@ -655,7 +655,7 @@ class PlotHorizontalProfile(ProfileBase):
 
         x = np.arange(profiles['bright']['length'])
         ax.plot(x, profiles['bright']['mid'],
-                label='50% mid',
+                label='Mid',
                 gid='%d:marker' % test.id)
         ax.plot(x, profiles['bright']['min'],
                 label=profiles['bright']['min_label'],
@@ -664,12 +664,12 @@ class PlotHorizontalProfile(ProfileBase):
                 label=profiles['bright']['max_label'],
                 gid='%d:marker' % test.id)
         ax.plot(x, profiles['bright']['mean'],
-                label='50% mean',
+                label='Mean',
                 gid='%d:marker' % test.id)
 
         x_dark = np.arange(profiles['dark']['length'])
         ax2.plot(x_dark, profiles['dark']['mid'],
-                 label='mid',
+                 label='Mid',
                  gid='%d:data' % test.id)
         ax2.plot(x_dark, profiles['dark']['min'],
                  label=profiles['dark']['min_label'],
@@ -678,7 +678,7 @@ class PlotHorizontalProfile(ProfileBase):
                  label=profiles['dark']['max_label'],
                  gid='%d:data' % test.id)
         ax2.plot(x_dark, profiles['dark']['mean'],
-                 label='mean',
+                 label='Mean',
                  gid='%d:data' % test.id)
 
         ax.axis(ymin=min(self.axis_limits['bright']['min']),
@@ -721,7 +721,7 @@ class PlotVerticalProfile(ProfileBase):
 
         y = np.arange(profiles['bright']['length'])
         ax2.plot(profiles['bright']['mid'], y,
-                 label='50% mid',
+                 label='Mid',
                  gid='%d:marker' % test.id)
         ax2.plot(profiles['bright']['min'], y,
                  label=profiles['bright']['min_label'],
@@ -730,12 +730,12 @@ class PlotVerticalProfile(ProfileBase):
                  label=profiles['bright']['max_label'],
                  gid='%d:marker' % test.id)
         ax2.plot(profiles['bright']['mean'], y,
-                 label='50% mean',
+                 label='Mean',
                  gid='%d:marker' % test.id)
 
         y_dark = np.arange(profiles['dark']['length'])
         ax.plot(profiles['dark']['mid'], y_dark,
-                label='Dark mid',
+                label='Mid',
                 gid='%d:marker' % test.id)
         ax.plot(profiles['dark']['min'], y_dark,
                 label=profiles['dark']['min_label'],
@@ -744,7 +744,7 @@ class PlotVerticalProfile(ProfileBase):
                 label=profiles['dark']['max_label'],
                 gid='%d:marker' % test.id)
         ax.plot(profiles['dark']['mean'], y_dark,
-                label='Dark mean',
+                label='Mean',
                 gid='%d:marker' % test.id)
 
         ax2.axis(xmin=min(self.axis_limits['bright']['min']),
