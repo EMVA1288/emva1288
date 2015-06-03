@@ -764,54 +764,6 @@ class Results1288(object):
         if not filename:
             return routines.dict_to_xml(d)
         routines.dict_to_xml(d, filename=filename)
-#
-#     def latex(self):
-#         # TODO: Merge this with generate_latex
-#
-#         # The two template tex sections
-#         r = {'operation_point': '', 'camera': ''}
-#
-#         # The operation point data for the tex files, comes from the
-#         # Results1288 object
-#         d = routines.obj_to_dict(self)
-#         t = ''
-#         for section, v in d.items():
-#             t += '\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n'
-#             t += '% Section: ' + section + '\n%\n'
-#             for methodname, content in v.items():
-#                 if 'LatexName' in content:
-#                     t += '% Method: ' + methodname + '\n'
-#                     t += '% Desc: ' + content['Short'] + '\n'
-#                     t += '\\def\\%s{%s}\n' % (content['LatexName'],
-#                                               str(content['Value']))
-#                     t += '\\def\\U%s{%s}\n' % (content['LatexName'],
-#                                                content['Unit'])
-#                     t += '\\def\\S%s{%s}\n' % (content['LatexName'],
-#                                                content['Symbol'])
-#                     t += '\n'
-#         r['operation_point'] += t
-#
-#         # Some data to be included in the tex content, comes from
-#         # the descriptor file
-#         # For camera data
-#         #
-#         # c varname varcontent
-#         #
-#         # For operation point data
-#         # o varname varcontent
-#         #
-#         # This data was loaded by ProcessEmvaDescriptorFile
-#         # and is already in self.data.data['datasheet']
-#         for section in r.keys():
-#             if self.data.data['datasheet'][section]:
-#                 t = ''
-#                 t += '\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n'
-#                 t += '% Latex variables from input\n\n'
-#                 for varname, value in self.data.data['datasheet'][section].items():
-#                     t += '\\def\\' + str(varname) + '{' + str(value) + '}\n'
-#                 r[section] += t
-#
-#         return r
 
     @property
     def results(self):
@@ -821,12 +773,13 @@ class Results1288(object):
             results[section] = {}
             for method in d[section].keys():
                 s = d[section][method]
-                if s.get('Value', False):
+                if s.get('Value', False) is not False:
                     results[section][method] = {'short': s['Short'],
                                                 'symbol': s['Symbol'],
                                                 'value': s['Value'],
                                                 'unit': s['Unit'],
                                                 'latexname': s.get('LatexName')}
+
         return results
 
     def print_results(self):
