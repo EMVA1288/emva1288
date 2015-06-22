@@ -51,7 +51,7 @@ This class takes an EMVA1288 descriptor file and loads its content into a python
 An EMVA1288 descriptor file is a file that contains the description
 of an EMVA1288 test including exposure times, photon count and corresponding images
 
-An example of a descriptor file can be found at `examples/EMVA1288_Descriptor_File.txt`
+[Example of a descriptor file] (examples/EMVA1288_Descriptor_File.txt)
 
 
 loader.LoadImageData
@@ -60,7 +60,7 @@ This class takes a dictionary (product of `parser.ParseEmvaDescriptorFile`). Loa
 related images and reduce it's data to the minimum possible, **preserving all relevant image data in
 as integers**. The resulting data is a Python dictionary.
 
-An example of the reduced data can be found at `examples/EMVA1288_image_data.txt`
+[xample of the reduced data](examples/EMVA1288_image_data.txt)
 
 data.Data1288
 -------------
