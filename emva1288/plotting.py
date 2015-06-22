@@ -12,7 +12,7 @@ needed to create a reference datasheet of the EMVA1288 test
 from __future__ import print_function
 # from matplotlib.figure import Figure
 # from matplotlib.backend import new_figure_manager_given_figure
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import numpy as np
 
 from emva1288 import routines
@@ -67,8 +67,8 @@ class Emva1288Plot(object):
         name = test.name
         if not name:
             name = len(self.tests)
-        id_ = getattr(test, 'id', id(test))
-        test.id = id_
+        if not getattr(test, 'id', False):
+            test.id = id(test)
         self.tests.append(name)
         self.plot(test)
 
@@ -156,7 +156,7 @@ class PlotUyDark(Emva1288Plot):
                     test.temporal['u_ydark'],
                     label='Data',
                     gid='%d:data' % test.id)
-
+        ax.ticklabel_format(axis='x', style='sci', scilimits=(1, 4))
         self.set_legend(ax)
 
 
@@ -352,7 +352,7 @@ class PlotHorizontalSpectogramPRNU(Emva1288Plot):
 
     name = 'Horizontal spectrogram PRNU'
     xlabel = 'cycles [periods/pixel]'
-    ylabel = 'standard deviation and relative presence of each cycle [DN]'
+    ylabel = 'Standard deviation and\nrelative presence of each cycle [DN]'
     yscale = 'log'
 
     def plot(self, test):
@@ -384,7 +384,7 @@ class PlotHorizontalSpectrogramDSNU(Emva1288Plot):
 
     name = 'Horizontal spectrogram DSNU'
     xlabel = 'cycles [periods/pixel]'
-    ylabel = 'Standard deviation and relative presence of each cycle [DN]'
+    ylabel = 'Standard deviation and\nrelative presence of each cycle [DN]'
     yscale = 'log'
 
     def plot(self, test):
@@ -413,7 +413,7 @@ class PlotVerticalSpectrogramPRNU(Emva1288Plot):
 
     name = 'Vertical spectrogram PRNU'
     xlabel = 'cycles [periods/pixel]'
-    ylabel = 'Standard deviation and relative presence of each cycle [DN]'
+    ylabel = 'Standard deviation and\nrelative presence of each cycle [DN]'
     yscale = 'log'
 
     def plot(self, test):
@@ -442,8 +442,8 @@ class PlotVerticalSpectrogramDSNU(Emva1288Plot):
     '''
 
     name = 'Vertical spectrogram DSNU'
-    xlabel = 'cycles [periods/pixel]'
-    ylabel = 'standard deviation and relative presence of each cycle [DN]'
+    xlabel = 'Cycles [periods/pixel]'
+    ylabel = 'Standard deviation and\nrelative presence of each cycle [DN]'
     yscale = 'log'
 
     def plot(self, test):
@@ -528,7 +528,7 @@ class PlotAccumulatedLogHistogramDSNU(Emva1288Plot):
 
     name = 'Accumulated log histogram DSNU'
     xlabel = 'Minimal deviation from the mean [DN]'
-    ylabel = 'Percentage of pixels deviating from the mean at least of : '
+    ylabel = 'Percentage of pixels\ndeviating from the mean at least of : '
     yscale = 'log'
 
     def plot(self, test):
@@ -550,7 +550,7 @@ class PlotAccumulatedLogHistogramPRNU(Emva1288Plot):
 
     name = 'Accumulated log histogram PRNU'
     xlabel = 'Minimal deviation from the mean [%]'
-    ylabel = 'Percentage of pixels deviating from the mean at least of : '
+    ylabel = 'Percentage of pixels\ndeviating from the mean at least of : '
     yscale = 'log'
 
     def plot(self, test):
@@ -603,12 +603,14 @@ class ProfileBase(Emva1288Plot):
         profile_mid = img[mid_i // 2, :]
         length = np.shape(profile)[0]
 
-        extremes = self._get_extremes(profile, profile_min, profile_max)
+#         extremes = self._get_extremes(profile, profile_min, profile_max)
 
-        d = {'mean': profile, 'min': profile_min,
-             'max': profile_max, 'length': length,
+        d = {'mean': profile,
+             'min': profile_min,
+             'max': profile_max,
+             'length': length,
              'mid': profile_mid}
-        d.update(extremes)
+#         d.update(extremes)
         return d
 
     def get_profiles(self, bright, dark, transpose):
@@ -658,24 +660,25 @@ class PlotHorizontalProfile(ProfileBase):
                 label='Mid',
                 gid='%d:marker' % test.id)
         ax.plot(x, profiles['bright']['min'],
-                label=profiles['bright']['min_label'],
+                label='Min',
                 gid='%d:marker' % test.id)
         ax.plot(x, profiles['bright']['max'],
-                label=profiles['bright']['max_label'],
+                label='Max',
                 gid='%d:marker' % test.id)
         ax.plot(x, profiles['bright']['mean'],
                 label='Mean',
                 gid='%d:marker' % test.id)
+        ax.set_xticks([])
 
         x_dark = np.arange(profiles['dark']['length'])
         ax2.plot(x_dark, profiles['dark']['mid'],
                  label='Mid',
                  gid='%d:data' % test.id)
         ax2.plot(x_dark, profiles['dark']['min'],
-                 label=profiles['dark']['min_label'],
+                 label='Min',
                  gid='%d:data' % test.id)
         ax2.plot(x_dark, profiles['dark']['max'],
-                 label=profiles['dark']['max_label'],
+                 label='Max',
                  gid='%d:data' % test.id)
         ax2.plot(x_dark, profiles['dark']['mean'],
                  label='Mean',
@@ -724,24 +727,26 @@ class PlotVerticalProfile(ProfileBase):
                  label='Mid',
                  gid='%d:marker' % test.id)
         ax2.plot(profiles['bright']['min'], y,
-                 label=profiles['bright']['min_label'],
+                 label='Min',
                  gid='%d:marker' % test.id)
         ax2.plot(profiles['bright']['max'], y,
-                 label=profiles['bright']['max_label'],
+                 label='Max',
                  gid='%d:marker' % test.id)
         ax2.plot(profiles['bright']['mean'], y,
                  label='Mean',
                  gid='%d:marker' % test.id)
+
+        ax2.set_yticks([])
 
         y_dark = np.arange(profiles['dark']['length'])
         ax.plot(profiles['dark']['mid'], y_dark,
                 label='Mid',
                 gid='%d:marker' % test.id)
         ax.plot(profiles['dark']['min'], y_dark,
-                label=profiles['dark']['min_label'],
+                label='Min',
                 gid='%d:marker' % test.id)
         ax.plot(profiles['dark']['max'], y_dark,
-                label=profiles['dark']['max_label'],
+                label='Max',
                 gid='%d:marker' % test.id)
         ax.plot(profiles['dark']['mean'], y_dark,
                 label='Mean',
@@ -787,13 +792,6 @@ class Plotting1288(object):
         # Get data
         self.tests = args
 
-    def show(self):
-        # Show plots
-        plt.show()
-
-    def get_figure(self, i):
-        return plt.figure(i)
-
     def plots_to_plot(self, *plots):
         p = []
         if not plots:
@@ -806,24 +804,19 @@ class Plotting1288(object):
             p.append(i)
         return p
 
-    def get_figures(self, ids):
-        figures = {}
-        for i in ids:
-            figures[i] = self.get_figure(i)
-        return figures
-
     def plot(self, *ids, **kwargs):
+        import matplotlib.pyplot as plt
         plots = self.plots_to_plot(*ids)
-        figures = self.get_figures(*plots)
-        self.plot_figures(figures)
+        for i in plots:
+            figure = plt.figure(i)
+            self.plot_figure(i, figure)
+        plt.show()
 
-    def plot_figures(self, figures):
-        for i, figure in figures.items():
-            figure = figures[i]
-            plot = EVMA1288plots[i](figure)
-            for test in self.tests:
-                plot.add_test(test)
-            if not self._titles:
-                figure.canvas.set_window_title('Fig %d' % (i + 1))
-            else:
-                figure.canvas.set_window_title(plot.name)
+    def plot_figure(self, i, figure):
+        plot = EVMA1288plots[i](figure)
+        for test in self.tests:
+            plot.add_test(test)
+        if not self._titles:
+            figure.canvas.set_window_title('Fig %d' % (i + 1))
+        else:
+            figure.canvas.set_window_title(plot.name)
