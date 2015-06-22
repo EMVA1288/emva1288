@@ -60,7 +60,7 @@ This class takes a dictionary (product of `parser.ParseEmvaDescriptorFile`). Loa
 related images and reduce it's data to the minimum possible, **preserving all relevant image data in
 as integers**. The resulting data is a Python dictionary.
 
-[xample of the reduced data](examples/EMVA1288_image_data.txt)
+[Example of the reduced data](examples/EMVA1288_image_data.txt)
 
 data.Data1288
 -------------
