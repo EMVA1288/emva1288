@@ -26,7 +26,7 @@ Just copy the full repository and add it's path to your `PYTHONPATH` environment
 
 Description
 ===========
-If you are in a rush. there is one utility class that allows to do the full
+If you are in a rush there is one utility class that allows to do the full
 process in a very simple way
 ```
 from emva1288 import Emva1288
