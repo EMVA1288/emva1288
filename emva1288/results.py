@@ -341,7 +341,7 @@ class Results1288(object):
         **LatexName: DRDB
         """
 
-        return 20. * np.log(self.DR)
+        return 20. * np.log10(self.DR)
 
     def DR_bit(self):
         """
