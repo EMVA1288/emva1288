@@ -19,13 +19,29 @@ To use the emva1288 package you need to have installed
 Installation
 ============
 For inexperienced windows users it is recommended to use a prepackaged python distribution that
-contains the required packages. One excellent option for Windows users is [Python (x, y)](http://code.google.com/p/pythonxy/)
+contains the required packages. One excellent option for Windows users is [Anaconda](http://continuum.io/)
 
 For the time being there is no installer for the package.
 Just copy the full repository and add it's path to your `PYTHONPATH` environment variable
 
 Description
 ===========
+If you are in a rush there is one utility class that allows to do the full
+process in a very simple way
+```
+from emva1288 import Emva1288
+
+# Load your data descriptor file
+e = Emva1288(filename)
+# Print the results
+e.results()
+# Plot the graphics
+e.plot()
+```
+
+
+If you are interested keep reading.
+
 The code is dvidided in 7 parts
 
 parser.ParseEmvaDescriptorFile
@@ -35,7 +51,7 @@ This class takes an EMVA1288 descriptor file and loads its content into a python
 An EMVA1288 descriptor file is a file that contains the description
 of an EMVA1288 test including exposure times, photon count and corresponding images
 
-An example of a descriptor file can be found at `examples/EMVA1288_Descriptor_File.txt`
+[Example of a descriptor file] (examples/EMVA1288_Descriptor_File.txt)
 
 
 loader.LoadImageData
@@ -44,7 +60,7 @@ This class takes a dictionary (product of `parser.ParseEmvaDescriptorFile`). Loa
 related images and reduce it's data to the minimum possible, **preserving all relevant image data in
 as integers**. The resulting data is a Python dictionary.
 
-An example of the reduced data can be found at `examples/EMVA1288_image_data.txt`
+[Example of the reduced data](examples/EMVA1288_image_data.txt)
 
 data.Data1288
 -------------
@@ -69,28 +85,11 @@ To use the code, you need to have a set of images that correspond to an EMVA1288
 There are some sample image sets provided by the standard development group.
 [Example datasets](https://emva1288.plan.io/projects/emva1288-standard-public/files).
 
-Download one or all of these datasets, extract its content, and use it as in
-the example shown below.
+Download one or all of these datasets, extract its content, and use them as input
+in the examples shown below.
 
 
-Example
-=======
-A simple example to obtain EMVA1288 results from a dataset is
-
-```
-import os
-from emva1288 import parser, loader, data, results, plotting
-
-dir_ = '/home/work/1288/datasets/'
-fname = 'EMVA1288_ReferenceSet_001_CCD_12Bit/EMVA1288_Data.txt'
-
-info = parser.ParseEmvaDescriptorFile(os.path.join(dir_, fname))
-imgs = loader.LoadImageData(info.info)
-dat = data.Data1288(imgs.data)
-res = results.Results1288(dat.data)
-res.print_results()
-plot = plotting.Plotting1288(res)
-plot.plot()
-plot.show()
-```
-
+Examples
+========
+* [A simple example](examples/simple_emva_process.py)
+* [Step by step example](examples/full_emva_process.py)
