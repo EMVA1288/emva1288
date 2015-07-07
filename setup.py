@@ -1,7 +1,7 @@
-from distutils.core import setup
+from setuptools import setup
 setup(name='emva1288',
       packages=['emva1288'],
-      version='0.1',
+      version='0.1.1',
       description='EMVA1288 reference implementation',
       author='Federico Ariza',
       author_email='ariza.federico@gmail.com',

@@ -33,4 +33,5 @@ Thumbs.db
 ################
 # setup.py dist directory
 dist
-
+.settings
+*.egg-info
