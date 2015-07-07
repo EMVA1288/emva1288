@@ -7,22 +7,12 @@ Measurement and Presentation of Specifications for Machine Vision Sensors and Ca
 Please visit [Emva1288 Website](http://www.emva.org/cms/index.php?idcat=26) for information and latest releases of the standard.
 
 
-Requirements
-============
-To use the emva1288 package you need to have installed
-- numpy
-- opencv
-- matplotlib
-- lxml
-
-
 Installation
 ============
 For inexperienced windows users it is recommended to use a prepackaged python distribution that
 contains the required packages. One excellent option for Windows users is [Anaconda](http://continuum.io/)
 
-For the time being there is no installer for the package.
-Just copy the full repository and add it's path to your `PYTHONPATH` environment variable
+Once the python environment is installed just run `pip install emva1288`
 
 Description
 ===========

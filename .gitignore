@@ -29,3 +29,8 @@ ehthumbs.db
 Icon?
 Thumbs.db
 
+# Python files #
+################
+# setup.py dist directory
+dist
+
