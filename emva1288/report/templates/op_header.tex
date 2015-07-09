@@ -1,0 +1,28 @@
+
+\\*
+
+\underline{\textsl{Operation Point \textbf{%{{ opref %}}} (Page \pageref{%{{ opref %}}})}}
+
+
+\colorbox{greylight}{
+\begin{minipage}[t]{0.975\linewidth}
+\begin{multicols}{2}
+\textsl{Bit depth} \hfill 8
+\\[1mm]
+\textsl{Gain} \hfill %{{ op.gain %}} 
+\\[1mm]
+\textsl{Offset} \hfill %{{ op.offset %}}
+\\[1mm]
+\textsl{Exposure time} \hfill %{{ op.exposure_time %}}
+\\[1mm]
+\textsl{Illumination wavelength} \hfill %{{ op.wavelength %}}
+\\[1mm]
+\textsl{Environmental temperature} \hfill %{{ op.temperature %}}
+\\[1mm]
+\textsl{Housing temperature} \hfill %{{ op.housing_temperature %}}
+\\[1mm]
+\textsl{FPN Correction} \hfill %{{ op.fpn_correction %}}
+\\[1mm]
+\end{multicols}
+\end{minipage}
+}

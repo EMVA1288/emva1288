@@ -1,0 +1,54 @@
+\documentclass[a4paper,twoside,12pt,american,hidelinks]{article}
+\usepackage[T1]{fontenc}
+\usepackage[cp1257]{inputenc}
+\usepackage{lmodern}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+\usepackage{emvadatasheet}
+\usepackage{lastpage}
+\usepackage[printwatermark]{xwatermark}
+\usepackage{tikz}
+\usepackage{multicol}
+\title{}
+\author{}
+\date{}
+\begin{document}
+
+\newcommand{\TheReportSection}{}
+\newcommand{\ReportSection}[1]{\renewcommand{\TheReportSection}{#1}}
+
+%{ if marketing.watermark %}
+\newsavebox\wtmkbox
+\savebox\wtmkbox{\tikz[color=red,opacity=0.3]\node{%{{marketing.watermark%}}};}
+\newwatermark*[
+allpages, angle=45.0, scale=8.0, xpos=-20, ypos=15
+]{\usebox\wtmkbox}
+%{ endif %}
+
+%Cover preamble
+\ReportSection{EMVA\,1288 Summary Sheet}
+\pagestyle{fancy}
+\scriptsize
+%Cover header
+\textbf{EMVA\,1288 Summary Sheet}
+\vspace*{5mm}
+
+\colorbox{greylight}{
+\begin{minipage}[t]{0.975\linewidth}
+\vspace*{2mm}
+
+This datasheet describes the specification according to the standard 1288
+Standard for Characterization and Presentation of Specification Data for
+Image Sensors and Cameras of European Machine Vision Association (EMVA)
+(See www.standard1288.org).
+
+\vspace*{1mm}
+\vspace*{1mm}
+\end{minipage}
+}
+\vspace*{5mm}
+
+%{ include 'general_info.tex' %}
+
+\end{document}

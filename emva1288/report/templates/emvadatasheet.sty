@@ -1,0 +1,45 @@
+
+\typeout{Document Style `emvadatasheet' <27.09.2012>, Version 1.0.}
+
+
+\makeatletter
+
+%% PAGE LAYOUT
+\setlength{\textheight}{25cm}
+\setlength{\textwidth}{18.4cm} %Textbreite
+\setlength{\oddsidemargin}{1cm} %Rechter Rand der rechten Seite
+\setlength{\evensidemargin}{1cm} %Rechter Rand der linken Seite
+\setlength{\marginparwidth}{0cm} %Legt die Breite des Randnotizen-Bereichs fest.
+\setlength{\topmargin}{0cm}
+\setlength{\parindent}{0pt} %Einzug bei Anfaengen von Absaetzen
+\setlength\headheight{15mm} %Hoehe der Kopfzeile
+
+\voffset-19mm %Vertikaler Versatz
+\hoffset-23mm %Horizontaler Versatz
+
+
+
+% Header
+\fancyhead{}%
+\fancyhead[LO,LE]{\includegraphics[height=12mm]{EMVA1288Logo.pdf}}
+\fancyhead[C]{\textbf{\Vendor \, \Model}}
+\fancyhead[RE,RO]{\includegraphics[height=12mm]{%{{ marketing.logo|d('missinglogo.pdf', true) %}}}}
+\renewcommand{\headrulewidth}{0.5pt}
+
+% Footer
+\fancyfoot{}%
+\fancyfoot[LO,RE]{\scriptsize\sffamily \TheReportSection}
+\fancyfoot[LE,RO]{\scriptsize\sffamily\textup\thepage\ of \pageref{LastPage}}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\definecolor{greylight}{rgb}{0.93,0.93,0.93}  % Hintergrundfarbe Boxen
+
+\setlength{\columnsep}{1cm}  % Spaltenabstand
+
+\def\ind#1{\ensuremath{_{\mbox{\scriptsize #1}}}}
+
+
+\def\electrons{e}
+\def\photons{p}
+
+\makeatother

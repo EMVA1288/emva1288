@@ -1,0 +1,46 @@
+\colorbox{greylight}{
+\begin{minipage}[t]{0.975\linewidth}
+\begin{multicols}{2}
+\textsl{Vendor} \hfill %{{ marketing.vendor %}}
+\\[1mm]
+\textsl{Model} \hfill %{{ marketing.model %}}
+\\[1mm]
+\textsl{Serial Number} \hfill %{{ marketing.serial %}}
+\\[1mm]
+\textsl{Sensor Type} \hfill %{{ marketing.sensor_type %}}
+\\[1mm]
+\textsl{Sensor Name} \hfill  %{{ marketing.sensor_name %}}
+\\[1mm]
+\textsl{Resolution} \hfill $%{{ marketing.resolution_x %}} \times %{{ marketing.resolution_y %}}$
+\\[1mm]
+\textsl{Diagonal} \hfill %{{ marketing.sensor_diagonal %}}
+\\[1mm]
+\textsl{Lens} \hfill %{{ marketing.lens_mount %}}
+\\[1mm]
+\textsl{Shutter type} \hfill  %{{ marketing.shutter %}}
+\\[1mm]
+\textsl{Overlap capabilities} \hfill  %{{ marketing.overlap %}}
+\\[1mm]
+\textsl{Maximum readout rate} \hfill  %{{ marketing.readout_rate %}}
+\\[1mm]
+\textsl{Dark current compensation} \hfill   %{{ marketing.dark_current_compensation %}}
+\\[1mm]
+\textsl{Interface type} \hfill  %{{ marketing.interface %}}
+\\[1mm]
+\end{multicols}
+\end{minipage}
+}
+
+%{ for op in operation_points %}
+	%{ set opref = 'OP%d' % loop.index %}
+ 	%{ include 'op_header.tex' %}
+%{ endfor %}
+
+
+\\*
+\vfill
+\begin{center}
+\includegraphics[height=100mm,keepaspectratio]{%{{ marketing.qe_plot|d('missingplot.pdf', true) %}}}
+\end{center}
+
+
