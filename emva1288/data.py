@@ -25,7 +25,7 @@ class Data1288(object):
 
     def __init__(self,
                  data,
-                 loglevel=logging.DEBUG):
+                 loglevel=logging.INFO):
 
         self.pixels = data['format']['width'] * data['format']['height']
 
