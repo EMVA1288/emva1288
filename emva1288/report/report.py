@@ -1,6 +1,7 @@
 import jinja2
 import os
 import shutil
+from distutils.dir_util import copy_tree
 from collections import namedtuple
 from tempfile import TemporaryDirectory
 
@@ -54,7 +55,7 @@ _CURRDIR = os.path.abspath(os.path.dirname(__file__))
 
 class Report1288(object):
     def __init__(self, marketing):
-        self._tmpdir = TemporaryDirectory()
+        self._tmpdir = None
 
         self.renderer = jinja2.Environment(
             block_start_string='%{',
@@ -67,6 +68,34 @@ class Report1288(object):
         )
         self.ops = []
         self.marketing = marketing
+        self._temp_dirs()
+
+    def _temp_dirs(self):
+        self._tmpdir = TemporaryDirectory()
+        tmpfiles = os.path.join(self._tmpdir.name, 'files')
+        os.makedirs(tmpfiles)
+        currfiles = os.path.join(_CURRDIR, 'files')
+        copy_tree(currfiles, tmpfiles)
+        markfiles = os.path.join(self._tmpdir.name, 'marketing')
+        os.makedirs(markfiles)
+
+        if self.marketing.logo:
+            fname = os.path.basename(self.marketing.logo)
+            if not fname:
+                print('invalid logo file', fname)
+            else:
+                shutil.copy(os.path.abspath(self.marketing.logo),
+                            os.path.join(markfiles, fname))
+                self.marketing.logo = os.path.join('marketing', fname)
+
+        if self.marketing.qe_plot:
+            fname = os.path.basename(self.marketing.qe_plot)
+            if not fname:
+                print('invalid qe_plot file', fname)
+            else:
+                shutil.copy(os.path.abspath(self.marketing.qe_plot),
+                            os.path.join(markfiles, fname))
+                self.marketing.qe_plot = os.path.join('marketing', fname)
 
     def _write_file(self, name, content):
         fname = os.path.join(self._tmpdir.name, name)
@@ -84,15 +113,18 @@ class Report1288(object):
                              operation_points=self.ops)
 
     def latex(self, dir_):
+        '''Generate report latex files in a given directory'''
+
         self._write_file('emvadatasheet.sty', self._stylesheet())
         self._write_file('report.tex', self._report())
-        shutil.copytree(os.path.join(_CURRDIR, 'files'),
-                        os.path.join(self._tmpdir.name, 'files'))
+
         outdir = os.path.abspath(dir_)
-        os.makedirs(outdir)
-        shutil.copytree(self._tmpdir.name, outdir)
+        try:
+            os.makedirs(outdir)
+        except FileExistsError:
+            pass
+        copy_tree(self._tmpdir.name, outdir)
         print('Report files found in:', outdir)
-#         return os.path.relpath(dir_)
 
     def _results(self, data):
         return Results1288(data)
