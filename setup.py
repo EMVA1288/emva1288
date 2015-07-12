@@ -8,8 +8,8 @@ with open(path.join(here, 'README.rst')) as f:
     long_description = f.read()
 
 setup(name='emva1288',
-      packages=['emva1288'],
-      version='0.1.2',
+      packages=['emva1288', 'emva1288.report'],
+      version='0.2.0',
       description='EMVA1288 reference implementation',
       long_description=long_description,
       author='Federico Ariza',
@@ -24,5 +24,7 @@ setup(name='emva1288',
                         'numpy',
                         'pillow',
                         'lxml',
-                        'scipy'],
+                        'scipy',
+                        'jinja2'],
+      package_data={'emva1288': ['report/files/*', 'report/templates/*']}
       )
