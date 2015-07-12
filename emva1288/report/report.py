@@ -54,7 +54,7 @@ _CURRDIR = os.path.abspath(os.path.dirname(__file__))
 
 
 class Report1288(object):
-    def __init__(self, marketing):
+    def __init__(self, mark):
         self._tmpdir = None
 
         self.renderer = jinja2.Environment(
@@ -67,7 +67,7 @@ class Report1288(object):
             loader=jinja2.FileSystemLoader(os.path.join(_CURRDIR, 'templates'))
         )
         self.ops = []
-        self.marketing = marketing
+        self.marketing = mark
         self._temp_dirs()
 
     def _temp_dirs(self):
@@ -140,38 +140,11 @@ class Report1288(object):
             names[cls.__name__] = os.path.join(id_, cls.__name__ + '.pdf')
         return names
 
-    def add(self, op, data=None):
-        if not op.id:
-            op.id = 'OP%d' % (len(self.ops) + 1)
-        if not op.results and data:
-            op.results = self._results(data).results
-        if not op.plots and data:
-            op.plots = self._plots(data, op.id)
-        self.ops.append(op)
-
-if __name__ == '__main__':
-    r = Report1288(marketing)
-#     print(r.report())
-
-    import emva1288
-
-    dir_ = '/home/work/1288/datasets/'
-    fname = 'EMVA1288_ReferenceSet_003_Simulation_12Bit/EMVA1288_Data.txt'
-
-    info = emva1288.ParseEmvaDescriptorFile(os.path.join(dir_, fname))
-    imgs = emva1288.LoadImageData(info.info)
-    dat = emva1288.Data1288(imgs.data)
-
-    op1 = op()
-    op1.gain = 333
-    op1.offset = 444
-    r.add(op1, dat)
-
-#     op2 = op()
-#     op2.gain = 111
-#     op2.offset = 2222
-# 
-# 
-#     r.add(op2)
-    r.pdf()
-#     print(r.report())
+    def add(self, op_, data=None):
+        if not op_.id:
+            op_.id = 'OP%d' % (len(self.ops) + 1)
+        if not op_.results and data:
+            op_.results = self._results(data).results
+        if not op_.plots and data:
+            op_.plots = self._plots(data, op_.id)
+        self.ops.append(op_)

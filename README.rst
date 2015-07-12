@@ -84,6 +84,21 @@ plotting.Plotting1288
 This class takes a ``results.Results1288`` object and produces all the
 plots needed to create a reference datasheet of the EMVA1288 test
 
+report.Report1288
+-----------------
+This class creates a directory with all the files needed to compile a latex
+report.
+
+report.marketing
+~~~~~~~~~~~~~~~~
+This is a function that returns a named tuple to fill with the marketing data
+needed for the report
+
+report.op
+~~~~~~~~~
+Function that returns a named tuple serving as a place holder for all the data
+needed for an operation point in the report
+
 Usage
 =====
 
@@ -100,3 +115,4 @@ Examples
 
 -  `A simple example <https://github.com/EMVA1288/emva1288/blob/master/examples/simple_emva_process.py>`__
 -  `Step by step example <https://github.com/EMVA1288/emva1288/blob/master/examples/full_emva_process.py>`__
+-  `Experimental report generation module <https://github.com/EMVA1288/emva1288/blob/report/examples/simple_emva_process.py>`
