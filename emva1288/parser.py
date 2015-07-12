@@ -23,7 +23,7 @@ class ParseEmvaDescriptorFile(object):
     an usable directory
     '''
 
-    def __init__(self, filename, loglevel=logging.DEBUG):
+    def __init__(self, filename, loglevel=logging.INFO):
         # For dark the items are in the form of
         # exposure:{[fname1, fname2, ...]}
         # for bright the items are in the form of
@@ -199,7 +199,7 @@ class ParseEmvaDescriptorFile(object):
         '''
         Load a file, split by lines removing the comments (starts with #)
         '''
-        self.log.debug('Opening ' + filename)
+        self.log.info('Opening ' + filename)
         f = open(filename, 'r')
 
         # To add location when opening images

@@ -14,6 +14,7 @@ from __future__ import print_function
 # from matplotlib.backend import new_figure_manager_given_figure
 # import matplotlib.pyplot as plt
 import numpy as np
+import os
 
 from emva1288 import routines
 
@@ -806,11 +807,23 @@ class Plotting1288(object):
 
     def plot(self, *ids, **kwargs):
         import matplotlib.pyplot as plt
+        show = kwargs.pop('show', True)
+        savedir = kwargs.pop('savedir', False)
         plots = self.plots_to_plot(*ids)
         for i in plots:
             figure = plt.figure(i)
             self.plot_figure(i, figure)
-        plt.show()
+        if show:
+            plt.show()
+
+        if not savedir:
+            return
+
+        for i in plots:
+            figure = plt.figure(i)
+            fname = EVMA1288plots[i].__name__ + '.pdf'
+            fname = os.path.join(savedir, fname)
+            figure.savefig(fname)
 
     def plot_figure(self, i, figure):
         plot = EVMA1288plots[i](figure)

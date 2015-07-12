@@ -29,9 +29,12 @@ ehthumbs.db
 Icon?
 Thumbs.db
 
+
 # Python files #
 ################
 # setup.py dist directory
+build
 dist
+MANIFEST
 .settings
 *.egg-info

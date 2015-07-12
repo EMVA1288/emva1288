@@ -32,7 +32,7 @@ class LoadImageData(object):
 
     def __init__(self,
                  info,
-                 loglevel=logging.DEBUG,
+                 loglevel=logging.INFO,
                  fload=routines.load_image,
                  fload_args=[],
                  fload_kwargs={},

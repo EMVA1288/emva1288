@@ -10,6 +10,7 @@ from .loader import LoadImageData
 from .parser import ParseEmvaDescriptorFile
 from .results import Results1288
 from .plotting import Plotting1288
+from .report import report
 
 
 class Emva1288(object):
