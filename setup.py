@@ -26,5 +26,6 @@ setup(name='emva1288',
                         'lxml',
                         'scipy',
                         'jinja2'],
-      package_data={'emva1288': ['report/files/*', 'report/templates/*']}
+      package_data={'emva1288': ['report/files/*', 'report/templates/*',
+                                 'examples/*']}
       )
