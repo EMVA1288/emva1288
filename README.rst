@@ -115,4 +115,4 @@ Examples
 
 -  `A simple example <https://github.com/EMVA1288/emva1288/blob/master/examples/simple_emva_process.py>`__
 -  `Step by step example <https://github.com/EMVA1288/emva1288/blob/master/examples/full_emva_process.py>`__
--  `Experimental report generation module <https://github.com/EMVA1288/emva1288/blob/report/examples/simple_emva_process.py>`
+-  `Experimental report generation module <https://github.com/EMVA1288/emva1288/blob/report/examples/simple_emva_process.py>`__
