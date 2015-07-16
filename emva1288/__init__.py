@@ -26,3 +26,6 @@ class Emva1288(object):
     def plot(self):
         plot = Plotting1288(self._results)
         plot.plot()
+
+    def xml(self, filename=None):
+        return self._results.xml(filename)
