@@ -292,7 +292,7 @@ class Results1288(object):
         **LatexName: SNRMaxDB
         """
 
-        return 20. * np.log(self.SNR_max)
+        return 20. * np.log10(self.SNR_max)
 
     def SNR_max_bit(self):
         """
