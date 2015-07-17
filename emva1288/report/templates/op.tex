@@ -4,7 +4,6 @@
 \underline{\textsl{Operation Point \textbf{%{{ op.id %}}}\label{%{{ op.id %}}}}}
 %{ include 'op_header.tex' %}
 
-\vfill
 %Plots
 \begin{minipage}[t]{0.690\linewidth}
 \textbf{Photon transfer plot}
@@ -18,140 +17,105 @@
 %Results
 \begin{minipage}[t]{0.290\linewidth}
 
-\colorbox{greylight}{
-\begin{minipage}[t]{0.975\linewidth}
-\textsl{
-%{{ op.results.sensitivity.QE.short %}}
-(%{{ op.results.sensitivity.QE.unit %}})}
-\hfill
-%{{ '%.2f' % op.results.sensitivity.QE.value %}}
-\\[5mm]
-\textsl{
-%{{ op.results.sensitivity.K.short %}}
-(%{{ op.results.sensitivity.K.unit %}})}
-\hfill
-%{{ '%.3f' % op.results.sensitivity.K.value %}}
-\\[1mm]
-\textsl{
-%{{ op.results.sensitivity.inverse_K.short %}}
-(%{{ op.results.sensitivity.inverse_K.unit %}})}
-\hfill
-%{{ '%.3f' % op.results.sensitivity.inverse_K.value %}}
-\\[5mm]
-\underline{\textbf{Noise:}}
-\\*
-\textsl{
-%{{ op.results.sensitivity.sigma_y_dark.short %}}
-(%{{ op.results.sensitivity.sigma_y_dark.unit %}})}
-\hfill
-%{{ '%.3f' % op.results.sensitivity.sigma_y_dark.value %}}
-\\[1mm]
-\textsl{
-%{{ op.results.sensitivity.sigma_d.short %}}
-(%{{ op.results.sensitivity.sigma_d.unit %}})}
-\hfill
-%{{ '%.3f' % op.results.sensitivity.sigma_d.value %}}
-\\[3mm]
-\textsl{
-%{{ op.results.sensitivity.SNR_max.symbol %}}}
-\hfill
-%{{ '%.3f' % op.results.sensitivity.SNR_max.value %}}
-\\[1mm]
-\textsl{
-%{{ op.results.sensitivity.SNR_max_dB.symbol %}}
-(%{{ op.results.sensitivity.SNR_max_dB.unit %}})}
-\hfill
-%{{ '%.3f' % op.results.sensitivity.SNR_max_dB.value %}}
-\\[1mm]
-\textsl{
-%{{ op.results.sensitivity.SNR_max_bit.symbol %}}
-(%{{ op.results.sensitivity.SNR_max_bit.unit %}})}
-\hfill
-%{{ '%.3f' % op.results.sensitivity.SNR_max_bit.value %}}
-\\[1mm]
-\textsl{
-%{{ op.results.sensitivity.inverse_SNR_max.symbol %}}
-(%{{ op.results.sensitivity.inverse_SNR_max.unit %}})}
-\hfill
-%{{ '%.3f' % op.results.sensitivity.inverse_SNR_max.value %}}
-\\[3mm]
-\textsl{
-%{{ op.results.sensitivity.u_p_min.short %}}
-(%{{ op.results.sensitivity.u_p_min.unit %}})}
-\hfill
-%{{ '%.3f' % op.results.sensitivity.u_p_min.value %}}
-\\[1mm]
-\textsl{
-%{{ op.results.sensitivity.u_e_min.short %}}
-(%{{ op.results.sensitivity.u_e_min.unit %}})}
-\hfill
-%{{ '%.3f' % op.results.sensitivity.u_e_min.value %}}
-\\[1mm]
-\textsl{
-%{{ op.results.sensitivity.u_p_sat.short %}}
-(%{{ op.results.sensitivity.u_p_sat.unit %}})}
-\hfill
-%{{ '%.0f' % op.results.sensitivity.u_p_sat.value %}}
-\\[1mm]
-\textsl{
-%{{ op.results.sensitivity.u_e_sat.short %}}
-(%{{ op.results.sensitivity.u_e_sat.unit %}})}
-\hfill
-%{{ '%.0f' % op.results.sensitivity.u_e_sat.value %}}
-\\[1mm]
-\textsl{
-%{{ op.results.sensitivity.DR.short %}}}
-\hfill
-%{{ '%.0f' % op.results.sensitivity.DR.value %}}
-\\[1mm]
-\textsl{
-%{{ op.results.sensitivity.DR_dB.short %}}
-(%{{ op.results.sensitivity.DR_dB.unit %}})}
-\hfill
-%{{ '%.1f' % op.results.sensitivity.DR_dB.value %}}
-\\[1mm]
-\textsl{
-%{{ op.results.sensitivity.DR_bit.short %}}
-(%{{ op.results.sensitivity.DR_bit.unit %}})}
-\hfill
-%{{ '%.1f' % op.results.sensitivity.DR_bit.value %}}
-\\[5mm]
-\underline{\textbf{Spatial Nonuniformities:}}
-\\*
-\textsl{
-%{{ op.results.spatial.DSNU1288.short %}}
-(%{{ op.results.spatial.DSNU1288.unit %}})}
-\hfill
-%{{ '%.1f' % op.results.spatial.DSNU1288.value %}}
-\\[1mm]
-\textsl{
-%{{ op.results.spatial.DSNU1288_DN.short %}}
-(%{{ op.results.spatial.DSNU1288_DN.unit %}})}
-\hfill
-%{{ '%.1f' % op.results.spatial.DSNU1288_DN.value %}}
-\\[1mm]
-\textsl{
-%{{ op.results.spatial.PRNU1288.short %}}
-(%{{ op.results.spatial.PRNU1288.unit %}})}
-\hfill
-%{{ '%.1f' % op.results.spatial.PRNU1288.value %}}
-\\[5mm]
-\underline{\textbf{Linearity:}}
-\\*
-\textsl{
-%{{ op.results.linearity.LE_min.short %}}
-(%{{ op.results.linearity.LE_min.unit %}})}
-\hfill
-%{{ '%.3f' % op.results.linearity.LE_min.value %}}
-\\[1mm]
-\textsl{
-%{{ op.results.linearity.LE_max.short %}}
-(%{{ op.results.linearity.LE_max.unit %}})}
-\hfill
-%{{ '%.3f' % op.results.linearity.LE_max.value %}}
-\\[5mm]
-\end{minipage}
-}
+\begin{tabular}{lrl}
+\multicolumn{3}{c}{\textbf{Results}} \\[2mm]
+
+\textsl{%{{ op.results.sensitivity.QE.short %}}}
+(%{{ op.results.sensitivity.QE.symbol %}}) &
+%{{ '%.2f' % op.results.sensitivity.QE.value %}} &
+%{{ op.results.sensitivity.QE.unit %}} \\[5mm]
+
+\multicolumn{3}{l}{\textbf{Sensitivity}} \\
+
+%{{ op.results.sensitivity.K.symbol %}} &
+%{{ '%.3f' % op.results.sensitivity.K.value %}} &
+%{{ op.results.sensitivity.K.unit %}} \\
+
+%{{ op.results.sensitivity.inverse_K.symbol %}} &
+%{{ '%.3f' % op.results.sensitivity.inverse_K.value %}} &
+%{{ op.results.sensitivity.inverse_K.unit %}} \\[5mm]
+
+\multicolumn{3}{l}{\textbf{Temporal dark noise}} \\
+
+%{{ op.results.sensitivity.sigma_y_dark.symbol %}} &
+%{{ '%.3f' % op.results.sensitivity.sigma_y_dark.value %}} &
+%{{ op.results.sensitivity.sigma_y_dark.unit %}} \\
+
+%{{ op.results.sensitivity.sigma_d.symbol %}} &
+%{{ '%.3f' % op.results.sensitivity.sigma_d.value %}} &
+%{{ op.results.sensitivity.sigma_d.unit %}} \\
+
+%{{ op.results.sensitivity.SNR_max.symbol %}} &
+%{{ '%.3f' % op.results.sensitivity.SNR_max.value %}} \\
+
+%{{ op.results.sensitivity.SNR_max_dB.symbol %}} &
+%{{ '%.3f' % op.results.sensitivity.SNR_max_dB.value %}} &
+%{{ op.results.sensitivity.SNR_max_dB.unit %}} \\
+
+%{{ op.results.sensitivity.SNR_max_bit.symbol %}} &
+%{{ '%.3f' % op.results.sensitivity.SNR_max_bit.value %}} &
+%{{ op.results.sensitivity.SNR_max_bit.unit %}} \\
+
+%{{ op.results.sensitivity.inverse_SNR_max.symbol %}} &
+%{{ '%.3f' % op.results.sensitivity.inverse_SNR_max.value %}} &
+%{{ op.results.sensitivity.inverse_SNR_max.unit %}} \\[5mm]
+
+\multicolumn{3}{l}{\textbf{Sensitivity treshold}} \\
+
+%{{ op.results.sensitivity.u_p_min.symbol %}} &
+%{{ '%.3f' % op.results.sensitivity.u_p_min.value %}} &
+%{{ op.results.sensitivity.u_p_min.unit %}} \\
+
+%{{ op.results.sensitivity.u_e_min.symbol %}} &
+%{{ '%.3f' % op.results.sensitivity.u_e_min.value %}} &
+%{{ op.results.sensitivity.u_e_min.unit %}} \\[5mm]
+
+\multicolumn{3}{l}{\textbf{Saturation capacity}} \\
+
+%{{ op.results.sensitivity.u_p_sat.symbol %}} &
+%{{ '%.0f' % op.results.sensitivity.u_p_sat.value %}} &
+%{{ op.results.sensitivity.u_p_sat.unit %}} \\
+
+%{{ op.results.sensitivity.u_e_sat.symbol %}} &
+%{{ '%.0f' % op.results.sensitivity.u_e_sat.value %}} &
+%{{ op.results.sensitivity.u_e_sat.unit %}} \\
+
+\textsl{%{{ op.results.sensitivity.DR.short %}}} &
+%{{ '%.0f' % op.results.sensitivity.DR.value %}} \\
+
+%{{ op.results.sensitivity.DR_dB.symbol %}} &
+%{{ '%.1f' % op.results.sensitivity.DR_dB.value %}} &
+%{{ op.results.sensitivity.DR_dB.unit %}} \\
+
+%{{ op.results.sensitivity.DR_bit.symbol %}} &
+%{{ '%.1f' % op.results.sensitivity.DR_bit.value %}} &
+%{{ op.results.sensitivity.DR_bit.unit %}} \\[5mm]
+
+\multicolumn{3}{l}{\textbf{Spatial Nonuniformities:}} \\
+
+%{{ op.results.spatial.DSNU1288.symbol %}} &
+%{{ '%.1f' % op.results.spatial.DSNU1288.value %}} &
+%{{ op.results.spatial.DSNU1288.unit %}} \\
+
+%{{ op.results.spatial.DSNU1288_DN.symbol %}} &
+%{{ '%.1f' % op.results.spatial.DSNU1288_DN.value %}} &
+%{{ op.results.spatial.DSNU1288_DN.unit %}} \\
+
+%{{ op.results.spatial.PRNU1288.symbol %}} &
+%{{ '%.1f' % op.results.spatial.PRNU1288.value %}} &
+%{{ op.results.spatial.PRNU1288.unit %}} \\[5mm]
+
+\multicolumn{3}{l}{\textbf{Linearity error:}} \\
+
+%{{ op.results.linearity.LE_min.symbol %}} &
+%{{ '%.3f' % op.results.linearity.LE_min.value %}} &
+%{{ op.results.linearity.LE_min.unit %}} \\
+
+%{{ op.results.linearity.LE_max.symbol %}} &
+%{{ '%.3f' % op.results.linearity.LE_max.value %}} &
+%{{ op.results.linearity.LE_max.unit %}} \\
+\end{tabular}
+
 \end{minipage}
 
 
