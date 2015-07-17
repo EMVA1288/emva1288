@@ -17,13 +17,18 @@ def marketing(**kwargs):
                    'sensor_diagonal, lens_mount, '
                    'shutter, overlap, readout_rate, '
                    'dark_current_compensation, interface, '
-                   'watermark, qe_plot')
+                   'watermark, qe_plot, '
+                   'emva1288_logo, missingplot, missinglogo')
 
     # For these attributes default is False
     # for the rest is '-'
     kwargs.setdefault('logo', False)
     kwargs.setdefault('watermark', False)
     kwargs.setdefault('qe_plot', False)
+    kwargs.setdefault('emva1288_logo',
+                      os.path.join('files', 'EMVA1288Logo.pdf'))
+    kwargs.setdefault('missinglogo', os.path.join('files', 'missinglogo.pdf'))
+    kwargs.setdefault('missingplot', os.path.join('files', 'missingplot.pdf'))
     for field in m._fields:
         v = kwargs.pop(field, '-')
         setattr(m, field, v)
