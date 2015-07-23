@@ -826,6 +826,6 @@ class Results1288(object):
                 s = d[section][method]
                 print('{:<50}{:<30}{:>10}'.format(s['short'],
                                                   s['symbol'],
-                                                  s['value']))
+                                                  str(s['value'])))
         print('*' * 50)
         print(' ')
