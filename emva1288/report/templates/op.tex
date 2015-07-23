@@ -3,15 +3,12 @@
 
 \underline{\textsl{Operation Point \textbf{%{{ op.id %}}}\label{%{{ op.id %}}}}}
 %{ include 'op_header.tex' %}
-
+\\[10mm]
 %Plots
 \begin{minipage}[t]{0.690\linewidth}
-\textbf{Photon transfer plot}
-\\*
+
 \includegraphics[width=0.95\linewidth,keepaspectratio]{%{{op.plots.PlotPTC %}}}
-\vfill
-\textbf{Signal to noise ratio}
-\\*
+
 \includegraphics[width=0.95\linewidth,keepaspectratio]{%{{op.plots.PlotSNR %}}}
 \end{minipage}
 %Results
@@ -20,8 +17,9 @@
 \begin{tabular}{lrl}
 \multicolumn{3}{c}{\textbf{Results}} \\[2mm]
 
-\textsl{%{{ op.results.sensitivity.QE.short %}}}
-(%{{ op.results.sensitivity.QE.symbol %}}) &
+\multicolumn{3}{l}{\textbf{%{{ op.results.sensitivity.QE.short %}}}} \\
+
+%{{ op.results.sensitivity.QE.symbol %}} &
 %{{ '%.2f' % op.results.sensitivity.QE.value %}} &
 %{{ op.results.sensitivity.QE.unit %}} \\[5mm]
 
@@ -43,7 +41,9 @@
 
 %{{ op.results.sensitivity.sigma_d.symbol %}} &
 %{{ '%.3f' % op.results.sensitivity.sigma_d.value %}} &
-%{{ op.results.sensitivity.sigma_d.unit %}} \\
+%{{ op.results.sensitivity.sigma_d.unit %}} \\[5mm]
+
+\multicolumn{3}{l}{\textbf{SNR}} \\
 
 %{{ op.results.sensitivity.SNR_max.symbol %}} &
 %{{ '%.3f' % op.results.sensitivity.SNR_max.value %}} \\
@@ -57,30 +57,40 @@
 %{{ op.results.sensitivity.SNR_max_bit.unit %}} \\
 
 %{{ op.results.sensitivity.inverse_SNR_max.symbol %}} &
-%{{ '%.3f' % op.results.sensitivity.inverse_SNR_max.value %}} &
+%{{ op.results.sensitivity.inverse_SNR_max.value|missing(3) %}} &
 %{{ op.results.sensitivity.inverse_SNR_max.unit %}} \\[5mm]
 
 \multicolumn{3}{l}{\textbf{Sensitivity treshold}} \\
 
 %{{ op.results.sensitivity.u_p_min.symbol %}} &
-%{{ '%.3f' % op.results.sensitivity.u_p_min.value %}} &
+%{{ op.results.sensitivity.u_p_min.value|missing(3) %}} &
 %{{ op.results.sensitivity.u_p_min.unit %}} \\
 
+%{{ op.results.sensitivity.u_p_min_area.symbol %}} &
+%{{ op.results.sensitivity.u_p_min_area.value|missing(3) %}} &
+%{{ op.results.sensitivity.u_p_min_area.unit %}} \\
+
 %{{ op.results.sensitivity.u_e_min.symbol %}} &
-%{{ '%.3f' % op.results.sensitivity.u_e_min.value %}} &
+%{{ op.results.sensitivity.u_e_min.value|missing(3) %}} &
 %{{ op.results.sensitivity.u_e_min.unit %}} \\[5mm]
 
 \multicolumn{3}{l}{\textbf{Saturation capacity}} \\
 
 %{{ op.results.sensitivity.u_p_sat.symbol %}} &
-%{{ '%.0f' % op.results.sensitivity.u_p_sat.value %}} &
+%{{ op.results.sensitivity.u_p_sat.value|missing(0) %}} &
 %{{ op.results.sensitivity.u_p_sat.unit %}} \\
+
+%{{ op.results.sensitivity.u_p_sat_area.symbol %}} &
+%{{ op.results.sensitivity.u_p_sat_area.value|missing(3) %}} &
+%{{ op.results.sensitivity.u_p_sat_area.unit %}} \\
 
 %{{ op.results.sensitivity.u_e_sat.symbol %}} &
 %{{ '%.0f' % op.results.sensitivity.u_e_sat.value %}} &
-%{{ op.results.sensitivity.u_e_sat.unit %}} \\
+%{{ op.results.sensitivity.u_e_sat.unit %}} \\[5mm]
 
-\textsl{%{{ op.results.sensitivity.DR.short %}}} &
+\multicolumn{3}{l}{\textbf{%{{ op.results.sensitivity.DR.short %}}}} \\
+
+%{{ op.results.sensitivity.DR.symbol %}} &
 %{{ '%.0f' % op.results.sensitivity.DR.value %}} \\
 
 %{{ op.results.sensitivity.DR_dB.symbol %}} &

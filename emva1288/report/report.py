@@ -71,6 +71,19 @@ class Report1288(object):
             comment_end_string='%#}',
             loader=jinja2.FileSystemLoader(os.path.join(_CURRDIR, 'templates'))
         )
+
+        def missingfilter(value, precision=None):
+            if value is None:
+                return '-'
+            if precision is None:
+                return value
+            if not precision:
+                return int(value)
+            t = '{:.%df}' % precision
+            return t.format(value)
+
+        self.renderer.filters['missing'] = missingfilter
+
         self.ops = []
         self.marketing = mark
         self._temp_dirs()

@@ -212,3 +212,6 @@ class Data1288(object):
         r = Results1288(d)
         '''
         return self.data[key]
+
+    def get(self, key, default=None):
+        return self.data.get(key, default)
