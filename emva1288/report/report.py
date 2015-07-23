@@ -17,13 +17,18 @@ def marketing(**kwargs):
                    'sensor_diagonal, lens_mount, '
                    'shutter, overlap, readout_rate, '
                    'dark_current_compensation, interface, '
-                   'watermark, qe_plot')
+                   'watermark, qe_plot, '
+                   'emva1288_logo, missingplot, missinglogo')
 
     # For these attributes default is False
     # for the rest is '-'
     kwargs.setdefault('logo', False)
     kwargs.setdefault('watermark', False)
     kwargs.setdefault('qe_plot', False)
+    kwargs.setdefault('emva1288_logo',
+                      os.path.join('files', 'EMVA1288Logo.pdf'))
+    kwargs.setdefault('missinglogo', os.path.join('files', 'missinglogo.pdf'))
+    kwargs.setdefault('missingplot', os.path.join('files', 'missingplot.pdf'))
     for field in m._fields:
         v = kwargs.pop(field, '-')
         setattr(m, field, v)
@@ -66,6 +71,19 @@ class Report1288(object):
             comment_end_string='%#}',
             loader=jinja2.FileSystemLoader(os.path.join(_CURRDIR, 'templates'))
         )
+
+        def missingfilter(value, precision=None):
+            if value is None:
+                return '-'
+            if precision is None:
+                return value
+            if not precision:
+                return int(value)
+            t = '{:.%df}' % precision
+            return t.format(value)
+
+        self.renderer.filters['missing'] = missingfilter
+
         self.ops = []
         self.marketing = mark
         self._temp_dirs()

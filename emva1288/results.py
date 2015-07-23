@@ -29,6 +29,7 @@ class Results1288(object):
         self.temporal = data['temporal']
         self.spatial = data['spatial']
         self.name = data['name']
+        self.pixel_area = data.get('pixel_area', None)
         self._s2q = 1.0 / 12.0
         self._index_start = 0
         self._index_sensitivity_min = 0
@@ -232,6 +233,22 @@ class Results1288(object):
 
         return (100.0 / self.QE) * ((self.sigma_y_dark / self.K) + 0.5)
 
+    @property
+    def u_p_min_area(self):
+        """
+        **Section: sensitivity
+        **Short: Sensitivity threshold
+        **Symbol:$\mu_{p.min.area}$
+        **Comment:
+        **Unit: $p/\mu m^2$
+        **LatexName: UPMin
+        """
+
+        if not self.pixel_area:
+            return None
+
+        return self.u_p_min / self.pixel_area
+
     def u_e_min(self):
         """
         **Section: sensitivity
@@ -255,6 +272,22 @@ class Results1288(object):
         """
 
         return self.temporal['u_p'][self.index_u_ysat]
+
+    @property
+    def u_p_sat_area(self):
+        """
+        **Section: sensitivity
+        **Short:Saturation Capacity
+        **Symbol:$\mu_{p.sat.area}$
+        **Comment:
+        **Unit: $p/\mu m^2$
+        **LatexName: UPSat
+        """
+
+        if not self.pixel_area:
+            return None
+
+        return self.u_p_sat / self.pixel_area
 
     @property
     def u_e_sat(self):
@@ -292,7 +325,7 @@ class Results1288(object):
         **LatexName: SNRMaxDB
         """
 
-        return 20. * np.log(self.SNR_max)
+        return 20. * np.log10(self.SNR_max)
 
     def SNR_max_bit(self):
         """
@@ -793,6 +826,6 @@ class Results1288(object):
                 s = d[section][method]
                 print('{:<50}{:<30}{:>10}'.format(s['short'],
                                                   s['symbol'],
-                                                  s['value']))
+                                                  str(s['value'])))
         print('*' * 50)
         print(' ')

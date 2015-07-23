@@ -316,7 +316,8 @@ def dict_to_xml(d, root='results', filename=None):
     t = etree.tostring(xml, pretty_print=True)
     if filename is None:
         return t
-    filename.write(t)
+    with open(filename, 'w') as f:
+        f.write(t.decode('utf-8'))
 
 
 def xml_to_dict(xml):
