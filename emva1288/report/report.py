@@ -10,86 +10,113 @@ from .. results import Results1288
 from .. plotting import Plotting1288, EVMA1288plots
 
 
-def marketing(**kwargs):
-    m = namedtuple('marketing',
-                   'logo, vendor, model, '
-                   'serial, sensor_type, sensor_name, '
-                   'resolution_x, resolution_y, '
-                   'sensor_diagonal, lens_mount, '
-                   'shutter, overlap, readout_rate, '
-                   'dark_current_compensation, interface, '
-                   'watermark, qe_plot, '
-                   'emva1288_logo, missingplot, missinglogo')
+def _none_tuple(t, **kwargs):
+    '''Making default None for all fields'''
+    for field in t._fields:
+        v = kwargs.pop(field, None)
+        setattr(t, field, v)
 
-    # For these attributes default is False
-    # for the rest is '-'
-    kwargs.setdefault('logo', False)
-    kwargs.setdefault('watermark', False)
-    kwargs.setdefault('qe_plot', False)
-    kwargs.setdefault('emva1288_logo',
-                      posixpath.join('files', 'EMVA1288Logo.pdf'))
-    kwargs.setdefault('missinglogo', posixpath.join('files',
-                                                    'missinglogo.pdf'))
-    kwargs.setdefault('missingplot', posixpath.join('files',
-                                                    'missingplot.pdf'))
-    for field in m._fields:
-        v = kwargs.pop(field, '-')
-        setattr(m, field, v)
+
+def info_setup(**kwargs):
+    '''Container for setup information'''
+    s = namedtuple('setup',
+                   ['light_source',
+                    'standard_version'])
+    _none_tuple(s)
+    return s
+
+
+def info_basic(**kwargs):
+    '''Container for basic information'''
+    b = namedtuple('basic',
+                   ['vendor',
+                    'model',
+                    'data_type',
+                    'sensor_type',
+                    'sensor_diagonal',
+                    'lens_category',
+                    'resolution',
+                    'pixel_size',
+                    #########
+                    # For CCD
+                    'readout_type', 'transfer_type',
+                    # For CMOS
+                    'shutter_type', 'overlap_capabilities',
+                    #########
+                    'maximum_readout_rate',
+                    'dark_current_compensation',
+                    'interface_type',
+                    'qe_plot'])
+    _none_tuple(b, **kwargs)
+    return b
+
+
+def info_marketing(**kwargs):
+    m = namedtuple('marketing',
+                   ['logo',
+                    'watermark',
+                    'missingplot'])
+
+    _none_tuple(m, **kwargs)
     return m
 
 
-def op():
-    o = namedtuple('op', 'bit_depth, gain,'
-                   'offset, exposure_time, wavelength, '
-                   'temperature, housing_temperature, '
-                   'fpn_correction, results, plots, extra')
+def info_op(**kwargs):
+    o = namedtuple('op',
+                   ['bit_depth',
+                    'gain',
+                    'exposure_time',
+                    'black_level',
+                    'fpn_correction'
+                    # External conditions
+                    'wavelength',
+                    'temperature',
+                    'housing_temperature',
+                    # Options
+                    'summary_only'])
+    _none_tuple(o, **kwargs)
 
-    o.bit_depth = '-'
-    o.gain = '-'
-    o.offset = '-'
-    o.exposure_time = '-'
-    o.wavelength = '-'
-    o.temperature = 'room'
-    o.housing_temperature = '-'
-    o.fpn_correction = '-'
-    o.extra = False
-    o.results = None
-    o.plots = None
-    o.id = None
     return o
 
 _CURRDIR = os.path.abspath(os.path.dirname(__file__))
 
 
 class Report1288(object):
-    def __init__(self, mark):
+    def __init__(self, setup=None, basic=None, marketing=None):
         self._tmpdir = None
 
-        self.renderer = jinja2.Environment(
+        self.renderer = self._template_renderer()
+        self.ops = []
+        self.marketing = marketing or info_marketing()
+        self.basic = basic or info_basic()
+        self.setup = setup or info_setup()
+        self._temp_dirs()
+
+    def _template_renderer(self):
+        renderer = jinja2.Environment(
             block_start_string='%{',
             block_end_string='%}',
             variable_start_string='%{{',
             variable_end_string='%}}',
             comment_start_string='%{#',
             comment_end_string='%#}',
-            loader=jinja2.FileSystemLoader(os.path.join(_CURRDIR, 'templates'))
-        )
+            loader=jinja2.FileSystemLoader(os.path.join(_CURRDIR,
+                                                        'templates')))
 
-        def missingfilter(value, precision=None):
+        def missingnumber(value, precision):
             if value is None:
                 return '-'
-            if precision is None:
-                return value
-            if not precision:
-                return int(value)
             t = '{:.%df}' % precision
             return t.format(value)
 
-        self.renderer.filters['missing'] = missingfilter
+        def missingfilter(value, default='-'):
+            if value is None:
+                return default
+            return value
 
-        self.ops = []
-        self.marketing = mark
-        self._temp_dirs()
+        renderer.filters['missing'] = missingfilter
+        renderer.filters['missingnumber'] = missingnumber
+        return renderer
 
     def _temp_dirs(self):
         self._tmpdir = TemporaryDirectory()
@@ -100,23 +127,19 @@ class Report1288(object):
         markfiles = os.path.join(self._tmpdir.name, 'marketing')
         os.makedirs(markfiles)
 
-        if self.marketing.logo:
-            fname = os.path.basename(self.marketing.logo)
-            if not fname:
-                print('invalid logo file', fname)
+        def default_image(attr, default):
+            img = getattr(self.marketing, attr)
+            if img:
+                shutil.copy(os.path.abspath(img), markfiles)
+                v = posixpath.join(
+                    'marketing',
+                    os.path.basename(img))
             else:
-                shutil.copy(os.path.abspath(self.marketing.logo),
-                            os.path.join(markfiles, fname))
-                self.marketing.logo = posixpath.join('marketing', fname)
+                v = posixpath.join('files', default)
+            setattr(self.marketing, attr, v)
 
-        if self.marketing.qe_plot:
-            fname = os.path.basename(self.marketing.qe_plot)
-            if not fname:
-                print('invalid qe_plot file', fname)
-            else:
-                shutil.copy(os.path.abspath(self.marketing.qe_plot),
-                            os.path.join(markfiles, fname))
-                self.marketing.qe_plot = posixpath.join('marketing', fname)
+        default_image('logo', 'missinglogo.pdf')
+        default_image('missingplot', 'missingplot.pdf')
 
     def _write_file(self, name, content):
         fname = os.path.join(self._tmpdir.name, name)
@@ -126,11 +149,14 @@ class Report1288(object):
 
     def _stylesheet(self):
         stylesheet = self.renderer.get_template('emvadatasheet.sty')
-        return stylesheet.render(marketing=self.marketing)
+        return stylesheet.render(marketing=self.marketing,
+                                 basic=self.basic)
 
     def _report(self):
         report = self.renderer.get_template('report.tex')
         return report.render(marketing=self.marketing,
+                             basic=self.basic,
+                             setup=self.setup,
                              operation_points=self.ops)
 
     def latex(self, dir_):
@@ -150,9 +176,8 @@ class Report1288(object):
     def _results(self, data):
         return Results1288(data)
 
-    def _plots(self, data, id_):
-        res = self._results(data)
-        plots = Plotting1288(res)
+    def _plots(self, results, id_):
+        plots = Plotting1288(results)
         savedir = os.path.join(self._tmpdir.name, id_)
         os.mkdir(savedir)
         plots.plot(savedir=savedir, show=False)
@@ -161,11 +186,9 @@ class Report1288(object):
             names[cls.__name__] = posixpath.join(id_, cls.__name__ + '.pdf')
         return names
 
-    def add(self, op_, data=None):
-        if not op_.id:
-            op_.id = 'OP%d' % (len(self.ops) + 1)
-        if not op_.results and data:
-            op_.results = self._results(data).results
-        if not op_.plots and data:
-            op_.plots = self._plots(data, op_.id)
-        self.ops.append(op_)
+    def add(self, op, data):
+        op.id = 'OP%d' % (len(self.ops) + 1)
+        results = self._results(data)
+        op.results = results.results
+        op.plots = self._plots(results, op.id)
+        self.ops.append(op)

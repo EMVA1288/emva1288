@@ -2,6 +2,7 @@
 \ReportSection{Operation Point %{{ op.id %}}}
 
 \underline{\textsl{Operation Point \textbf{%{{ op.id %}}}\label{%{{ op.id %}}}}}
+
 %{ include 'op_header.tex' %}
 \\[10mm]
 %Plots
@@ -17,13 +18,13 @@
 \begin{tabular}{lrl}
 \multicolumn{3}{c}{\textbf{Results}} \\[2mm]
 
-\multicolumn{3}{l}{\textbf{%{{ op.results.sensitivity.QE.short %}}}} \\
+\multicolumn{3}{l}{\textbf{%{{ op.results.sensitivity.QE.short %}}$^*$}} \\
 
 %{{ op.results.sensitivity.QE.symbol %}} &
 %{{ '%.2f' % op.results.sensitivity.QE.value %}} &
 %{{ op.results.sensitivity.QE.unit %}} \\[5mm]
 
-\multicolumn{3}{l}{\textbf{Sensitivity}} \\
+\multicolumn{3}{l}{\textbf{%{{ op.results.sensitivity.K.short %}}}} \\
 
 %{{ op.results.sensitivity.K.symbol %}} &
 %{{ '%.3f' % op.results.sensitivity.K.value %}} &
@@ -43,45 +44,45 @@
 %{{ '%.3f' % op.results.sensitivity.sigma_d.value %}} &
 %{{ op.results.sensitivity.sigma_d.unit %}} \\[5mm]
 
-\multicolumn{3}{l}{\textbf{SNR}} \\
+\multicolumn{3}{l}{\textbf{%{{ op.results.sensitivity.SNR_max.short %}}}} \\
 
 %{{ op.results.sensitivity.SNR_max.symbol %}} &
-%{{ '%.3f' % op.results.sensitivity.SNR_max.value %}} \\
+%{{ '%.0f' % op.results.sensitivity.SNR_max.value %}} \\
 
 %{{ op.results.sensitivity.SNR_max_dB.symbol %}} &
-%{{ '%.3f' % op.results.sensitivity.SNR_max_dB.value %}} &
+%{{ '%.2f' % op.results.sensitivity.SNR_max_dB.value %}} &
 %{{ op.results.sensitivity.SNR_max_dB.unit %}} \\
 
 %{{ op.results.sensitivity.SNR_max_bit.symbol %}} &
-%{{ '%.3f' % op.results.sensitivity.SNR_max_bit.value %}} &
+%{{ '%.1f' % op.results.sensitivity.SNR_max_bit.value %}} &
 %{{ op.results.sensitivity.SNR_max_bit.unit %}} \\
 
 %{{ op.results.sensitivity.inverse_SNR_max.symbol %}} &
-%{{ op.results.sensitivity.inverse_SNR_max.value|missing(3) %}} &
+%{{ '%.3f' % op.results.sensitivity.inverse_SNR_max.value %}} &
 %{{ op.results.sensitivity.inverse_SNR_max.unit %}} \\[5mm]
 
-\multicolumn{3}{l}{\textbf{Sensitivity treshold}} \\
+\multicolumn{3}{l}{\textbf{%{{ op.results.sensitivity.u_p_min.short %}}}} \\
 
-%{{ op.results.sensitivity.u_p_min.symbol %}} &
-%{{ op.results.sensitivity.u_p_min.value|missing(3) %}} &
+%{{ op.results.sensitivity.u_p_min.symbol %}}$^*$ &
+%{{ op.results.sensitivity.u_p_min.value|missingnumber(3) %}} &
 %{{ op.results.sensitivity.u_p_min.unit %}} \\
 
-%{{ op.results.sensitivity.u_p_min_area.symbol %}} &
-%{{ op.results.sensitivity.u_p_min_area.value|missing(3) %}} &
+%{{ op.results.sensitivity.u_p_min_area.symbol %}}$^*$ &
+%{{ op.results.sensitivity.u_p_min_area.value|missingnumber(3) %}} &
 %{{ op.results.sensitivity.u_p_min_area.unit %}} \\
 
 %{{ op.results.sensitivity.u_e_min.symbol %}} &
-%{{ op.results.sensitivity.u_e_min.value|missing(3) %}} &
+%{{ '%.3f' % op.results.sensitivity.u_e_min.value %}} &
 %{{ op.results.sensitivity.u_e_min.unit %}} \\[5mm]
 
-\multicolumn{3}{l}{\textbf{Saturation capacity}} \\
+\multicolumn{3}{l}{\textbf{%{{ op.results.sensitivity.u_p_sat.short %}}}} \\
 
-%{{ op.results.sensitivity.u_p_sat.symbol %}} &
-%{{ op.results.sensitivity.u_p_sat.value|missing(0) %}} &
+%{{ op.results.sensitivity.u_p_sat.symbol %}}$^*$ &
+%{{ '%.0f' % op.results.sensitivity.u_p_sat.value %}} &
 %{{ op.results.sensitivity.u_p_sat.unit %}} \\
 
-%{{ op.results.sensitivity.u_p_sat_area.symbol %}} &
-%{{ op.results.sensitivity.u_p_sat_area.value|missing(3) %}} &
+%{{ op.results.sensitivity.u_p_sat_area.symbol %}}$^*$ &
+%{{ op.results.sensitivity.u_p_sat_area.value|missingnumber(3) %}} &
 %{{ op.results.sensitivity.u_p_sat_area.unit %}} \\
 
 %{{ op.results.sensitivity.u_e_sat.symbol %}} &
@@ -101,7 +102,7 @@
 %{{ '%.1f' % op.results.sensitivity.DR_bit.value %}} &
 %{{ op.results.sensitivity.DR_bit.unit %}} \\[5mm]
 
-\multicolumn{3}{l}{\textbf{Spatial Nonuniformities:}} \\
+\multicolumn{3}{l}{\textbf{Spatial Nonuniformities}} \\
 
 %{{ op.results.spatial.DSNU1288.symbol %}} &
 %{{ '%.1f' % op.results.spatial.DSNU1288.value %}} &
@@ -115,7 +116,7 @@
 %{{ '%.1f' % op.results.spatial.PRNU1288.value %}} &
 %{{ op.results.spatial.PRNU1288.unit %}} \\[5mm]
 
-\multicolumn{3}{l}{\textbf{Linearity error:}} \\
+\multicolumn{3}{l}{\textbf{Linearity error}} \\
 
 %{{ op.results.linearity.LE_min.symbol %}} &
 %{{ '%.3f' % op.results.linearity.LE_min.value %}} &
@@ -123,14 +124,15 @@
 
 %{{ op.results.linearity.LE_max.symbol %}} &
 %{{ '%.3f' % op.results.linearity.LE_max.value %}} &
-%{{ op.results.linearity.LE_max.unit %}} \\
-\end{tabular}
+%{{ op.results.linearity.LE_max.unit %}} \\[5mm]
 
+\multicolumn{3}{l}{\textbf{$^*$Result depends on wavelenght}} \\
+\end{tabular}
 \end{minipage}
 
 
 
-%{ if op.extra %}
+%{ if not op.summary_only %}
 %Extra plots
 \newpage
 \begin{center}

@@ -224,7 +224,7 @@ class Results1288(object):
     def u_p_min(self):
         """
         **Section: sensitivity
-        **Short: Sensitivity threshold
+        **Short: Absolute sensitivity threshold
         **Symbol:$\mu_{p.min}$
         **Comment:
         **Unit: $p$
@@ -306,7 +306,7 @@ class Results1288(object):
     def SNR_max(self):
         """
         **Section: sensitivity
-        **Short: Maximum Signal to Noise Ratio
+        **Short: Signal-to-Noise Ratio
         **Symbol: $SNR_{max}$
         **Comment:
         **Unit:

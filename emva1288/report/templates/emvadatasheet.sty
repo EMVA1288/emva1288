@@ -21,9 +21,9 @@
 
 % Header
 \fancyhead{}%
-\fancyhead[LO,LE]{\includegraphics[height=12mm]{%{{marketing.emva1288_logo%}}}}
-\fancyhead[C]{\textbf{%{{ marketing.vendor %}} \, %{{ marketing.model %}}}}
-\fancyhead[RE,RO]{\includegraphics[height=12mm]{%{{ marketing.logo|d(marketing.missinglogo, true) %}}}}
+\fancyhead[LO,LE]{\includegraphics[height=12mm]{files/EMVA1288Logo.pdf}}
+\fancyhead[C]{\textbf{%{{ marketing.vendor %}} \, %{{ basic.model|missing %}}}}
+\fancyhead[RE,RO]{\includegraphics[height=12mm]{%{{ marketing.logo %}}}}
 \renewcommand{\headrulewidth}{0.5pt}
 
 % Footer
@@ -32,14 +32,8 @@
 \fancyfoot[LE,RO]{\scriptsize\sffamily\textup\thepage\ of \pageref{LastPage}}
 \renewcommand{\footrulewidth}{0.4pt}
 
-\definecolor{greylight}{rgb}{0.93,0.93,0.93}  % Hintergrundfarbe Boxen
-
 \setlength{\columnsep}{1cm}  % Spaltenabstand
 
 \def\ind#1{\ensuremath{_{\mbox{\scriptsize #1}}}}
-
-
-\def\electrons{e}
-\def\photons{p}
 
 \makeatother

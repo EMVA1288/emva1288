@@ -1,5 +1,4 @@
 import emva1288
-from emva1288.report.report import Report1288, op, marketing
 import os
 
 # Load one test to add it as operation point
@@ -10,33 +9,38 @@ info = emva1288.ParseEmvaDescriptorFile(os.path.join(dir_, fname))
 imgs = emva1288.LoadImageData(info.info)
 dat = emva1288.Data1288(imgs.data)
 
-# Setup the marketing values
-# marketing has several parameters
-# logo, vendor, model, serial, sensor_type, sensor_name,
-# resolution_x, resolution_y, sensor_diagonal, lens_mount,
-# shutter, overlap, readout_rate, dark_current_compensation,
-# interface, watermark, qe_plot
 
-mark = marketing()
-mark.vendor = 'Sample vendor'
-mark.model = 'Unknown model'
-mark.interface = 'simulation'
-mark.resolution_x = 640
-mark.resolution_y = 480
+# Description of the setup
+setup = emva1288.report.info_setup()
+setup.standard_version = 3.1
+
+# Basic information
+basic = emva1288.report.info_basic()
+basic.vendor = 'Simulation'
+basic.data_type = 'Single'
+basic.sensor_type = 'simulated sensor'
+basic.resolution = '640x480'
+
+
+# Marketing information
+marketing = emva1288.report.info_marketing()
+
 
 # Initialize the report with the marketing data
-report = Report1288(mark)
+report = emva1288.report.Report1288(marketing=marketing,
+                                    setup=setup,
+                                    basic=basic)
 
-# Operation point has several parameters
-# bit_depth, gain, offset, exposure_time, wavelength,
+# Operation point
+# bit_depth, gain, black_level, exposure_time, wavelength,
 # temperature, housing_temperature, fpn_correction,
-# results, plots, extra
+# summary_only
 
-op1 = op()
-op1.gain = 3
-op1.offset = 20
-op1.wavelength = 525
-op1.extra = True
+op1 = emva1288.report.info_op()
+op1.gain = 0.1
+op1.offset = 29.4
+op1.bit_depth = '12 bits'
+op1.summary_only = False
 
 # Add the operation point to the report
 # we can add as many operation points as we want
