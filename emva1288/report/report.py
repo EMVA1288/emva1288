@@ -4,6 +4,7 @@ import shutil
 from distutils.dir_util import copy_tree
 from collections import namedtuple
 from tempfile import TemporaryDirectory
+import posixpath
 
 from .. results import Results1288
 from .. plotting import Plotting1288, EVMA1288plots
@@ -26,9 +27,11 @@ def marketing(**kwargs):
     kwargs.setdefault('watermark', False)
     kwargs.setdefault('qe_plot', False)
     kwargs.setdefault('emva1288_logo',
-                      os.path.join('files', 'EMVA1288Logo.pdf'))
-    kwargs.setdefault('missinglogo', os.path.join('files', 'missinglogo.pdf'))
-    kwargs.setdefault('missingplot', os.path.join('files', 'missingplot.pdf'))
+                      posixpath.join('files', 'EMVA1288Logo.pdf'))
+    kwargs.setdefault('missinglogo', posixpath.join('files',
+                                                    'missinglogo.pdf'))
+    kwargs.setdefault('missingplot', posixpath.join('files',
+                                                    'missingplot.pdf'))
     for field in m._fields:
         v = kwargs.pop(field, '-')
         setattr(m, field, v)
@@ -104,7 +107,7 @@ class Report1288(object):
             else:
                 shutil.copy(os.path.abspath(self.marketing.logo),
                             os.path.join(markfiles, fname))
-                self.marketing.logo = os.path.join('marketing', fname)
+                self.marketing.logo = posixpath.join('marketing', fname)
 
         if self.marketing.qe_plot:
             fname = os.path.basename(self.marketing.qe_plot)
@@ -113,7 +116,7 @@ class Report1288(object):
             else:
                 shutil.copy(os.path.abspath(self.marketing.qe_plot),
                             os.path.join(markfiles, fname))
-                self.marketing.qe_plot = os.path.join('marketing', fname)
+                self.marketing.qe_plot = posixpath.join('marketing', fname)
 
     def _write_file(self, name, content):
         fname = os.path.join(self._tmpdir.name, name)
@@ -155,7 +158,7 @@ class Report1288(object):
         plots.plot(savedir=savedir, show=False)
         names = {}
         for cls in EVMA1288plots:
-            names[cls.__name__] = os.path.join(id_, cls.__name__ + '.pdf')
+            names[cls.__name__] = posixpath.join(id_, cls.__name__ + '.pdf')
         return names
 
     def add(self, op_, data=None):
