@@ -568,6 +568,13 @@ class ProfileBase(Emva1288Plot):
 
         return {'bright': b_p, 'dark': d_p}
 
+    def reduce_ticks(self, axis):
+        ticks = axis.get_ticklocs()
+        ti = ticks[1]
+        tf = ticks[-2]
+        tm = int((ti + tf) / 2)
+        axis.set_ticks([ti, tm, tf])
+
 
 class PlotHorizontalProfile(ProfileBase):
     '''Create Horizontal profile plot
@@ -595,18 +602,18 @@ class PlotHorizontalProfile(ProfileBase):
         profiles = self.get_profiles(bimg, dimg, False)
 
         x = np.arange(profiles['bright']['length'])
-        ax.plot(x, profiles['bright']['mid'],
-                label='Mid',
-                gid='%d:marker' % test.id)
-        ax.plot(x, profiles['bright']['min'],
-                label='Min',
-                gid='%d:marker' % test.id)
-        ax.plot(x, profiles['bright']['max'],
-                label='Max',
-                gid='%d:marker' % test.id)
-        ax.plot(x, profiles['bright']['mean'],
-                label='Mean',
-                gid='%d:marker' % test.id)
+        lmid = ax.plot(x, profiles['bright']['mid'],
+                       label='Mid',
+                       gid='%d:marker' % test.id)[0]
+        lmin = ax.plot(x, profiles['bright']['min'],
+                       label='Min',
+                       gid='%d:marker' % test.id)[0]
+        lmax = ax.plot(x, profiles['bright']['max'],
+                       label='Max',
+                       gid='%d:marker' % test.id)[0]
+        lmean = ax.plot(x, profiles['bright']['mean'],
+                        label='Mean',
+                        gid='%d:marker' % test.id)[0]
         ax.set_xticks([])
 
         x_dark = np.arange(profiles['dark']['length'])
@@ -630,8 +637,12 @@ class PlotHorizontalProfile(ProfileBase):
                  ymax=max(self.axis_limits['dark']['max']),
                  xmax=max(self.axis_limits['dark']['length']))
 
-        self.set_legend(ax)
-        self.set_legend(ax2)
+        self.figure.legend((lmid, lmin, lmax, lmean),
+                           ('Mid', 'Min', 'Max', 'Mean'),
+                           'upper right')
+
+        self.reduce_ticks(ax2.get_yaxis())
+        self.reduce_ticks(ax.get_yaxis())
 
 
 class PlotVerticalProfile(ProfileBase):
@@ -660,18 +671,18 @@ class PlotVerticalProfile(ProfileBase):
         profiles = self.get_profiles(bimg, dimg, True)
 
         y = np.arange(profiles['bright']['length'])
-        ax2.plot(profiles['bright']['mid'], y,
-                 label='Mid',
-                 gid='%d:marker' % test.id)
-        ax2.plot(profiles['bright']['min'], y,
-                 label='Min',
-                 gid='%d:marker' % test.id)
-        ax2.plot(profiles['bright']['max'], y,
-                 label='Max',
-                 gid='%d:marker' % test.id)
-        ax2.plot(profiles['bright']['mean'], y,
-                 label='Mean',
-                 gid='%d:marker' % test.id)
+        lmid = ax2.plot(profiles['bright']['mid'], y,
+                        label='Mid',
+                        gid='%d:marker' % test.id)[0]
+        lmin = ax2.plot(profiles['bright']['min'], y,
+                        label='Min',
+                        gid='%d:marker' % test.id)[0]
+        lmax = ax2.plot(profiles['bright']['max'], y,
+                        label='Max',
+                        gid='%d:marker' % test.id)[0]
+        lmean = ax2.plot(profiles['bright']['mean'], y,
+                         label='Mean',
+                         gid='%d:marker' % test.id)[0]
 
         ax2.set_yticks([])
 
@@ -696,8 +707,12 @@ class PlotVerticalProfile(ProfileBase):
                 xmax=max(self.axis_limits['dark']['max']),
                 ymax=max(self.axis_limits['dark']['length']))
 
-        self.set_legend(ax)
-        self.set_legend(ax2)
+        self.figure.legend((lmid, lmin, lmax, lmean),
+                           ('Mid', 'Min', 'Max', 'Mean'),
+                           'upper right')
+
+        self.reduce_ticks(ax2.get_xaxis())
+        self.reduce_ticks(ax.get_xaxis())
 
 
 EVMA1288plots = [PlotPTC,
