@@ -1,23 +1,25 @@
-
-\colorbox{greylight}{
 \begin{minipage}[t]{0.975\linewidth}
 \begin{multicols}{2}
-\textsl{Bit depth} \hfill 8
+\textbf{Camera setting} \hfill
 \\[1mm]
-\textsl{Gain} \hfill %{{ op.gain %}} 
+\textsl{Bit depth} \hfill %{{ op.bit_depth|missing %}} 
 \\[1mm]
-\textsl{Offset} \hfill %{{ op.offset %}}
+\textsl{Gain} \hfill %{{ op.gain|missing %}} 
 \\[1mm]
-\textsl{Exposure time} \hfill %{{ op.exposure_time %}}
+\textsl{Exposure time} \hfill %{{ op.exposure_time|missing %}}
 \\[1mm]
-\textsl{Illumination wavelength} \hfill %{{ op.wavelength %}}
+\textsl{Black level} \hfill %{{ op.black_level|missing %}}
 \\[1mm]
-\textsl{Environmental temperature} \hfill %{{ op.temperature %}}
+\textsl{FPN correction} \hfill %{{ op.fpn_correction|missing %}}
 \\[1mm]
-\textsl{Housing temperature} \hfill %{{ op.housing_temperature %}}
+%
+\textbf{External conditions} 
 \\[1mm]
-\textsl{FPN Correction} \hfill %{{ op.fpn_correction %}}
+\textsl{Illumination wavelength} \hfill %{{ op.wavelength|missing %}} $nm$
+\\[1mm]
+\textsl{Environmental temperature} \hfill %{{ op.temperature|missing %}} $^oC$
+\\[1mm]
+\textsl{Housing temperature} \hfill %{{ op.housing_temperature|missing %}} $^oC$
 \\[1mm]
 \end{multicols}
 \end{minipage}
-}

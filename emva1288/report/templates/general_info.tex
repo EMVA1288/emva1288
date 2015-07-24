@@ -1,38 +1,49 @@
-\colorbox{greylight}{
 \begin{minipage}[t]{0.975\linewidth}
 \begin{multicols}{2}
-\textsl{Vendor} \hfill %{{ marketing.vendor %}}
+\textsl{Vendor} \hfill %{{ basic.vendor|missing %}}
 \\[1mm]
-\textsl{Model} \hfill %{{ marketing.model %}}
+\textsl{Model} \hfill %{{ basic.model|missing %}}
 \\[1mm]
-\textsl{Serial Number} \hfill %{{ marketing.serial %}}
+\textsl{Data type} \hfill %{{ basic.data_type|missing %}}
 \\[1mm]
-\textsl{Sensor Type} \hfill %{{ marketing.sensor_type %}}
+\textsl{Sensor type} \hfill %{{ basic.sensor_type|missing %}}
 \\[1mm]
-\textsl{Sensor Name} \hfill  %{{ marketing.sensor_name %}}
+\textsl{Diagonal} \hfill %{{ basic.sensor_diagonal|missing %}}
 \\[1mm]
-\textsl{Resolution} \hfill $%{{ marketing.resolution_x %}} \times %{{ marketing.resolution_y %}}$
+\textsl{Lens category} \hfill %{{ basic.lens_category|missing %}}
 \\[1mm]
-\textsl{Diagonal} \hfill %{{ marketing.sensor_diagonal %}}
+\textsl{Resolution} \hfill %{{ basic.resolution|missing %}} pixels
 \\[1mm]
-\textsl{Lens} \hfill %{{ marketing.lens_mount %}}
+\textsl{Pixel size} \hfill %{{ basic.pixel_size|missing %}} $\mu m$
 \\[1mm]
-\textsl{Shutter type} \hfill  %{{ marketing.shutter %}}
+%{- if basic.sensor_type == "CCD" -%}
+\textsl{Readout type} \hfill %{{ basic.readout_type|missing %}}
 \\[1mm]
-\textsl{Overlap capabilities} \hfill  %{{ marketing.overlap %}}
+\textsl{Transfer type} \hfill %{{ basic.transfer_type|missing %}}
 \\[1mm]
-\textsl{Maximum readout rate} \hfill  %{{ marketing.readout_rate %}}
+%{- elif basic.sensor_type == "CMOS" -%}
+\textsl{Shutter type} \hfill %{{ basic.shutter_type|missing %}}
 \\[1mm]
-\textsl{Dark current compensation} \hfill   %{{ marketing.dark_current_compensation %}}
+\textsl{Overlap capabilities} \hfill %{{ basic.overlap_capabilities|missing %}}
 \\[1mm]
-\textsl{Interface type} \hfill  %{{ marketing.interface %}}
+%{- endif -%}
+\textsl{Maximum readout rate} \hfill  %{{ basic.readout_rate|missing %}}
+\\[1mm]
+\textsl{Dark current compensation} \hfill   %{{ basic.dark_current_compensation|missing %}}
+\\[1mm]
+\textsl{Interface type} \hfill  %{{ basic.interface_type|missing %}}
+\\[1mm]
+%%%%%%%%%% SETUP
+\textsl{Light source} \hfill  %{{ basic.light_source|missing %}}
+\\[1mm]
+\textsl{Standard version} \hfill  %{{ setup.standard_version|missing %}}
 \\[1mm]
 \end{multicols}
 \end{minipage}
-}
-
+\\[5mm]
 %{ for op in operation_points %}
 	\underline{\textsl{Operation Point \textbf{%{{ op.id %}}} (Page \pageref{%{{ op.id %}}})}}
+
  	%{ include 'op_header.tex' %}
 %{ endfor %}
 
@@ -40,5 +51,5 @@
 %\\*
 \vfill
 \begin{center}
-\includegraphics[height=100mm,keepaspectratio]{%{{ marketing.qe_plot|d(marketing.missingplot, true) %}}}
+\includegraphics[height=100mm,keepaspectratio]{%{{ basic.qe_plot|missing(marketing.missingplot) %}}}
 \end{center}

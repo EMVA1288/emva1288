@@ -224,7 +224,7 @@ class Results1288(object):
     def u_p_min(self):
         """
         **Section: sensitivity
-        **Short: Sensitivity threshold
+        **Short: Absolute sensitivity threshold
         **Symbol:$\mu_{p.min}$
         **Comment:
         **Unit: $p$
@@ -306,7 +306,7 @@ class Results1288(object):
     def SNR_max(self):
         """
         **Section: sensitivity
-        **Short: Maximum Signal to Noise Ratio
+        **Short: Signal-to-Noise Ratio
         **Symbol: $SNR_{max}$
         **Comment:
         **Unit:
@@ -582,55 +582,6 @@ class Results1288(object):
                                            self.spatial['L_dark'][0])
 
     @property
-    def s_2_y_measured_spectrogram(self):
-        """
-        **Section: spatial
-        **Short: Spatial variance measured from spectrogram
-        **Symbol:$s^2_{y.measured.spectrogram}$
-        **Comment:
-        **Unit:DN2
-        """
-
-        return np.mean(routines.FFT1288(self.spatial['avg'][0])[8: -7])
-
-    @property
-    def s_2_y_measured_spectrogram_dark(self):
-        """
-        **Section: spatial
-        **Short: Spatial variance measured dark from spectrogram
-        **Symbol:$s^2_{y.measured.spectrogram.dark}$
-        **Comment:
-        **Unit:DN2
-        """
-
-        return np.mean(routines.FFT1288(self.spatial['avg_dark'][0]))
-
-    @property
-    def s_2_y_spectrogram(self):
-        """
-        **Section: spatial
-        **Short: Spatial variance from spectrogram
-        **Symbol:$s^2_{y.spectrogram}$
-        **Comment:
-        **Unit:DN2
-        """
-        return (self.s_2_y_measured_spectrogram -
-                (self.sigma_2_y_stack / self.spatial['L'][0]))
-
-    @property
-    def s_2_y_spectrogram_dark(self):
-        """
-        **Section: spatial
-        **Short: Spatial variance from spectrogram dark
-        **Symbol:$s^2_{y.spectrogram.dark}$
-        **Comment:
-        **Unit:DN2
-        """
-
-        return (self.s_2_y_measured_spectrogram_dark -
-                (self.sigma_2_y_stack_dark / self.spatial['L_dark'][0]))
-
-    @property
     def DSNU1288(self):
         """
         **Section: spatial
@@ -673,32 +624,6 @@ class Results1288(object):
         return (np.sqrt(self.s_2_y - self.s_2_y_dark) * 100 /
                 (np.mean(self.spatial['avg'][0]) -
                  np.mean(self.spatial['avg_dark'][0])))
-
-    @property
-    def F_50(self):
-        """
-        **Section: spatial
-        **Short: Non Whiteness factor 50%
-        **Symbol: $F_{50\%}$
-        **Comment:
-        **Unit:
-        """
-
-        return (self.s_2_y_measured_spectrogram /
-                np.median(routines.FFT1288(self.spatial['avg'][0])[8: -7]))
-
-    @property
-    def F_dark(self):
-        """
-        **Section: spatial
-        **Short: Non Whiteness factor Dark
-        **Symbol: $F_{dark}$
-        **Comment:
-        **Unit:
-        """
-
-        return (self.s_2_y_measured_spectrogram_dark /
-                np.median(routines.FFT1288(self.spatial['avg_dark'][0])))
 
     @property
     def histogram_PRNU(self):
