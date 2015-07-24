@@ -34,7 +34,6 @@ class Emva1288Plot(object):
 
     def __init__(self, figure):
         self.figure = figure
-        self.tests = []
         self.setup_figure()
 
     def setup_figure(self):
@@ -62,35 +61,13 @@ class Emva1288Plot(object):
         self.ax = ax
 
     def plot(self, test):
-        pass
-
-    def add_test(self, test):
-        name = test.name
-        if not name:
-            name = len(self.tests)
-        if not getattr(test, 'id', False):
-            test.id = id(test)
-        self.tests.append(name)
-        self.plot(test)
+        raise NotImplementedError
 
     def set_legend(self, ax):
         '''
-        This function is just to prevent a very long legend when there are
-        several datasets
-        If more than one test, only label the first plot as Dataset #
-        if not then use the labels setted in the different plots
+        Shortcut to add legend
         '''
-
-        handles, labels = ax.get_legend_handles_labels()
-        if len(self.tests) > 1:
-            d = int(len(labels) / len(self.tests))
-            for j in range(len(labels)):
-                t = int(j / d)
-                labels[j] = 'Dataset: ' + str(self.tests[t])
-            ax.legend(handles[::d], labels[::d], loc='upper left')
-        else:
-            ax.legend(loc='upper left')
-
+        ax.legend(loc='upper left')
         legend = ax.get_legend()
         if legend is not None:
             if getattr(legend, 'draggable', False):
@@ -132,10 +109,7 @@ class PlotSensitivity(Emva1288Plot):
 
 
 class PlotUyDark(Emva1288Plot):
-    '''
-    Create $\mu_{y.dark}$ plot with all instances of Processing in
-    self.tests.
-    '''
+    '''Create $\mu_{y.dark}$ plot'''
 
     name = 'Mean gray value in dark'
     title = '$\mu_{y.dark}$'
@@ -162,10 +136,7 @@ class PlotUyDark(Emva1288Plot):
 
 
 class PlotPTC(Emva1288Plot):
-    '''
-    Create Photon Transfer plot with all instances of Processing in
-    self.tests.
-    '''
+    '''Create Photon Transfer plot'''
 
     name = 'Photon Transfer'
     xlabel = '$\mu_y - \mu_{y.dark}$ [DN]'
@@ -207,9 +178,7 @@ class PlotPTC(Emva1288Plot):
 
 
 class PlotSNR(Emva1288Plot):
-    '''
-    Create SNR plot with all instances of Processing in self.tests.
-    '''
+    '''Create SNR plot '''
 
     name = 'SNR'
     xlabel = '$\mu_{p}$ [mean number of photons/pixel]'
@@ -280,9 +249,7 @@ class PlotSNR(Emva1288Plot):
 
 
 class PlotLinearity(Emva1288Plot):
-    '''
-    Create Linearity plot with all instances of Processing in self.tests.
-    '''
+    '''Create Linearity plot'''
 
     name = 'Linearity'
     xlabel = '$\mu_{p}$ [mean number of photons/pixel]'
@@ -315,10 +282,7 @@ class PlotLinearity(Emva1288Plot):
 
 
 class PlotDeviationLinearity(Emva1288Plot):
-    '''
-    Create Deviation Linearity plot with all instances of Processing in
-    self.tests.
-    '''
+    '''Create Deviation Linearity plot'''
 
     name = 'Deviation linearity'
     xlabel = '$\mu_{p}$ [mean number of photons/pixel]'
@@ -346,10 +310,7 @@ class PlotDeviationLinearity(Emva1288Plot):
 
 
 class PlotHorizontalSpectogramPRNU(Emva1288Plot):
-    '''
-    Create Horizontal spectrogram PRNU plot with all instances of
-    Processing in self.tests.
-    '''
+    '''Create Horizontal spectrogram PRNU plot'''
 
     name = 'Horizontal spectrogram PRNU'
     xlabel = 'cycles [periods/pixel]'
@@ -378,10 +339,7 @@ class PlotHorizontalSpectogramPRNU(Emva1288Plot):
 
 
 class PlotHorizontalSpectrogramDSNU(Emva1288Plot):
-    '''
-    Create Horizontal spectrogram DSNU plot with all instances of
-    Processing in self.tests.
-    '''
+    '''Create Horizontal spectrogram DSNU plot'''
 
     name = 'Horizontal spectrogram DSNU'
     xlabel = 'cycles [periods/pixel]'
@@ -407,10 +365,7 @@ class PlotHorizontalSpectrogramDSNU(Emva1288Plot):
 
 
 class PlotVerticalSpectrogramPRNU(Emva1288Plot):
-    '''
-    Create Vertical spectrogram PRNU plot with all instances of Processing
-    in self.tests.
-    '''
+    '''Create Vertical spectrogram PRNU plot'''
 
     name = 'Vertical spectrogram PRNU'
     xlabel = 'cycles [periods/pixel]'
@@ -437,10 +392,7 @@ class PlotVerticalSpectrogramPRNU(Emva1288Plot):
 
 
 class PlotVerticalSpectrogramDSNU(Emva1288Plot):
-    '''
-    Create Vertical spectrogram DSNU plot with all instances of
-    Processing in self.tests.
-    '''
+    '''Create Vertical spectrogram DSNU plot'''
 
     name = 'Vertical spectrogram DSNU'
     xlabel = 'Cycles [periods/pixel]'
@@ -467,10 +419,7 @@ class PlotVerticalSpectrogramDSNU(Emva1288Plot):
 
 
 class PlotLogarithmicHistogramDSNU(Emva1288Plot):
-    '''
-    Create Logarithmic histogram DSNU plot with all instances of
-    Processing in self.tests.
-    '''
+    '''Create Logarithmic histogram DSNU plot'''
 
     name = 'Logarithmic histogram DSNU'
     xlabel = 'Deviation from the mean [DN]'
@@ -496,10 +445,7 @@ class PlotLogarithmicHistogramDSNU(Emva1288Plot):
 
 
 class PlotLogarithmicHistogramPRNU(Emva1288Plot):
-    '''
-    Create Logarithmic histogram PRNU plot with all instances of
-    Processing in self.tests.
-    '''
+    '''Create Logarithmic histogram PRNU plot'''
 
     name = 'Logarithmic histogram PRNU'
     xlabel = 'Deviation from the mean [%]'
@@ -522,10 +468,7 @@ class PlotLogarithmicHistogramPRNU(Emva1288Plot):
 
 
 class PlotAccumulatedLogHistogramDSNU(Emva1288Plot):
-    '''
-    Create Accumulated log histogram DSNU plot with all instances of
-    Processing in self.tests.
-    '''
+    '''Create Accumulated log histogram DSNU plot'''
 
     name = 'Accumulated log histogram DSNU'
     xlabel = 'Minimal deviation from the mean [DN]'
@@ -544,10 +487,7 @@ class PlotAccumulatedLogHistogramDSNU(Emva1288Plot):
 
 
 class PlotAccumulatedLogHistogramPRNU(Emva1288Plot):
-    '''
-    Create Accumulated log histogram PRNU plot with all instances of
-    Processing in self.tests.
-    '''
+    '''Create Accumulated log histogram PRNU plot'''
 
     name = 'Accumulated log histogram PRNU'
     xlabel = 'Minimal deviation from the mean [%]'
@@ -630,9 +570,7 @@ class ProfileBase(Emva1288Plot):
 
 
 class PlotHorizontalProfile(ProfileBase):
-    '''
-    Create Horizontal profile plot with all instances of Processing in
-    self.tests.
+    '''Create Horizontal profile plot
     Profile is done with spatial images.
     '''
 
@@ -697,9 +635,7 @@ class PlotHorizontalProfile(ProfileBase):
 
 
 class PlotVerticalProfile(ProfileBase):
-    '''
-    Create Vertical profile plot with all instances of Processing in
-    self.tests.
+    '''Create Vertical profile plot.
     Profile is done with spatial images.
     '''
 
@@ -783,15 +719,17 @@ EVMA1288plots = [PlotPTC,
 
 
 class Plotting1288(object):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, test, **kwargs):
         '''
         Creates and shows all plots necessary to prepare a camera or sensor
         descriptive report compliant with EMVA Standard 1288 version 3.1.
         '''
 
         self._titles = kwargs.pop('titles', True)
-        # Get data
-        self.tests = args
+
+        if not getattr(test, 'id', False):
+            test.id = id(test)
+        self.test = test
 
     def plots_to_plot(self, *plots):
         p = []
@@ -827,8 +765,7 @@ class Plotting1288(object):
 
     def plot_figure(self, i, figure):
         plot = EVMA1288plots[i](figure)
-        for test in self.tests:
-            plot.add_test(test)
+        plot.plot(self.test)
         if not self._titles:
             figure.canvas.set_window_title('Fig %d' % (i + 1))
         else:
