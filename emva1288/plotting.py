@@ -544,14 +544,11 @@ class ProfileBase(Emva1288Plot):
         profile_mid = img[mid_i // 2, :]
         length = np.shape(profile)[0]
 
-#         extremes = self._get_extremes(profile, profile_min, profile_max)
-
         d = {'mean': profile,
              'min': profile_min,
              'max': profile_max,
              'length': length,
              'mid': profile_mid}
-#         d.update(extremes)
         return d
 
     def get_profiles(self, bright, dark, transpose):
@@ -568,12 +565,8 @@ class ProfileBase(Emva1288Plot):
 
         return {'bright': b_p, 'dark': d_p}
 
-    def reduce_ticks(self, axis):
-        ticks = axis.get_ticklocs()
-        ti = ticks[1]
-        tf = ticks[-2]
-        tm = int((ti + tf) / 2)
-        axis.set_ticks([ti, tm, tf])
+    def reduce_ticks(self, ax, axis, n=4):
+        ax.locator_params(axis=axis, nbins=n)
 
 
 class PlotHorizontalProfile(ProfileBase):
@@ -641,8 +634,8 @@ class PlotHorizontalProfile(ProfileBase):
                            ('Mid', 'Min', 'Max', 'Mean'),
                            'upper right')
 
-        self.reduce_ticks(ax2.get_yaxis())
-        self.reduce_ticks(ax.get_yaxis())
+        self.reduce_ticks(ax2, 'y')
+        self.reduce_ticks(ax, 'y')
 
 
 class PlotVerticalProfile(ProfileBase):
@@ -711,8 +704,8 @@ class PlotVerticalProfile(ProfileBase):
                            ('Mid', 'Min', 'Max', 'Mean'),
                            'upper right')
 
-        self.reduce_ticks(ax2.get_xaxis())
-        self.reduce_ticks(ax.get_xaxis())
+        self.reduce_ticks(ax2, 'x')
+        self.reduce_ticks(ax, 'x')
 
 
 EVMA1288plots = [PlotPTC,
