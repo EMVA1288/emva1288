@@ -12,7 +12,7 @@ preserving all relevant image data in as integers
 
 import os
 import numpy as np
-from emva1288 import routines
+from . import routines
 import logging
 
 

@@ -16,7 +16,7 @@ from __future__ import print_function
 import numpy as np
 import os
 
-from emva1288 import routines
+from . import routines
 
 
 class Emva1288Plot(object):
@@ -67,7 +67,7 @@ class Emva1288Plot(object):
         '''
         Shortcut to add legend
         '''
-        ax.legend(loc='upper left')
+        ax.legend(loc='best')
         legend = ax.get_legend()
         if legend is not None:
             if getattr(legend, 'draggable', False):
@@ -727,13 +727,11 @@ EVMA1288plots = [PlotPTC,
 
 
 class Plotting1288(object):
-    def __init__(self, test, **kwargs):
+    def __init__(self, test):
         '''
         Creates and shows all plots necessary to prepare a camera or sensor
         descriptive report compliant with EMVA Standard 1288 version 3.1.
         '''
-
-        self._titles = kwargs.pop('titles', True)
 
         if not getattr(test, 'id', False):
             test.id = id(test)
@@ -751,30 +749,12 @@ class Plotting1288(object):
             p.append(i)
         return p
 
-    def plot(self, *ids, **kwargs):
+    def plot(self, *ids):
         import matplotlib.pyplot as plt
-        show = kwargs.pop('show', True)
-        savedir = kwargs.pop('savedir', False)
         plots = self.plots_to_plot(*ids)
         for i in plots:
             figure = plt.figure(i)
-            self.plot_figure(i, figure)
-        if show:
-            plt.show()
-
-        if not savedir:
-            return
-
-        for i in plots:
-            figure = plt.figure(i)
-            fname = EVMA1288plots[i].__name__ + '.pdf'
-            fname = os.path.join(savedir, fname)
-            figure.savefig(fname)
-
-    def plot_figure(self, i, figure):
-        plot = EVMA1288plots[i](figure)
-        plot.plot(self.test)
-        if not self._titles:
-            figure.canvas.set_window_title('Fig %d' % (i + 1))
-        else:
+            plot = EVMA1288plots[i](figure)
+            plot.plot(self.test)
             figure.canvas.set_window_title(plot.name)
+        plt.show()
