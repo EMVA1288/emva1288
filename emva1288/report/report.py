@@ -123,29 +123,41 @@ class Report1288(object):
         '''Create the directory structure for the report
         If the directory exist, raise an error
         '''
-        os.makedirs(self._outdir)
+        try:
+            os.makedirs(self._outdir)
+        except FileExistsError:
+            pass
         print('Output Dir: ', self._outdir)
 
         files_dir = os.path.join(self._outdir, 'files')
-        os.makedirs(files_dir)
+        try:
+            os.makedirs(files_dir)
+        except FileExistsError:
+            pass
         currfiles = os.path.join(_CURRDIR, 'files')
         copy_tree(currfiles, files_dir)
-        marketing_dir = os.path.join(self._outdir, 'marketing')
-        os.makedirs(marketing_dir)
 
-        def default_image(attr, default):
-            img = getattr(self.marketing, attr)
+        upload_dir = os.path.join(self._outdir, 'upload')
+        try:
+            os.makedirs(upload_dir)
+        except FileExistsError:
+            pass
+
+        def default_image(img, default):
             if img:
-                shutil.copy(os.path.abspath(img), marketing_dir)
+                shutil.copy(os.path.abspath(img), upload_dir)
                 v = posixpath.join(
-                    'marketing',
+                    'upload',
                     os.path.basename(img))
             else:
                 v = posixpath.join('files', default)
-            setattr(self.marketing, attr, v)
-
-        default_image('logo', 'missinglogo.pdf')
-        default_image('missingplot', 'missingplot.pdf')
+            return v
+        self.marketing.logo = default_image(self.marketing.logo,
+                                            'missinglogo.pdf')
+        self.marketing.missingplot = default_image(self.marketing.missingplot,
+                                                   'missingplot.pdf')
+        self.basic.qe_plot = default_image(self.basic.qe_plot,
+                                           'missingplot.pdf')
 
     def _write_file(self, name, content):
         fname = os.path.join(self._outdir, name)
@@ -177,7 +189,10 @@ class Report1288(object):
     def _plots(self, results, id_):
         names = {}
         savedir = os.path.join(self._outdir, id_)
-        os.mkdir(savedir)
+        try:
+            os.mkdir(savedir)
+        except FileExistsError:
+            pass
         for plt_cls in EVMA1288plots:
             figure = Figure()
             _canvas = FigureCanvas(figure)
