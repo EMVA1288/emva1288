@@ -3,11 +3,12 @@ import os
 import shutil
 from distutils.dir_util import copy_tree
 from collections import namedtuple
-from tempfile import TemporaryDirectory
 import posixpath
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_pdf import FigureCanvas
 
 from .. results import Results1288
-from .. plotting import Plotting1288, EVMA1288plots
+from .. plotting import EVMA1288plots
 
 
 def _none_tuple(t, **kwargs):
@@ -82,15 +83,15 @@ _CURRDIR = os.path.abspath(os.path.dirname(__file__))
 
 
 class Report1288(object):
-    def __init__(self, setup=None, basic=None, marketing=None):
-        self._tmpdir = None
+    def __init__(self, outdir, setup=None, basic=None, marketing=None):
+        self._outdir = os.path.abspath(outdir)
 
         self.renderer = self._template_renderer()
         self.ops = []
         self.marketing = marketing or info_marketing()
         self.basic = basic or info_basic()
         self.setup = setup or info_setup()
-        self._temp_dirs()
+        self._make_dirs(outdir)
 
     def _template_renderer(self):
         renderer = jinja2.Environment(
@@ -118,19 +119,24 @@ class Report1288(object):
         renderer.filters['missingnumber'] = missingnumber
         return renderer
 
-    def _temp_dirs(self):
-        self._tmpdir = TemporaryDirectory()
-        tmpfiles = os.path.join(self._tmpdir.name, 'files')
-        os.makedirs(tmpfiles)
+    def _make_dirs(self, outdir):
+        '''Create the directory structure for the report
+        If the directory exist, raise an error
+        '''
+        os.makedirs(self._outdir)
+        print('Output Dir: ', self._outdir)
+
+        files_dir = os.path.join(self._outdir, 'files')
+        os.makedirs(files_dir)
         currfiles = os.path.join(_CURRDIR, 'files')
-        copy_tree(currfiles, tmpfiles)
-        markfiles = os.path.join(self._tmpdir.name, 'marketing')
-        os.makedirs(markfiles)
+        copy_tree(currfiles, files_dir)
+        marketing_dir = os.path.join(self._outdir, 'marketing')
+        os.makedirs(marketing_dir)
 
         def default_image(attr, default):
             img = getattr(self.marketing, attr)
             if img:
-                shutil.copy(os.path.abspath(img), markfiles)
+                shutil.copy(os.path.abspath(img), marketing_dir)
                 v = posixpath.join(
                     'marketing',
                     os.path.basename(img))
@@ -142,7 +148,7 @@ class Report1288(object):
         default_image('missingplot', 'missingplot.pdf')
 
     def _write_file(self, name, content):
-        fname = os.path.join(self._tmpdir.name, name)
+        fname = os.path.join(self._outdir, name)
         with open(fname, 'w') as f:
             f.write(content)
         return fname
@@ -159,36 +165,34 @@ class Report1288(object):
                              setup=self.setup,
                              operation_points=self.ops)
 
-    def latex(self, dir_):
-        '''Generate report latex files in a given directory'''
+    def latex(self):
+        '''Generate report latex files'''
 
         self._write_file('emvadatasheet.sty', self._stylesheet())
         self._write_file('report.tex', self._report())
-
-        outdir = os.path.abspath(dir_)
-        try:
-            os.makedirs(outdir)
-        except FileExistsError:
-            pass
-        copy_tree(self._tmpdir.name, outdir)
-        print('Report files found in:', outdir)
 
     def _results(self, data):
         return Results1288(data)
 
     def _plots(self, results, id_):
-        plots = Plotting1288(results)
-        savedir = os.path.join(self._tmpdir.name, id_)
-        os.mkdir(savedir)
-        plots.plot(savedir=savedir, show=False)
         names = {}
-        for cls in EVMA1288plots:
-            names[cls.__name__] = posixpath.join(id_, cls.__name__ + '.pdf')
+        savedir = os.path.join(self._outdir, id_)
+        os.mkdir(savedir)
+        for plt_cls in EVMA1288plots:
+            figure = Figure()
+            _canvas = FigureCanvas(figure)
+            plot = plt_cls(figure)
+            plot.plot(results)
+            fname = plt_cls.__name__ + '.pdf'
+            figure.savefig(os.path.join(savedir, fname))
+            names[plt_cls.__name__] = posixpath.join(id_, fname)
         return names
 
     def add(self, op, data):
-        op.id = 'OP%d' % (len(self.ops) + 1)
+        n = len(self.ops) + 1
+        op.id = 'OP%d' % (n)
         results = self._results(data)
         op.results = results.results
+        results.id = n
         op.plots = self._plots(results, op.id)
         self.ops.append(op)
