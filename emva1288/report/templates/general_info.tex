@@ -36,20 +36,24 @@
 %%%%%%%%%% SETUP
 \textsl{Light source} \hfill  %{{ setup.light_source|missing %}}
 \\[1mm]
+\textsl{Light source non uniformity} \hfill  %{{ setup.light_source_non_uniformity|missing %}}
+\\[1mm]
+\textsl{Irradiation calibration accuracy} \hfill  %{{ setup.irradiation_calibration_accuracy|missing %}}
+\\[1mm]
+\textsl{Irradiation measurement error} \hfill  %{{ setup.irradiation_measurement_error|missing %}}
+\\[1mm]
 \textsl{Standard version} \hfill  %{{ setup.standard_version|missing %}}
 \\[1mm]
 \end{multicols}
 \end{minipage}
 \\[5mm]
 %{ for op in operation_points %}
-	\underline{\textsl{Operation Point \textbf{%{{ op.id %}}} (Page \pageref{%{{ op.id %}}})}}
+	\underline{\textsl{Operation Point: \textbf{%{{ op.name %}}} (Page \pageref{%{{ op.id %}}})}}
 
  	%{ include 'op_header.tex' %}
 \\[5mm]
 %{ endfor %}
 
-
-%\\*
 \vfill
 \begin{center}
 \includegraphics[height=100mm,keepaspectratio]{%{{ basic.qe_plot|missing(marketing.missingplot) %}}}

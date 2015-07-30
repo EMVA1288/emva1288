@@ -44,6 +44,8 @@ op1.gain = 0.1
 op1.offset = 29.4
 op1.bit_depth = '12 bits'
 op1.summary_only = False
+op1.illumination = 'Variable with constant exposure time'
+op1.irradiation_steps = 50
 
 # Add the operation point to the report
 # we can add as many operation points as we want
