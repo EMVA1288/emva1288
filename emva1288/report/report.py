@@ -21,7 +21,10 @@ def _none_tuple(t, **kwargs):
 def info_setup(**kwargs):
     '''Container for setup information'''
     s = namedtuple('setup',
-                   ['light_source',
+                   ['light_source',  # Integrating sphere, ...
+                    'light_source_non_uniformity',  # Eq. 27
+                    'irradiation_calibration_accuracy',
+                    'irradiation_measurement_error',
                     'standard_version'])
     _none_tuple(s)
     return s
@@ -64,13 +67,23 @@ def info_marketing(**kwargs):
 
 def info_op(**kwargs):
     o = namedtuple('op',
-                   ['bit_depth',
+                   ['name',
+                    'id',
+                    # Camera Setup
+                    'bit_depth',
                     'gain',
                     'exposure_time',
                     'black_level',
-                    'fpn_correction'
+                    'roi',
+                    'fpn_correction',
+                    # Operation point parameters
+                    'illumination',  # Constant with variable exposure time
+                                     # Variable with constant exposure time
+                                     # Pulsed with constant exposure time
+                    'irradiation_steps',  # Number of irradiation steps
                     # External conditions
                     'wavelength',
+                    'fwhm',
                     'temperature',
                     'housing_temperature',
                     # Options
@@ -206,6 +219,8 @@ class Report1288(object):
     def add(self, op, data):
         n = len(self.ops) + 1
         op.id = 'OP%d' % (n)
+        if not op.name:
+            op.name = op.id
         results = self._results(data)
         op.results = results.results
         results.id = n
