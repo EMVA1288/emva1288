@@ -309,7 +309,7 @@ class PlotDeviationLinearity(Emva1288Plot):
         self.set_legend(ax)
 
 
-class PlotHorizontalSpectogramPRNU(Emva1288Plot):
+class PlotHorizontalSpectrogramPRNU(Emva1288Plot):
     '''Create Horizontal spectrogram PRNU plot'''
 
     name = 'Horizontal spectrogram PRNU'
@@ -321,7 +321,8 @@ class PlotHorizontalSpectogramPRNU(Emva1288Plot):
         ax = self.ax
 
         # In Release 3.2, there is no subtraction of the residue.
-        spectrogram = routines.FFT1288(test.spatial['avg'][0])
+        spectrogram = routines.FFT1288(test.spatial['avg'][0] -
+                                       test.spatial['avg_dark'][0])
 
         ax.plot(routines.GetFrecs(spectrogram[:(np.shape(spectrogram)[0] //
                                                 2)]),
@@ -329,9 +330,16 @@ class PlotHorizontalSpectogramPRNU(Emva1288Plot):
                 label='Data',
                 gid='%d:data' % test.id)
 
+        ax.axhline(test.PRNU1288,
+                   label='$PRNU_{1288}$',
+                   linestyle='--',
+                   color='r',
+                   gid='%d:marker' % test.id)
+
         ax.axhline(np.sqrt(test.sigma_2_y_stack),
                    label='$\sigma^2_{y.stack}$',
                    linestyle='--',
+                   color='g',
                    gid='%d:marker' % test.id)
 
         # TODO: Standard EMVA3 asks to print on graph s_w and F.
@@ -359,6 +367,13 @@ class PlotHorizontalSpectrogramDSNU(Emva1288Plot):
         ax.axhline(np.sqrt(test.sigma_2_y_stack_dark),
                    label='$\sigma^2_{y.stack.dark}$',
                    linestyle='--',
+                   color='g',
+                   gid='%d:marker' % test.id)
+
+        ax.axhline(test.DSNU1288_DN(),
+                   label='$DSNU_{1288.DN}$',
+                   linestyle='--',
+                   color='r',
                    gid='%d:marker' % test.id)
 
         self.set_legend(ax)
@@ -375,7 +390,9 @@ class PlotVerticalSpectrogramPRNU(Emva1288Plot):
     def plot(self, test):
         ax = self.ax
 
-        spectrogram = routines.FFT1288(test.spatial['avg'][0], rotate=True)
+        spectrogram = routines.FFT1288(test.spatial['avg'][0] -
+                                       test.spatial['avg_dark'][0],
+                                       rotate=True)
 
         ax.plot((routines.GetFrecs(spectrogram[:(np.shape(spectrogram)[0] //
                                                  2)])),
@@ -383,9 +400,16 @@ class PlotVerticalSpectrogramPRNU(Emva1288Plot):
                 label='Data',
                 gid='%d:data' % test.id)
 
+        ax.axhline(test.PRNU1288,
+                   label='$PRNU_{1288}$',
+                   linestyle='--',
+                   color='r',
+                   gid='%d:marker' % test.id)
+
         ax.axhline(np.sqrt(test.sigma_2_y_stack),
                    label='$\sigma^2_{y.stack}$',
                    linestyle='--',
+                   color='g',
                    gid='%d:marker' % test.id)
 
         self.set_legend(ax)
@@ -410,9 +434,16 @@ class PlotVerticalSpectrogramDSNU(Emva1288Plot):
                 label='Data',
                 gid='%d:data' % test.id)
 
+        ax.axhline(test.DSNU1288_DN(),
+                   label='$DSNU_{1288.DN}$',
+                   linestyle='--',
+                   color='r',
+                   gid='%d:marker' % test.id)
+
         ax.axhline(np.sqrt(test.sigma_2_y_stack_dark),
                    label='$\sigma^2_{y.stack.dark}$',
                    linestyle='--',
+                   color='g',
                    gid='%d:marker' % test.id)
 
         self.set_legend(ax)
@@ -590,7 +621,7 @@ class PlotHorizontalProfile(ProfileBase):
         ax = self.ax
         ax2 = self.ax2
 
-        bimg = test.spatial['avg'][0]
+        bimg = test.spatial['avg'][0] - test.spatial['avg_dark'][0]
         dimg = test.spatial['avg_dark'][0]
         profiles = self.get_profiles(bimg, dimg, False)
 
@@ -714,7 +745,7 @@ EVMA1288plots = [PlotPTC,
                  PlotUyDark,
                  PlotLinearity,
                  PlotDeviationLinearity,
-                 PlotHorizontalSpectogramPRNU,
+                 PlotHorizontalSpectrogramPRNU,
                  PlotHorizontalSpectrogramDSNU,
                  PlotVerticalSpectrogramPRNU,
                  PlotVerticalSpectrogramDSNU,
