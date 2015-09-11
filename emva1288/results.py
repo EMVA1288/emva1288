@@ -110,7 +110,8 @@ class Results1288(object):
         **Section: sensitivity
         **Short:Sensitivity fit minimum index
         **Symbol:
-        **Comment:Index for linear fits in sensitivity part of the standard (70% of saturation)
+        **Comment:Index for linear fits in sensitivity part of the standard
+        (70% of saturation)
         **Unit:
         """
         return self._index_sensitivity_min
@@ -141,7 +142,8 @@ class Results1288(object):
         **Section: sensitivity
         **Short:System gain
         **Symbol:K
-        **Comment:Slope of (s2_y - s2_y_dark) Vs (u_y - u_y_dark). Fit with offset = 0
+        **Comment:Slope of (s2_y - s2_y_dark) Vs (u_y - u_y_dark). Fit with
+        offset = 0
         **Unit: $DN/e^-$
         **LatexName:K
         """
@@ -732,11 +734,12 @@ class Results1288(object):
             for method in d[section].keys():
                 s = d[section][method]
                 if s.get('Value', False) is not False:
-                    results[section][method] = {'short': s['Short'],
-                                                'symbol': s['Symbol'],
-                                                'value': s['Value'],
-                                                'unit': s['Unit'],
-                                                'latexname': s.get('LatexName')}
+                    results[section][method] = {
+                        'short': s['Short'],
+                        'symbol': s['Symbol'],
+                        'value': s['Value'],
+                        'unit': s['Unit'],
+                        'latexname': s.get('LatexName')}
 
         return results
 
