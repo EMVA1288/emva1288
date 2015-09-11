@@ -6,6 +6,8 @@ python:
 notifications:
   email: false
  
+sudo: false
+
 # Setup anaconda
 # adapted from
 # https://github.com/Jorge-C/ordination/blob/master/.travis.yml
@@ -18,8 +20,8 @@ before_install:
   # Update conda itself
   - conda update --yes conda
   # The next couple lines fix a crash with multiprocessing on Travis and are not specific to using Miniconda
-  - sudo rm -rf /dev/shm
-  - sudo ln -s /run/shm /dev/shm
+  # - sudo rm -rf /dev/shm
+  # - sudo ln -s /run/shm /dev/shm
 
 # Install packages
 install:
