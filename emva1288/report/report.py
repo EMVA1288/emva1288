@@ -26,7 +26,7 @@ def info_setup(**kwargs):
                     'irradiation_calibration_accuracy',
                     'irradiation_measurement_error',
                     'standard_version'])
-    _none_tuple(s)
+    _none_tuple(s, **kwargs)
     return s
 
 
