@@ -26,6 +26,11 @@ allpages, angle=45.0, scale=8.0, xpos=-20, ypos=15
 ]{\usebox\wtmkbox}
 %{ endif %}
 
+%First marketing cover page
+%{ if cover_page %}
+\input{%{{cover_page%}}}
+%{ endif %}
+
 %Cover preamble
 \ReportSection{EMVA\,1288 Summary Sheet}
 \pagestyle{fancy}
