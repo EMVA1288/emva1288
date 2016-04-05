@@ -9,7 +9,7 @@ with open(path.join(here, 'README.rst')) as f:
 
 setup(name='emva1288',
       packages=['emva1288', 'emva1288.report'],
-      version='0.2.0',
+      version='0.3.0',
       description='EMVA1288 reference implementation',
       long_description=long_description,
       author='Federico Ariza',

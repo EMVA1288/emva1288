@@ -59,7 +59,8 @@ def info_marketing(**kwargs):
     m = namedtuple('marketing',
                    ['logo',
                     'watermark',
-                    'missingplot'])
+                    'missingplot',
+                    'cover_page'])
 
     _none_tuple(m, **kwargs)
     return m
@@ -96,17 +97,27 @@ _CURRDIR = os.path.abspath(os.path.dirname(__file__))
 
 
 class Report1288(object):
-    def __init__(self, outdir, setup=None, basic=None, marketing=None):
+    def __init__(self,
+                 outdir,
+                 setup=None,
+                 basic=None,
+                 marketing=None,
+                 cover_page=False):
+
         self._outdir = os.path.abspath(outdir)
 
-        self.renderer = self._template_renderer()
+        self.renderer = self.template_renderer()
         self.ops = []
         self.marketing = marketing or info_marketing()
         self.basic = basic or info_basic()
         self.setup = setup or info_setup()
+        self.cover_page = cover_page
         self._make_dirs(outdir)
 
-    def _template_renderer(self):
+    @staticmethod
+    def template_renderer(dirname=None):
+        if not dirname:
+            dirname = os.path.join(_CURRDIR, 'templates')
         renderer = jinja2.Environment(
             block_start_string='%{',
             block_end_string='%}',
@@ -114,8 +125,7 @@ class Report1288(object):
             variable_end_string='%}}',
             comment_start_string='%{#',
             comment_end_string='%#}',
-            loader=jinja2.FileSystemLoader(os.path.join(_CURRDIR,
-                                                        'templates')))
+            loader=jinja2.FileSystemLoader(dirname))
 
         def missingnumber(value, precision):
             if value is None:
@@ -156,20 +166,20 @@ class Report1288(object):
         except FileExistsError:
             pass
 
-        def default_image(img, default):
-            if img:
-                shutil.copy(os.path.abspath(img), upload_dir)
+        def uploaded_file(fname, default):
+            if fname:
+                shutil.copy(os.path.abspath(fname), upload_dir)
                 v = posixpath.join(
                     'upload',
-                    os.path.basename(img))
+                    os.path.basename(fname))
             else:
                 v = posixpath.join('files', default)
             return v
-        self.marketing.logo = default_image(self.marketing.logo,
+        self.marketing.logo = uploaded_file(self.marketing.logo,
                                             'missinglogo.pdf')
-        self.marketing.missingplot = default_image(self.marketing.missingplot,
+        self.marketing.missingplot = uploaded_file(self.marketing.missingplot,
                                                    'missingplot.pdf')
-        self.basic.qe_plot = default_image(self.basic.qe_plot,
+        self.basic.qe_plot = uploaded_file(self.basic.qe_plot,
                                            'missingplot.pdf')
 
     def _write_file(self, name, content):
@@ -188,7 +198,8 @@ class Report1288(object):
         return report.render(marketing=self.marketing,
                              basic=self.basic,
                              setup=self.setup,
-                             operation_points=self.ops)
+                             operation_points=self.ops,
+                             cover_page=self.cover_page)
 
     def latex(self):
         '''Generate report latex files'''

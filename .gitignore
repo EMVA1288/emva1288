@@ -8,6 +8,7 @@
 *.kdev4
 .project
 .pydevproject
+.idea
 
 # Compiled source #
 ###################
@@ -19,6 +20,10 @@
 *.o
 *.py[ocd]
 *.so
+
+# EXAMPLE FILES #
+##################
+examples/myreport/
 
 # OS generated files #
 ######################
