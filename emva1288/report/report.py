@@ -117,7 +117,7 @@ class Report1288(object):
     @staticmethod
     def template_renderer(dirname=None):
         if not dirname:
-            dirname = os.path.join(_CURRDIR,'templates')
+            dirname = os.path.join(_CURRDIR, 'templates')
         renderer = jinja2.Environment(
             block_start_string='%{',
             block_end_string='%}',
