@@ -735,6 +735,8 @@ class PlotVerticalProfile(ProfileBase):
                            ('Mid', 'Min', 'Max', 'Mean'),
                            'upper right')
 
+        self.ax.invert_yaxis()
+        self.ax2.invert_yaxis()
         self.reduce_ticks(ax2, 'x')
         self.reduce_ticks(ax, 'x')
 
