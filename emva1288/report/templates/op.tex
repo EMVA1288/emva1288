@@ -15,8 +15,8 @@
 %Results
 \begin{minipage}[t]{0.290\linewidth}
 
-\begin{tabular}{lrl}
-\multicolumn{3}{c}{\textbf{Results}} \\[2mm]
+\begin{tabular}{lr@{\hspace{1.4mm}}l}
+\multicolumn{3}{c}{\textbf{Performance}} \\[2mm]
 
 \multicolumn{3}{l}{\textbf{%{{ op.results.sensitivity.QE.short %}}$^*$}} \\
 
@@ -73,7 +73,12 @@
 
 %{{ op.results.sensitivity.u_e_min.symbol %}} &
 %{{ '%.3f' % op.results.sensitivity.u_e_min.value %}} &
-%{{ op.results.sensitivity.u_e_min.unit %}} \\[5mm]
+%{{ op.results.sensitivity.u_e_min.unit %}} \\
+
+%{{ op.results.sensitivity.u_e_min_area.symbol %}} &
+%{{ op.results.sensitivity.u_e_min_area.value|missingnumber(3) %}} &
+%{{ op.results.sensitivity.u_e_min_area.unit %}} \\[5mm]
+
 
 \multicolumn{3}{l}{\textbf{%{{ op.results.sensitivity.u_p_sat.short %}}}} \\
 
@@ -87,7 +92,12 @@
 
 %{{ op.results.sensitivity.u_e_sat.symbol %}} &
 %{{ '%.0f' % op.results.sensitivity.u_e_sat.value %}} &
-%{{ op.results.sensitivity.u_e_sat.unit %}} \\[5mm]
+%{{ op.results.sensitivity.u_e_sat.unit %}} \\
+
+%{{ op.results.sensitivity.u_e_sat_area.symbol %}} &
+%{{ op.results.sensitivity.u_e_sat_area.value|missingnumber(0) %}} &
+%{{ op.results.sensitivity.u_e_sat_area.unit %}} \\[5mm]
+
 
 \multicolumn{3}{l}{\textbf{%{{ op.results.sensitivity.DR.short %}}}} \\
 

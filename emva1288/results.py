@@ -262,6 +262,20 @@ class Results1288(object):
         """
         return self.QE * self.u_p_min / 100.0
 
+    def u_e_min_area(self):
+        """
+        **Section: sensitivity
+        **Short: Sensitivity threshold
+        **Symbol:$\mu_{e.min.area}$
+        **Comment:
+        **Unit: $e^-/\mu m^2$
+        **LatexName: UEMin
+        """
+        if not self.pixel_area:
+            return None
+
+        return self.u_e_min / self.pixel_area
+
     @property
     def u_p_sat(self):
         """
@@ -303,6 +317,22 @@ class Results1288(object):
         """
 
         return self.QE * self.u_p_sat / 100.0
+
+    @property
+    def u_e_sat_area(self):
+        """
+        **Section: sensitivity
+        **Short:Saturation Capacity
+        **Symbol:$\mu_{e.sat.area}$
+        **Comment:
+        **Unit: $e^-/\mu m^2$
+        **LatexName: UESat
+        """
+
+        if not self.pixel_area:
+            return None
+
+        return self.u_e_sat / self.pixel_area
 
     @property
     def SNR_max(self):
