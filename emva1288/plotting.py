@@ -157,7 +157,7 @@ class PlotPTC(Emva1288Plot):
                 gid='%d:fit' % test.id)
 
         ax.plot((X[test.index_u_ysat], ), (Y[test.index_u_ysat], ),
-                marker='o',
+                marker='s',
                 linestyle='None',
                 label='Saturation',
                 gid='%d:marker' % test.id)
@@ -215,7 +215,7 @@ class PlotSNR(Emva1288Plot):
         self.max_ideal.append(ideal[-1])
         ax.plot((X),
                 ideal,
-                linestyle='--',
+                linestyle='-.',
                 label='Ideal',
                 gid='%d:fit' % test.id)
 
@@ -225,7 +225,7 @@ class PlotSNR(Emva1288Plot):
                    gid='%d:marker' % test.id)
 
         ax.axvline(test.u_p_sat,
-                   linestyle='--',
+                   linestyle=':',
                    label='$\mu_{p.sat} = %.1f[p]$' % test.u_p_sat,
                    gid='%d:marker' % test.id)
 
