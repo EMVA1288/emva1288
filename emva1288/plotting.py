@@ -237,7 +237,7 @@ class PlotSNR(Emva1288Plot):
                         (test.DSNU1288 ** 2) +
                         (((test.PRNU1288 / 100) *
                           (test.QE / 100.) * X) ** 2)),
-                linestyle='--',
+                linestyle=(0, (10, 5)),
                 label='Total SNR',
                 gid='%d:fit' % test.id)
 
