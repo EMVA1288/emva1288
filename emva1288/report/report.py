@@ -6,6 +6,7 @@ from collections import namedtuple
 import posixpath
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_pdf import FigureCanvas
+import numpy as np
 
 from .. results import Results1288
 from .. plotting import EVMA1288plots
@@ -128,13 +129,13 @@ class Report1288(object):
             loader=jinja2.FileSystemLoader(dirname))
 
         def missingnumber(value, precision):
-            if value is None:
+            if value in (None, np.nan):
                 return '-'
             t = '{:.%df}' % precision
             return t.format(value)
 
         def missingfilter(value, default='-'):
-            if value is None:
+            if value in (None, np.nan):
                 return default
             return value
 

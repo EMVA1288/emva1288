@@ -21,6 +21,7 @@ basic.vendor = 'Simulation'
 basic.data_type = 'Single'
 basic.sensor_type = 'simulated sensor'
 basic.resolution = '640x480'
+basic.model = 'Simulated camera'
 
 
 # Marketing information
