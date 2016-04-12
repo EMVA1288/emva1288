@@ -171,16 +171,13 @@ class PlotPTC(Emva1288Plot):
                 label='Fit range',
                 gid='%d:marker' % test.id)
 
-        # Todo : Standard EMVA3 asks to print on graph
-        # $\sigma^2_{y.dark}$ and K with its one-sigma statistical
-        # uncertainty.
         self.set_legend(ax)
 
 
 class PlotSNR(Emva1288Plot):
     '''Create SNR plot '''
 
-    name = 'SNR'
+    name = 'Signal to Noise Ratio'
     xlabel = '$\mu_{p}$ [mean number of photons/pixel]'
     ylabel = 'SNR'
 
@@ -314,15 +311,16 @@ class PlotHorizontalSpectrogramPRNU(Emva1288Plot):
 
     name = 'Horizontal spectrogram PRNU'
     xlabel = 'cycles [periods/pixel]'
-    ylabel = 'Standard deviation and\nrelative presence of each cycle [DN]'
+    ylabel = 'Standard deviation and\nrelative presence of each cycle [%]'
     yscale = 'log'
 
     def plot(self, test):
         ax = self.ax
 
-        # In Release 3.2, there is no subtraction of the residue.
-        spectrogram = routines.FFT1288(test.spatial['avg'][0] -
-                                       test.spatial['avg_dark'][0])
+        data = test.spatial['avg'][0] - test.spatial['avg_dark'][0]
+        data_mean = np.mean(data)
+
+        spectrogram = routines.FFT1288(data) / data_mean
 
         ax.plot(routines.GetFrecs(spectrogram[:(np.shape(spectrogram)[0] //
                                                 2)]),
@@ -338,7 +336,7 @@ class PlotHorizontalSpectrogramPRNU(Emva1288Plot):
 
         ax.axhline(np.sqrt(test.sigma_2_y_stack),
                    label='$\sigma^2_{y.stack}$',
-                   linestyle='--',
+                   linestyle='-.',
                    color='g',
                    gid='%d:marker' % test.id)
 
@@ -364,16 +362,17 @@ class PlotHorizontalSpectrogramDSNU(Emva1288Plot):
                 label='Data',
                 gid='%d:data' % test.id)
 
-        ax.axhline(np.sqrt(test.sigma_2_y_stack_dark),
-                   label='$\sigma^2_{y.stack.dark}$',
-                   linestyle='--',
-                   color='g',
-                   gid='%d:marker' % test.id)
-
         ax.axhline(test.DSNU1288_DN(),
                    label='$DSNU_{1288.DN}$',
                    linestyle='--',
                    color='r',
+                   gid='%d:marker' % test.id)
+
+
+        ax.axhline(np.sqrt(test.sigma_2_y_stack_dark),
+                   label='$\sigma^2_{y.stack.dark}$',
+                   linestyle='-.',
+                   color='g',
                    gid='%d:marker' % test.id)
 
         self.set_legend(ax)
@@ -384,15 +383,14 @@ class PlotVerticalSpectrogramPRNU(Emva1288Plot):
 
     name = 'Vertical spectrogram PRNU'
     xlabel = 'cycles [periods/pixel]'
-    ylabel = 'Standard deviation and\nrelative presence of each cycle [DN]'
+    ylabel = 'Standard deviation and\nrelative presence of each cycle [%]'
     yscale = 'log'
 
     def plot(self, test):
         ax = self.ax
-
-        spectrogram = routines.FFT1288(test.spatial['avg'][0] -
-                                       test.spatial['avg_dark'][0],
-                                       rotate=True)
+        data = test.spatial['avg'][0] - test.spatial['avg_dark'][0]
+        data_mean = np.mean(data)
+        spectrogram = routines.FFT1288(data, rotate=True) / data_mean
 
         ax.plot((routines.GetFrecs(spectrogram[:(np.shape(spectrogram)[0] //
                                                  2)])),
@@ -406,9 +404,9 @@ class PlotVerticalSpectrogramPRNU(Emva1288Plot):
                    color='r',
                    gid='%d:marker' % test.id)
 
-        ax.axhline(np.sqrt(test.sigma_2_y_stack),
+        ax.axhline(np.sqrt(test.sigma_2_y_stack) / data_mean,
                    label='$\sigma^2_{y.stack}$',
-                   linestyle='--',
+                   linestyle='-.',
                    color='g',
                    gid='%d:marker' % test.id)
 
@@ -442,7 +440,7 @@ class PlotVerticalSpectrogramDSNU(Emva1288Plot):
 
         ax.axhline(np.sqrt(test.sigma_2_y_stack_dark),
                    label='$\sigma^2_{y.stack.dark}$',
-                   linestyle='--',
+                   linestyle='-.',
                    color='g',
                    gid='%d:marker' % test.id)
 

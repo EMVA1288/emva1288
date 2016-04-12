@@ -1,7 +1,7 @@
 \newpage
-\ReportSection{Operation Point: \textbf{%{{ op.name %}}}}
+\ReportSection{Operation Point: \textbf{%{{ op.name %}}} (@%{{ op.wavelength|missing %}} $nm$)}
 
-\underline{\textsl{Operation Point: \textbf{%{{ op.name %}}}\label{%{{ op.id %}}}}}
+\underline{\textsl{Summary sheet for Operation Point: \textbf{%{{ op.name %}}}\label{%{{ op.id %}}}} (@%{{ op.wavelength|missing %}} $nm$ wavelength)}
 
 %{ include 'op_header.tex' %}
 \\[10mm]
@@ -36,24 +36,24 @@
 
 \multicolumn{3}{l}{\textbf{Temporal dark noise}} \\
 
-%{{ op.results.sensitivity.sigma_y_dark.symbol %}} &
-%{{ '%.3f' % op.results.sensitivity.sigma_y_dark.value %}} &
-%{{ op.results.sensitivity.sigma_y_dark.unit %}} \\
-
 %{{ op.results.sensitivity.sigma_d.symbol %}} &
 %{{ '%.3f' % op.results.sensitivity.sigma_d.value %}} &
-%{{ op.results.sensitivity.sigma_d.unit %}} \\[5mm]
+%{{ op.results.sensitivity.sigma_d.unit %}} \\
+
+%{{ op.results.sensitivity.sigma_y_dark.symbol %}} &
+%{{ '%.3f' % op.results.sensitivity.sigma_y_dark.value %}} &
+%{{ op.results.sensitivity.sigma_y_dark.unit %}} \\[5mm]
 
 \multicolumn{3}{l}{\textbf{%{{ op.results.sensitivity.SNR_max.short %}}}} \\
 
 %{{ op.results.sensitivity.SNR_max.symbol %}} &
 %{{ '%.0f' % op.results.sensitivity.SNR_max.value %}} \\
 
-%{{ op.results.sensitivity.SNR_max_dB.symbol %}} &
+& % %{{ op.results.sensitivity.SNR_max_dB.symbol %}} &
 %{{ '%.2f' % op.results.sensitivity.SNR_max_dB.value %}} &
 %{{ op.results.sensitivity.SNR_max_dB.unit %}} \\
 
-%{{ op.results.sensitivity.SNR_max_bit.symbol %}} &
+& % %{{ op.results.sensitivity.SNR_max_bit.symbol %}} &
 %{{ '%.1f' % op.results.sensitivity.SNR_max_bit.value %}} &
 %{{ op.results.sensitivity.SNR_max_bit.unit %}} \\
 
@@ -104,11 +104,11 @@
 %{{ op.results.sensitivity.DR.symbol %}} &
 %{{ '%.0f' % op.results.sensitivity.DR.value %}} \\
 
-%{{ op.results.sensitivity.DR_dB.symbol %}} &
+& % %{{ op.results.sensitivity.DR_dB.symbol %}} &
 %{{ '%.1f' % op.results.sensitivity.DR_dB.value %}} &
 %{{ op.results.sensitivity.DR_dB.unit %}} \\
 
-%{{ op.results.sensitivity.DR_bit.symbol %}} &
+& % %{{ op.results.sensitivity.DR_bit.symbol %}} &
 %{{ '%.1f' % op.results.sensitivity.DR_bit.value %}} &
 %{{ op.results.sensitivity.DR_bit.unit %}} \\[5mm]
 
@@ -118,7 +118,7 @@
 %{{ '%.1f' % op.results.spatial.DSNU1288.value %}} &
 %{{ op.results.spatial.DSNU1288.unit %}} \\
 
-%{{ op.results.spatial.DSNU1288_DN.symbol %}} &
+& % %{{ op.results.spatial.DSNU1288_DN.symbol %}} &
 %{{ '%.1f' % op.results.spatial.DSNU1288_DN.value %}} &
 %{{ op.results.spatial.DSNU1288_DN.unit %}} \\
 
@@ -135,6 +135,17 @@
 %{{ op.results.linearity.LE_max.symbol %}} &
 %{{ '%.3f' % op.results.linearity.LE_max.value %}} &
 %{{ op.results.linearity.LE_max.unit %}} \\[5mm]
+
+\multicolumn{3}{l}{\textbf{Dark current}} \\
+
+%{{ op.results.dark_current.u_I_mean.symbol %}} &
+%{{ op.results.dark_current.u_I_mean.value|missing %}} &
+%{{ op.results.dark_current.u_I_mean.unit %}} \\
+
+%{{ op.results.dark_current.u_I_var.symbol %}} &
+%{{ op.results.dark_current.u_I_var.value|missing %}} &
+%{{ op.results.dark_current.u_I_var.unit %}} \\[5mm]
+
 
 \multicolumn{3}{l}{\textbf{$^*$Result depends on wavelenght}} \\
 \end{tabular}
