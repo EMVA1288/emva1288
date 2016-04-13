@@ -470,7 +470,7 @@ class PlotLogarithmicHistogramDSNU(Emva1288Plot):
 
         self.set_legend(ax)
 
-        ax.axis(ymin=1.0)
+        ax.axis(ymin=1.0, ymax=np.max(hist['values'])*2)
 
 
 class PlotLogarithmicHistogramPRNU(Emva1288Plot):
@@ -493,7 +493,7 @@ class PlotLogarithmicHistogramPRNU(Emva1288Plot):
                 label='Model')
 
         self.set_legend(ax)
-        ax.axis(ymin=0.5)
+        ax.axis(ymin=0.5, ymax=np.max(hist['values'])*2)
 
 
 class PlotAccumulatedLogHistogramDSNU(Emva1288Plot):
