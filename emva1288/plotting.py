@@ -73,6 +73,12 @@ class Emva1288Plot(object):
             if getattr(legend, 'draggable', False):
                 legend.draggable(True)
 
+    def rearrange(self):
+        """Opportunity to change axis or limits after all the tests have
+        been plotted
+        """
+        pass
+
 
 class PlotSensitivity(Emva1288Plot):
     name = 'Sensitivity'
@@ -199,6 +205,8 @@ class PlotSNR(Emva1288Plot):
         ax.plot(test.temporal['u_p'][nz],
                 (test.temporal['u_y'] - test.temporal['u_ydark'])[nz] /
                 np.sqrt(test.temporal['s2_y'][nz]),
+                marker='.',
+                ls=' ',
                 label='Data',
                 gid='%d:data' % test.id)
 
@@ -207,7 +215,7 @@ class PlotSNR(Emva1288Plot):
                 np.sqrt((test.sigma_d) ** 2 +
                         (test.s2q / (test.K) ** 2) +
                         ((test.QE / 100) * X)),
-                linestyle='--',
+                linestyle=':',
                 label='Theoretical',
                 gid='%d:fit' % test.id)
 
@@ -220,12 +228,10 @@ class PlotSNR(Emva1288Plot):
                 gid='%d:fit' % test.id)
 
         ax.axvline(test.u_p_min,
-                   linestyle='--',
                    label='$\mu_{p.min} = %.1f[p]$' % test.u_p_min,
                    gid='%d:marker' % test.id)
 
         ax.axvline(test.u_p_sat,
-                   linestyle=':',
                    label='$\mu_{p.sat} = %.1f[p]$' % test.u_p_sat,
                    gid='%d:marker' % test.id)
 
@@ -237,7 +243,7 @@ class PlotSNR(Emva1288Plot):
                         (test.DSNU1288 ** 2) +
                         (((test.PRNU1288 / 100) *
                           (test.QE / 100.) * X) ** 2)),
-                linestyle=(0, (10, 5)),
+                linestyle='--',
                 label='Total SNR',
                 gid='%d:fit' % test.id)
 
@@ -367,7 +373,6 @@ class PlotHorizontalSpectrogramDSNU(Emva1288Plot):
                    linestyle='--',
                    color='r',
                    gid='%d:marker' % test.id)
-
 
         ax.axhline(np.sqrt(test.sigma_2_y_stack_dark),
                    label='$\sigma^2_{y.stack.dark}$',
@@ -706,8 +711,6 @@ class PlotVerticalProfile(ProfileBase):
                          label='Mean',
                          gid='%d:marker' % test.id)[0]
 
-        ax2.set_yticks([])
-
         y_dark = np.arange(profiles['dark']['length'])
         ax.plot(profiles['dark']['mid'], y_dark,
                 label='Mid',
@@ -722,22 +725,22 @@ class PlotVerticalProfile(ProfileBase):
                 label='Mean',
                 gid='%d:marker' % test.id)
 
-        ax2.axis(xmin=min(self.axis_limits['bright']['min']),
-                 xmax=max(self.axis_limits['bright']['max']),
-                 ymax=max(self.axis_limits['bright']['length']))
-        ax.axis(xmin=min(self.axis_limits['dark']['min']),
-                xmax=max(self.axis_limits['dark']['max']),
-                ymax=max(self.axis_limits['dark']['length']))
-
         self.figure.legend((lmid, lmin, lmax, lmean),
                            ('Mid', 'Min', 'Max', 'Mean'),
                            'upper right')
 
+    def rearrange(self):
+        self.ax2.set_yticks([])
+        self.ax2.axis(xmin=min(self.axis_limits['bright']['min']),
+                      xmax=max(self.axis_limits['bright']['max']),
+                      ymax=max(self.axis_limits['bright']['length']))
+        self.ax.axis(xmin=min(self.axis_limits['dark']['min']),
+                     xmax=max(self.axis_limits['dark']['max']),
+                     ymax=max(self.axis_limits['dark']['length']))
         self.ax.invert_yaxis()
         self.ax2.invert_yaxis()
-        self.reduce_ticks(ax2, 'x')
-        self.reduce_ticks(ax, 'x')
-
+        self.reduce_ticks(self.ax2, 'x')
+        self.reduce_ticks(self.ax, 'x')
 
 EVMA1288plots = [PlotPTC,
                  PlotSNR,
@@ -787,5 +790,6 @@ class Plotting1288(object):
             figure = plt.figure(i)
             plot = EVMA1288plots[i](figure)
             plot.plot(self.test)
+            plot.rearrange()
             figure.canvas.set_window_title(plot.name)
         plt.show()
