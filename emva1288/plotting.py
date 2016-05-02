@@ -374,7 +374,6 @@ class PlotHorizontalSpectrogramDSNU(Emva1288Plot):
                    color='r',
                    gid='%d:marker' % test.id)
 
-
         ax.axhline(np.sqrt(test.sigma_2_y_stack_dark),
                    label='$\sigma^2_{y.stack.dark}$',
                    linestyle='-.',
