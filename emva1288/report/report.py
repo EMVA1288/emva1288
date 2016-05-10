@@ -223,6 +223,7 @@ class Report1288(object):
             _canvas = FigureCanvas(figure)
             plot = plt_cls(figure)
             plot.plot(results)
+            plot.rearrange()
             fname = plt_cls.__name__ + '.pdf'
             figure.savefig(os.path.join(savedir, fname))
             names[plt_cls.__name__] = posixpath.join(id_, fname)
