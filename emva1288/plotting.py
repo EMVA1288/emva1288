@@ -10,9 +10,6 @@ needed to create a reference datasheet of the EMVA1288 test
 """
 
 from __future__ import print_function
-# from matplotlib.figure import Figure
-# from matplotlib.backend import new_figure_manager_given_figure
-# import matplotlib.pyplot as plt
 import numpy as np
 import os
 
@@ -77,7 +74,11 @@ class Emva1288Plot(object):
         """Opportunity to change axis or limits after all the tests have
         been plotted
         """
-        pass
+        self.figure.tight_layout()
+
+    def reduce_ticks(self, ax, axis, n=4):
+        """Reduce the number of ticks in ax.axis"""
+        ax.locator_params(axis=axis, nbins=n)
 
 
 class PlotSensitivity(Emva1288Plot):
@@ -110,8 +111,11 @@ class PlotSensitivity(Emva1288Plot):
                 marker='o',
                 gid='%d:marker' % test.id)
 
-        # Todo : Standard EMVA3 asks to print on graph $\mu_{y.dark}$.
         self.set_legend(ax)
+
+    def rearrange(self):
+        self.ax.ticklabel_format(axis='x', style='sci', scilimits=(1, 4))
+        self.figure.tight_layout()
 
 
 class PlotUyDark(Emva1288Plot):
@@ -282,6 +286,7 @@ class PlotLinearity(Emva1288Plot):
                 gid='%d:marker' % test.id)
 
         self.set_legend(ax)
+        self.ax.ticklabel_format(axis='x', style='sci', scilimits=(1, 4))
 
 
 class PlotDeviationLinearity(Emva1288Plot):
@@ -310,6 +315,7 @@ class PlotDeviationLinearity(Emva1288Plot):
                 gid='%d:marker' % test.id)
 
         self.set_legend(ax)
+        self.ax.ticklabel_format(axis='x', style='sci', scilimits=(1, 4))
 
 
 class PlotHorizontalSpectrogramPRNU(Emva1288Plot):
@@ -346,7 +352,6 @@ class PlotHorizontalSpectrogramPRNU(Emva1288Plot):
                    color='g',
                    gid='%d:marker' % test.id)
 
-        # TODO: Standard EMVA3 asks to print on graph s_w and F.
         self.set_legend(ax)
 
 
@@ -518,6 +523,7 @@ class PlotAccumulatedLogHistogramDSNU(Emva1288Plot):
                 label='Data')
 
         self.set_legend(ax)
+        self.figure.tight_layout()
 
 
 class PlotAccumulatedLogHistogramPRNU(Emva1288Plot):
@@ -599,9 +605,6 @@ class ProfileBase(Emva1288Plot):
 
         return {'bright': b_p, 'dark': d_p}
 
-    def reduce_ticks(self, ax, axis, n=4):
-        ax.locator_params(axis=axis, nbins=n)
-
 
 class PlotHorizontalProfile(ProfileBase):
     '''Create Horizontal profile plot
@@ -641,7 +644,6 @@ class PlotHorizontalProfile(ProfileBase):
         lmean = ax.plot(x, profiles['bright']['mean'],
                         label='Mean',
                         gid='%d:marker' % test.id)[0]
-        ax.set_xticks([])
 
         x_dark = np.arange(profiles['dark']['length'])
         ax2.plot(x_dark, profiles['dark']['mid'],
@@ -657,19 +659,20 @@ class PlotHorizontalProfile(ProfileBase):
                  label='Mean',
                  gid='%d:data' % test.id)
 
-        ax.axis(ymin=min(self.axis_limits['bright']['min']),
-                ymax=max(self.axis_limits['bright']['max']),
-                xmax=max(self.axis_limits['bright']['length']))
-        ax2.axis(ymin=min(self.axis_limits['dark']['min']),
-                 ymax=max(self.axis_limits['dark']['max']),
-                 xmax=max(self.axis_limits['dark']['length']))
-
         self.figure.legend((lmid, lmin, lmax, lmean),
                            ('Mid', 'Min', 'Max', 'Mean'),
                            'upper right')
 
-        self.reduce_ticks(ax2, 'y')
-        self.reduce_ticks(ax, 'y')
+    def rearrange(self):
+        self.ax.set_xticks([])
+        self.ax.axis(ymin=min(self.axis_limits['bright']['min']),
+                     ymax=max(self.axis_limits['bright']['max']))
+        self.ax2.axis(ymin=min(self.axis_limits['dark']['min']),
+                      ymax=max(self.axis_limits['dark']['max']))
+
+        self.reduce_ticks(self.ax2, 'y')
+        self.reduce_ticks(self.ax, 'y')
+        self.figure.tight_layout(pad=2)
 
 
 class PlotVerticalProfile(ProfileBase):
@@ -727,20 +730,20 @@ class PlotVerticalProfile(ProfileBase):
 
         self.figure.legend((lmid, lmin, lmax, lmean),
                            ('Mid', 'Min', 'Max', 'Mean'),
-                           'upper right')
+                           loc=(0.8, 0.65))
 
     def rearrange(self):
         self.ax2.set_yticks([])
         self.ax2.axis(xmin=min(self.axis_limits['bright']['min']),
-                      xmax=max(self.axis_limits['bright']['max']),
-                      ymax=max(self.axis_limits['bright']['length']))
+                      xmax=max(self.axis_limits['bright']['max']))
         self.ax.axis(xmin=min(self.axis_limits['dark']['min']),
-                     xmax=max(self.axis_limits['dark']['max']),
-                     ymax=max(self.axis_limits['dark']['length']))
+                     xmax=max(self.axis_limits['dark']['max']))
         self.ax.invert_yaxis()
         self.ax2.invert_yaxis()
         self.reduce_ticks(self.ax2, 'x')
         self.reduce_ticks(self.ax, 'x')
+        self.figure.tight_layout()
+
 
 EVMA1288plots = [PlotPTC,
                  PlotSNR,
