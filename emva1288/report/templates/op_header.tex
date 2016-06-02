@@ -2,31 +2,15 @@
 \begin{multicols}{2}
 \textbf{Camera setting} \hfill
 \\[1mm]
-\textsl{Bit depth} \hfill %{{ op.bit_depth|missing %}} 
+%{ for key, value in op.camera_settings.items() -%}
+\textsl{%{{ key %}}} \hfill %{{ value %}}
 \\[1mm]
-\textsl{Gain} \hfill %{{ op.gain|missing %}} 
-\\[1mm]
-\textsl{Exposure time} \hfill %{{ op.exposure_time|missing %}}
-\\[1mm]
-\textsl{Black level} \hfill %{{ op.black_level|missing %}}
-\\[1mm]
-\textsl{ROI} \hfill %{{ op.roi|missing %}}
-\\[1mm]
-\textsl{FPN correction} \hfill %{{ op.fpn_correction|missing %}}
-\\[1mm]
+%{ endfor -%}
 \textbf{Operation point parameters}
 \\[1mm]
-\textsl{Illumination} \hfill %{{ op.illumination|missing %}}
+%{ for key, value in op.test_parameters.items() -%}
+\textsl{%{{ key %}}} \hfill %{{ value %}}
 \\[1mm]
-\textsl{Iradiation steps} \hfill %{{ op.irradiation_steps|missing %}}
-\\[1mm]
-\textsl{Illumination wavelength} \hfill %{{ op.wavelength|missing %}} $nm$
-\\[1mm]
-\textsl{FWHM} \hfill %{{ op.fwhm|missing %}} $nm$
-\\[1mm]
-\textsl{Environmental temperature} \hfill %{{ op.temperature|missing %}} $^oC$
-\\[1mm]
-\textsl{Housing temperature} \hfill %{{ op.housing_temperature|missing %}} $^oC$
-\\[1mm]
+%{ endfor -%}
 \end{multicols}
 \end{minipage}

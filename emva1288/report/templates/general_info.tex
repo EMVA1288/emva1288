@@ -34,16 +34,10 @@
 \textsl{Interface type} \hfill  %{{ basic.interface_type|missing %}}
 \\[1mm]
 %%%%%%%%%% SETUP
-\textsl{Light source} \hfill  %{{ setup.light_source|missing %}}
+%{ for key, value in setup.items() -%}
+\textsl{%{{ key %}}} \hfill %{{ value|missing %}}
 \\[1mm]
-\textsl{Light source non uniformity} \hfill  %{{ setup.light_source_non_uniformity|missing %}}
-\\[1mm]
-\textsl{Irradiation calibration accuracy} \hfill  %{{ setup.irradiation_calibration_accuracy|missing %}}
-\\[1mm]
-\textsl{Irradiation measurement error} \hfill  %{{ setup.irradiation_measurement_error|missing %}}
-\\[1mm]
-\textsl{Standard version} \hfill  %{{ setup.standard_version|missing %}}
-\\[1mm]
+%{ endfor -%}
 \end{multicols}
 \end{minipage}
 \\[5mm]
