@@ -2,7 +2,7 @@ import jinja2
 import os
 import shutil
 from distutils.dir_util import copy_tree
-from collections import namedtuple
+from collections import namedtuple, OrderedDict
 import posixpath
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_pdf import FigureCanvas
@@ -12,87 +12,64 @@ from .. results import Results1288
 from .. plotting import EVMA1288plots
 
 
-def _none_tuple(t, **kwargs):
-    '''Making default None for all fields'''
-    for field in t._fields:
-        v = kwargs.pop(field, None)
-        setattr(t, field, v)
-
-
 def info_setup(**kwargs):
     '''Container for setup information'''
-    s = namedtuple('setup',
-                   ['light_source',  # Integrating sphere, ...
-                    'light_source_non_uniformity',  # Eq. 27
-                    'irradiation_calibration_accuracy',
-                    'irradiation_measurement_error',
-                    'standard_version'])
-    _none_tuple(s, **kwargs)
+    s = OrderedDict()
+    s['Light source'] = None
+    s['Light source non uniformity'] = None
+    s['Irradiation calibration accuracy'] = None
+    s['Irradiation measurement error'] = None
+    s['Standard version'] = None
+    s.update(kwargs)
     return s
 
 
 def info_basic(**kwargs):
     '''Container for basic information'''
-    b = namedtuple('basic',
-                   ['vendor',
-                    'model',
-                    'data_type',
-                    'sensor_type',
-                    'sensor_diagonal',
-                    'lens_category',
-                    'resolution',
-                    'pixel_size',
-                    #########
-                    # For CCD
-                    'readout_type', 'transfer_type',
-                    # For CMOS
-                    'shutter_type', 'overlap_capabilities',
-                    #########
-                    'maximum_readout_rate',
-                    'dark_current_compensation',
-                    'interface_type',
-                    'qe_plot'])
-    _none_tuple(b, **kwargs)
+    b = {'vendor': None,
+         'model': None,
+         'data_type': None,
+         'sensor_type': None,
+         'sensor_diagonal': None,
+         'lens_category': None,
+         'resolution': None,
+         'pixel_size': None,
+         #########
+         # For CCD
+         'readout_type': None,
+         'transfer_type': None,
+         # For CMOS
+         'shutter_type': None,
+         'overlap_capabilities': None,
+         #########
+         'maximum_readout_rate': None,
+         'dark_current_compensation': None,
+         'interface_type': None,
+         'qe_plot': None
+         }
+    b.update(kwargs)
     return b
 
 
 def info_marketing(**kwargs):
-    m = namedtuple('marketing',
-                   ['logo',
-                    'watermark',
-                    'missingplot',
-                    'cover_page'])
-
-    _none_tuple(m, **kwargs)
+    m = {'logo': None,
+         'watermark': None,
+         'missingplot': None,
+         'cover_page': None
+         }
+    m.update(kwargs)
     return m
 
 
-def info_op(**kwargs):
-    o = namedtuple('op',
-                   ['name',
-                    'id',
-                    # Camera Setup
-                    'bit_depth',
-                    'gain',
-                    'exposure_time',
-                    'black_level',
-                    'roi',
-                    'fpn_correction',
-                    # Operation point parameters
-                    'illumination',  # Constant with variable exposure time
-                                     # Variable with constant exposure time
-                                     # Pulsed with constant exposure time
-                    'irradiation_steps',  # Number of irradiation steps
-                    # External conditions
-                    'wavelength',
-                    'fwhm',
-                    'temperature',
-                    'housing_temperature',
-                    # Options
-                    'summary_only'])
-    _none_tuple(o, **kwargs)
+def info_op():
+    d = {'name': None,
+         'id': None,
+         'summary_only': None,
+         'results': None,
+         'camera_settings': OrderedDict(),
+         'test_parameters': OrderedDict()}
+    return d
 
-    return o
 
 _CURRDIR = os.path.abspath(os.path.dirname(__file__))
 
@@ -176,12 +153,16 @@ class Report1288(object):
             else:
                 v = posixpath.join('files', default)
             return v
-        self.marketing.logo = uploaded_file(self.marketing.logo,
-                                            'missinglogo.pdf')
-        self.marketing.missingplot = uploaded_file(self.marketing.missingplot,
-                                                   'missingplot.pdf')
-        self.basic.qe_plot = uploaded_file(self.basic.qe_plot,
-                                           'missingplot.pdf')
+
+        self.marketing['logo'] = uploaded_file(self.marketing['logo'],
+                                               'missinglogo.pdf')
+
+        self.marketing['missingplot'] = uploaded_file(
+            self.marketing['missingplot'],
+            'missingplot.pdf')
+
+        self.basic['qe_plot'] = uploaded_file(self.basic['qe_plot'],
+                                              'missingplot.pdf')
 
     def _write_file(self, name, content):
         fname = os.path.join(self._outdir, name)
@@ -229,13 +210,14 @@ class Report1288(object):
             names[plt_cls.__name__] = posixpath.join(id_, fname)
         return names
 
-    def add(self, op, data):
+    def add(self, op, data, results=None):
         n = len(self.ops) + 1
-        op.id = 'OP%d' % (n)
-        if not op.name:
-            op.name = op.id
-        results = self._results(data)
-        op.results = results.results
+        op['id'] = 'OP%d' % (n)
+        if not op['name']:
+            op['name'] = op['id']
+        if not results:
+            results = self._results(data)
+        op['results'] = results.results
         results.id = n
-        op.plots = self._plots(results, op.id)
+        op['plots'] = self._plots(results, op['id'])
         self.ops.append(op)

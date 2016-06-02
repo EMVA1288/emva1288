@@ -13,20 +13,20 @@ dat = emva1288.Data1288(imgs.data)
 
 # Description of the setup
 setup = report.info_setup()
-setup.standard_version = 3.1
+setup['Standard version'] = 3.1
 
 # Basic information
 basic = report.info_basic()
-basic.vendor = 'Simulation'
-basic.data_type = 'Single'
-basic.sensor_type = 'simulated sensor'
-basic.resolution = '640x480'
-basic.model = 'Simulated camera'
+basic['vendor'] = 'Simulation'
+basic['data_type'] = 'Single'
+basic['sensor_type'] = 'simulated sensor'
+basic['resolution'] = '640x480'
+basic['model'] = 'Simulated camera'
 
 
 # Marketing information
 marketing = report.info_marketing()
-
+marketing['watermark'] = 'Example'
 
 # Initialize the report with the marketing data
 # Provide a non existent name for the output directory
@@ -41,12 +41,13 @@ myreport = report.Report1288('myreport',
 # summary_only
 
 op1 = report.info_op()
-op1.gain = 0.1
-op1.offset = 29.4
-op1.bit_depth = '12 bits'
-op1.summary_only = False
-op1.illumination = 'Variable with constant exposure time'
-op1.irradiation_steps = 50
+op1['summary_only'] = False
+op1['camera_settings']['Gain'] = 0.1
+op1['camera_settings']['Black level'] = 29.4
+op1['camera_settings']['Bit depth'] = '12 bits'
+op1['test_parameters']['Illumination'] = 'Variable with constant \
+exposure time'
+op1['test_parameters']['Irradiation steps'] = 50
 
 # Add the operation point to the report
 # we can add as many operation points as we want
