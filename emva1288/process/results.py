@@ -17,6 +17,7 @@ from scipy.ndimage import convolve
 
 
 class Results1288(object):
+    """Class used to process data and to generate pdf report using LaTeX."""
     def __init__(self,
                  data,
                  pixel_area=None,

@@ -9,6 +9,7 @@
 .project
 .pydevproject
 .idea
+.swp
 
 # Compiled source #
 ###################
@@ -43,3 +44,4 @@ dist
 MANIFEST
 .settings
 *.egg-info
+doc/_build
