@@ -15,8 +15,8 @@ class CameraTestCase(unittest.TestCase):
         self.assertEqual((self.cam._img_x, self.cam._img_y), np.shape(img))
 
     def test_radiance(self):
-        self.cam.radiance = 0
+        self.cam.set_radiance(0)
         img1 = self.cam.grab()
-        self.cam.radiance = self.cam.saturation_radiance
+        self.cam.set_radiance(self.cam.get_radiance_for(mean=250))
         img2 = self.cam.grab()
         self.assertLess(img1.mean(), img2.mean())
