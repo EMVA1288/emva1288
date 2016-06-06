@@ -4,7 +4,7 @@ print results and plot graphics
 """
 
 import os
-from emva1288 import Emva1288
+from emva1288.process import Emva1288
 
 dir_ = '/home/work/1288/datasets/'
 fname = 'EMVA1288_ReferenceSet_001_CCD_12Bit/EMVA1288_Data.txt'

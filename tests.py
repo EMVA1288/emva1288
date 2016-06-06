@@ -1,7 +1,8 @@
 import nose
 
 
-default_test_modules = ['emva1288.tests.test_coding_standards', ]
+default_test_modules = ['emva1288.unittests.test_coding_standards',
+                        'emva1288.unittests.test_camera']
 
 
 def run():
