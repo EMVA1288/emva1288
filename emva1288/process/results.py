@@ -252,6 +252,7 @@ class Results1288(object):
 
         return self.u_p_min / self.pixel_area
 
+    @property
     def u_e_min(self):
         """
         **Section: sensitivity
@@ -263,6 +264,7 @@ class Results1288(object):
         """
         return self.QE * self.u_p_min / 100.0
 
+    @property
     def u_e_min_area(self):
         """
         **Section: sensitivity
