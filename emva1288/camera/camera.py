@@ -39,6 +39,7 @@ class Camera(object):
 
         self._f_number = f_number
         self._pixel_area = pixel_area
+        self._bit_depth = bit_depth
         self._img_max = 2 ** int(bit_depth) - 1
         self._img_x = img_x
         self._img_y = img_y
@@ -70,7 +71,26 @@ class Camera(object):
         self.blackoffset = blackoffset
 
         self._radiance = radiance
-        self.radiance = radiance
+
+    @property
+    def bit_depth(self):
+        return self._bit_depth
+
+    @property
+    def pixel_area(self):
+        return self._pixel_area
+
+    @property
+    def img_max(self):
+        return self._img_max
+
+    @property
+    def img_x(self):
+        return self._img_x
+
+    @property
+    def img_y(self):
+        return self._img_y
 
     @property
     def exposure(self):
@@ -81,12 +101,24 @@ class Camera(object):
         self._exposure = value
 
     @property
+    def exposure_min(self):
+        return self._exposure_min
+
+    @property
+    def exposure_max(self):
+        return self._exposure_max
+
+    @property
     def K(self):
         return self._K
 
     @K.setter
     def K(self, value):
         self._K = routines.nearest_value(value, self.__Ks)
+
+    @property
+    def Ks(self):
+        return self.__Ks
 
     @property
     def blackoffset(self):
@@ -98,11 +130,13 @@ class Camera(object):
                                                    self.__blackoffsets)
 
     @property
-    def radiance(self):
+    def blackoffsets(self):
+        return self.__blackoffsets
+
+    def get_radiance(self):
         return self._radiance
 
-    @radiance.setter
-    def radiance(self, value):
+    def set_radiance(self, value):
         self._radiance = np.abs(value)
 
     def grab(self):
@@ -110,9 +144,7 @@ class Camera(object):
         Create an image based on the mean and standard deviation from the
         EMVA1288 parameters
         '''
-#         clipping_point = int(min(self.img_max,
-#                             int(self.kwargs['clip_point'])))
-        clipping_point = int(self._img_max)
+        clipping_point = int(self.img_max)
         u_y = self._u_y()
         s2_y = np.sqrt(self._s2_y())
         img = np.random.normal(loc=u_y, scale=s2_y,
@@ -133,7 +165,7 @@ class Camera(object):
         '''
         Mean of electrons per pixel during exposure time
         '''
-        u_e = self._qe * self._get_photons()
+        u_e = self._qe * self.get_photons()
         return u_e
 
     def _s2_e(self):
@@ -178,22 +210,25 @@ class Camera(object):
         s2_d = self._sigma2_dark_0 + (self._u_i() * self.exposure / (10 ** 9))
         return s2_d
 
-    @property
-    def saturation_radiance(self):
+    def get_radiance_for(self, mean=None, exposure=None):
         """Radiance to achieve saturation"""
+        if not mean:
+            mean = self.img_max
+        if not exposure:
+            exposure = self.exposure
         ud = self._u_d()
-        ue = (self._img_max / self.K) - ud
+        ue = (mean / self.K) - ud
         up = ue / self._qe
-        radiance = routines.get_radiance(self.exposure,
+        radiance = routines.get_radiance(exposure,
                                          self._wavelength,
                                          up,
                                          self._pixel_area,
                                          self._f_number)
         return radiance
 
-    def _get_photons(self):
+    def get_photons(self):
         return routines.get_photons(self.exposure,
                                     self._wavelength,
-                                    self.radiance,
+                                    self.get_radiance(),
                                     self._pixel_area,
                                     self._f_number)

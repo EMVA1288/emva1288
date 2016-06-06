@@ -1,10 +1,10 @@
 import numpy as np
-from camera1288 import Camera
+from emva1288.camera import Camera
 
 c = Camera()
 
-radiances = np.linspace(0, c.saturation_radiance, num=20)
+radiances = np.linspace(0, c.get_radiance_for(mean=200), num=20)
 for radiance in radiances:
-    c.radiance = radiance
+    c.set_radiance(radiance)
     img = c.grab()
     print(img.mean(), img.std())
