@@ -14,10 +14,10 @@ from emva1288.process.plotting import Plotting1288
 
 class Emva1288(object):
     def __init__(self, fname):
-        info = ParseEmvaDescriptorFile(fname)
-        imgs = LoadImageData(info.info)
+        parser = ParseEmvaDescriptorFile(fname)
+        imgs = LoadImageData(parser.images)
         dat = Data1288(imgs.data)
-        self._results = Results1288(dat)
+        self._results = Results1288(dat.data)
 
     def results(self):
         return self._results.print_results()

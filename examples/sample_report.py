@@ -6,8 +6,8 @@ import os
 dir_ = '/home/work/1288/datasets/'
 fname = 'EMVA1288_ReferenceSet_003_Simulation_12Bit/EMVA1288_Data.txt'
 
-info = process.ParseEmvaDescriptorFile(os.path.join(dir_, fname))
-imgs = process.LoadImageData(info.info)
+parser = process.ParseEmvaDescriptorFile(os.path.join(dir_, fname))
+imgs = process.LoadImageData(parser.images)
 dat = process.Data1288(imgs.data)
 
 
@@ -53,7 +53,7 @@ op1['test_parameters']['Irradiation steps'] = 50
 # we can add as many operation points as we want
 # we pass the emva1288.Data1288 object to extract automatically all the results
 # and graphics
-myreport.add(op1, dat)
+myreport.add(op1, dat.data)
 
 # Generate the latex files
 myreport.latex()

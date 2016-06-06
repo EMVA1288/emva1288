@@ -56,13 +56,9 @@ def get_spatial(cam, illumination, L=50):
     return value
 
 
-data = {'version': None,
-        'format': {},  # bits, witdth, height
-        'name': None,
-        'info': {},
-        'temporal': {'dark': {}, 'bright': {}},
+data = {'temporal': {'dark': {}, 'bright': {}},
         'spatial': {'dark': {}, 'bright': {}},
-        }
+        'width': None, 'height': None}
 
 
 # Intialize the camera, here we can specify different image size
@@ -72,9 +68,8 @@ c = Camera(bit_depth=10,
            img_y=50)
 
 # Fill the information
-data['format'] = {'bits': c.bit_depth,
-                  'width': c.img_x,
-                  'height': c.img_y}
+data['width'] = c.img_x
+data['height'] = c.img_y
 
 # Maximum exposure for test
 exposure_max = 9000000
@@ -114,7 +109,7 @@ for illumination in ('bright', 'dark'):
 
 # Process the collected data
 dat = process.Data1288(data)
-res = process.Results1288(dat)
+res = process.Results1288(dat.data, pixel_area=c.pixel_area)
 res.print_results()
-# plot = process.Plotting1288(res)
-# plot.plot()
+plot = process.Plotting1288(res)
+plot.plot()

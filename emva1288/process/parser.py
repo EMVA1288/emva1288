@@ -23,21 +23,20 @@ class ParseEmvaDescriptorFile(object):
     an usable directory
     '''
 
-    def __init__(self, filename, loglevel=logging.INFO):
+    def __init__(self, filename, path=None, loglevel=logging.INFO):
         # For dark the items are in the form of
         # exposure:{[fname1, fname2, ...]}
         # for bright the items are in the form of
         # exposure:{photons:[fname1, fname2,...]}, photons....}
 
-        self.info = {'filename': None,
-                     'path': None,
-                     'version': None,
-                     'format': {},  # bits, witdth, height
-                     'temporal': {'dark': {}, 'bright': {}},
-                     'spatial': {'dark': {}, 'bright': {}},
-                     'camera_info': {},
-                     'operation_point_info': {},
-                     }
+        # If no path is given, the filename path will be used to fill
+        # the images dict
+        self._path = path
+
+        self.format = {}  # bits, witdth, height
+        self.version = None
+        self.images = {'temporal': {'dark': {}, 'bright': {}},
+                       'spatial': {'dark': {}, 'bright': {}}}
 
         logging.basicConfig()
         self.log = logging.getLogger('Parser')
@@ -45,7 +44,7 @@ class ParseEmvaDescriptorFile(object):
 
         self._load_file(filename)
         self._fill_info()
-        self.log.debug(pprint.pformat(self.info))
+        self.log.debug(pprint.pformat(self.images))
 
     def _get_images_filenames(self):
         '''
@@ -68,7 +67,7 @@ class ParseEmvaDescriptorFile(object):
                 break
 
             npath = os.path.normpath(l[1])
-            path = os.path.join(*npath.split('\\'))
+            path = os.path.join(self._path, *npath.split('\\'))
             fnames.append(path)
 
         if len(fnames) < 2:
@@ -92,10 +91,10 @@ class ParseEmvaDescriptorFile(object):
     def _add_bright_pcount(self, exposure, photons, fnames):
         '''
         For a given exposure and photon count
-        add the appropiate image filenames to the self.info dict
+        add the appropiate image filenames to the self.images dict
         '''
         kind = self._get_kind(fnames)
-        step = self.info[kind]['bright'].setdefault(exposure, {})
+        step = self.images[kind]['bright'].setdefault(exposure, {})
 
         if photons in step:
             raise SyntaxError('Only one set of bright images per photon count '
@@ -106,17 +105,15 @@ class ParseEmvaDescriptorFile(object):
     def _add_dark_pcount(self, exposure, fnames):
         kind = self._get_kind(fnames)
 
-        if exposure in self.info[kind]['dark']:
+        if exposure in self.images[kind]['dark']:
             raise SyntaxError('Only one set of images per dark exposure %.3f'
                               % (exposure))
-        self.info[kind]['dark'][exposure] = fnames
+        self.images[kind]['dark'][exposure] = fnames
 
     def _fill_info(self):
         '''
         Walk trhought all the lines in the descriptor file
-        by the first character fill self.info
-        This info is what should be the descriptor
-        (too late to change to this?)
+        by the first character fill self.images
         '''
 
         self._lines.reverse()
@@ -125,7 +122,7 @@ class ParseEmvaDescriptorFile(object):
             l = self._split_line(line)
 
             if l[0] == 'v':
-                self.info['version'] = l[1]
+                self.version = l[1]
                 self.log.info('Version ' + l[1])
                 continue
 
@@ -134,13 +131,13 @@ class ParseEmvaDescriptorFile(object):
                     raise SyntaxError('Wrong format: "%s" should be "n bits '
                                       'width height"' % line)
 
-                if self.info.get('format'):
+                if self.format:
                     raise SyntaxError('Only one "n bits width height" is '
                                       'allowed per file')
 
-                self.info['format']['bits'] = int(l[1])
-                self.info['format']['width'] = int(l[2])
-                self.info['format']['height'] = int(l[3])
+                self.format['bits'] = int(l[1])
+                self.format['width'] = int(l[2])
+                self.format['height'] = int(l[3])
                 continue
 
             if l[0] == 'b':
@@ -166,22 +163,6 @@ class ParseEmvaDescriptorFile(object):
 
                 continue
 
-            # Data for datasheet operation point starts with o
-            if l[0] == 'o':
-                if len(l) < 2:
-                    raise SyntaxError('Wrong format: %s should be "l varname '
-                                      'values"' % line)
-                self.info['operation_point_info'][l[1]] = ' '.join(l[2:])
-                continue
-
-            # Data for datasheet camera starts with c
-            if l[0] == 'c':
-                if len(l) < 2:
-                    raise SyntaxError('Wrong format: %s should be "l varname '
-                                      'values"' % line)
-                self.info['camera_info'][l[1]] = ' '.join(l[2:])
-                continue
-
             self.log.warning('Unknown command ' + line)
 
     def _split_line(self, line):
@@ -203,9 +184,9 @@ class ParseEmvaDescriptorFile(object):
         f = open(filename, 'r')
 
         # To add location when opening images
-        path = os.path.realpath(filename)
-        self.info['path'] = os.path.dirname(path)
-        self.info['filename'] = os.path.basename(path)
+        # If no path was passed as kwarg, set it to the filename path
+        if self._path is None:
+            self._path = os.path.dirname(filename)
 
         self._lines = [x.strip() for x in f.readlines() if x.strip() and
                        not x.strip().startswith('#')]
