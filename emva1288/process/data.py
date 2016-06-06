@@ -27,15 +27,13 @@ class Data1288(object):
                  data,
                  loglevel=logging.INFO):
 
-        self.pixels = data['format']['width'] * data['format']['height']
-
         logging.basicConfig()
         self.log = logging.getLogger('Data')
         self.log.setLevel(loglevel)
 
+        self.pixels = data['width'] * data['height']
+
         self.data = {}
-        self.data['name'] = data.get('name', 'Unkown')
-        self.data['format'] = data['format']
         self.data['temporal'] = self._get_temporal(data['temporal'])
         self.data['spatial'] = self._get_spatial(data['spatial'])
 
@@ -201,17 +199,3 @@ class Data1288(object):
                 'L': L,
                 'avg': avg_,
                 'var': var_}
-
-    def __getitem__(self, key):
-        '''Adds the possibility to pass the object directly to Results1288
-        Instead of using
-        d = Data1288(xxx)
-        r = Results1288(d.data)
-        It is possible to use
-        d = Data1288(xxx)
-        r = Results1288(d)
-        '''
-        return self.data[key]
-
-    def get(self, key, default=None):
-        return self.data.get(key, default)

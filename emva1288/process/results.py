@@ -19,6 +19,7 @@ from scipy.ndimage import convolve
 class Results1288(object):
     def __init__(self,
                  data,
+                 pixel_area=None,
                  index_u_ysat=None,
                  loglevel=logging.DEBUG):
 
@@ -28,8 +29,8 @@ class Results1288(object):
 
         self.temporal = data['temporal']
         self.spatial = data['spatial']
-        self.name = data['name']
-        self.pixel_area = data.get('pixel_area', None)
+
+        self.pixel_area = pixel_area
         self._s2q = 1.0 / 12.0
         self._index_start = 0
         self._index_sensitivity_min = 0
@@ -759,9 +760,9 @@ class Results1288(object):
     def results(self):
         d = routines.obj_to_dict(self)
         results = {}
-        for section in d.keys():
+        for section in sorted(d.keys()):
             results[section] = {}
-            for method in d[section].keys():
+            for method in sorted(d[section].keys()):
                 s = d[section][method]
                 if s.get('Value', False) is not False:
                     results[section][method] = {
@@ -775,12 +776,12 @@ class Results1288(object):
 
     def print_results(self):
         d = self.results
-        for section in d.keys():
+        for section in sorted(d.keys()):
             print('*' * 50)
             print(section)
-            print('*' * 50)
+            print('-' * 50)
 
-            for method in d[section].keys():
+            for method in sorted(d[section].keys()):
                 s = d[section][method]
                 print('{:<50}{:<30}{:>10}'.format(s['short'],
                                                   s['symbol'],
