@@ -8,8 +8,8 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_pdf import FigureCanvas
 import numpy as np
 
-from .. results import Results1288
-from .. plotting import EVMA1288plots
+from emva1288.process import Results1288
+from emva1288.process.plotting import EVMA1288plots
 
 
 def info_setup(**kwargs):

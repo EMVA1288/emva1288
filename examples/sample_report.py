@@ -1,14 +1,14 @@
-import emva1288
-import emva1288.report as report
+from emva1288 import process
+from emva1288 import report
 import os
 
 # Load one test to add it as operation point
 dir_ = '/home/work/1288/datasets/'
 fname = 'EMVA1288_ReferenceSet_003_Simulation_12Bit/EMVA1288_Data.txt'
 
-info = emva1288.ParseEmvaDescriptorFile(os.path.join(dir_, fname))
-imgs = emva1288.LoadImageData(info.info)
-dat = emva1288.Data1288(imgs.data)
+info = process.ParseEmvaDescriptorFile(os.path.join(dir_, fname))
+imgs = process.LoadImageData(info.info)
+dat = process.Data1288(imgs.data)
 
 
 # Description of the setup
