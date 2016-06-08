@@ -7,7 +7,6 @@ class Camera(object):
                  f_number=8,  # F-number of the light source/camera setup
                  pixel_area=25,  # um^2
                  bit_depth=8,  # Bit depth of the image [8, 10, 12, 14]
-                 radiance=0,  # Radiance of illumination at the source
                  img_x=640,
                  img_y=480,
 
@@ -70,8 +69,6 @@ class Camera(object):
         self._blackoffset = None
         self.blackoffset = blackoffset
 
-        self._radiance = radiance
-
     @property
     def bit_depth(self):
         return self._bit_depth
@@ -133,20 +130,14 @@ class Camera(object):
     def blackoffsets(self):
         return self.__blackoffsets
 
-    def get_radiance(self):
-        return self._radiance
-
-    def set_radiance(self, value):
-        self._radiance = np.abs(value)
-
-    def grab(self):
+    def grab(self, radiance):
         '''
         Create an image based on the mean and standard deviation from the
         EMVA1288 parameters
         '''
         clipping_point = int(self.img_max)
-        u_y = self._u_y()
-        s2_y = np.sqrt(self._s2_y())
+        u_y = self._u_y(radiance)
+        s2_y = np.sqrt(self._s2_y(radiance))
         img = np.random.normal(loc=u_y, scale=s2_y,
                                size=(self._img_x, self._img_y))
         img += self.blackoffset
@@ -154,25 +145,25 @@ class Camera(object):
         np.clip(img, 0, clipping_point, img)
         return img.astype(np.uint64)
 
-    def _u_y(self):
+    def _u_y(self, radiance):
         '''
         Mean of the image
         '''
-        uy = self.K * (self._u_d() + self._u_e())
+        uy = self.K * (self._u_d() + self._u_e(radiance))
         return uy
 
-    def _u_e(self):
+    def _u_e(self, radiance):
         '''
         Mean of electrons per pixel during exposure time
         '''
-        u_e = self._qe * self.get_photons()
+        u_e = self._qe * self.get_photons(radiance)
         return u_e
 
-    def _s2_e(self):
+    def _s2_e(self, radiance):
         '''
-        variance of the number of electrons....Poission distribution
+        variance of the number of electrons....Poisson distribution
         '''
-        return self._u_e()
+        return self._u_e(radiance)
 
     def _u_d(self):
         '''
@@ -187,11 +178,12 @@ class Camera(object):
         '''
         return 1.0 / 12.0
 
-    def _s2_y(self):
+    def _s2_y(self, radiance):
         '''
         Temporal noise
         '''
-        s2_y = (self.K ** 2) * (self._s2_d() + self._s2_e()) + self._s2_q()
+        s2_y = ((self.K ** 2) * (self._s2_d() + self._s2_e(radiance)) +
+                self._s2_q())
         return s2_y
 
     def _u_i(self):
@@ -226,9 +218,9 @@ class Camera(object):
                                          self._f_number)
         return radiance
 
-    def get_photons(self):
+    def get_photons(self, radiance):
         return routines.get_photons(self.exposure,
                                     self._wavelength,
-                                    self.get_radiance(),
+                                    radiance,
                                     self._pixel_area,
                                     self._f_number)

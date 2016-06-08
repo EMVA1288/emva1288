@@ -6,13 +6,13 @@ from emva1288 import process
 
 def get_emva_blackoffset(cam):
     """Find the blackoffset to satifsfy EMVA1288 requirements"""
-    bini = c.blackoffset
+    bini = cam.blackoffset
     # Find black offset with a maximum of 0.5% of values at Zero
     bo = cam.blackoffsets[0]
     pixels = cam.img_x * cam.img_y
     for i in cam.blackoffsets:
         cam.blackoffset = i
-        img = cam.grab()
+        img = cam.grab(0)
         if np.count_nonzero(img) > pixels * .995:
             break
         bo = i
@@ -22,37 +22,37 @@ def get_emva_blackoffset(cam):
 
 def get_emva_gain(cam):
     """Find the gain to satisfy EMVA1288 requirements"""
-    gini = c.K
+    gini = cam.K
     # Find gain with a minum temporal noise of 0.5DN
     g = cam.Ks[0]
     for gain in cam.Ks:
         cam.gain = gain
-        img1 = cam.grab()
-        img2 = cam.grab()
+        img1 = cam.grab(0)
+        img2 = cam.grab(0)
         if (img1 - img2).std() > 0.5:
             break
         g = gain
-    c.K = gini
+    cam.K = gini
     return g
 
 
-def get_temporal(cam, illumination):
-    img1 = cam.grab()
-    img2 = cam.grab()
+def get_temporal(cam, bright, radiance):
+    img1 = cam.grab(radiance)
+    img2 = cam.grab(radiance)
     imgs = get_int_imgs((img1, img2))
     value = {'sum': np.sum(imgs['sum']), 'pvar': np.sum(imgs['pvar'])}
-    if illumination == 'bright':
-        return {cam.get_photons(): value}
+    if bright:
+        return {cam.get_photons(radiance=radiance): value}
     return value
 
 
-def get_spatial(cam, illumination, L=50):
+def get_spatial(cam, bright, radiance, L=50):
     imgs = []
     for i in range(L):
-        imgs.append(cam.grab())
+        imgs.append(cam.grab(radiance))
     value = get_int_imgs(imgs)
-    if illumination == 'bright':
-        return {cam.get_photons(): value}
+    if bright:
+        return {cam.get_photons(radiance=radiance): value}
     return value
 
 
@@ -74,9 +74,6 @@ data['height'] = c.img_y
 # Maximum exposure for test
 exposure_max = 9000000
 
-# Go to darkness
-c.set_radiance(0)
-
 # Find the camera parameters for the test
 c.exposure = exposure_max
 c.blackoffset = get_emva_blackoffset(c)
@@ -88,23 +85,24 @@ saturation_radiance = c.get_radiance_for()
 exposure_spatial = None
 for illumination in ('bright', 'dark'):
     if illumination == 'bright':
-        c.set_radiance(saturation_radiance)
+        bright = True
+        radiance = saturation_radiance
     else:
-        c.set_radiance(0)
+        bright = False
+        radiance = 0
 
     for exposure in np.linspace(c.exposure_min, exposure_max, 100):
         c.exposure = exposure
 
-        data['temporal'][illumination][exposure] = get_temporal(c,
-                                                                illumination)
+        data['temporal'][illumination][exposure] = get_temporal(c, bright, radiance)
 
-        img = c.grab()
+        img = c.grab(radiance)
         if not exposure_spatial and (img.mean() > c.img_max / 2.):
             exposure_spatial = exposure
 
         if exposure_spatial == exposure:
-            data['spatial'][illumination][exposure] = get_spatial(c,
-                                                                  illumination)
+            data['spatial'][illumination][exposure] = get_spatial(c, bright, radiance)
+                                                                  
         print(exposure, img.mean(), img.std())
 
 # Process the collected data
