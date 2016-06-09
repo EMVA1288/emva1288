@@ -94,15 +94,19 @@ for illumination in ('bright', 'dark'):
     for exposure in np.linspace(c.exposure_min, exposure_max, 100):
         c.exposure = exposure
 
-        data['temporal'][illumination][exposure] = get_temporal(c, bright, radiance)
+        data['temporal'][illumination][exposure] = get_temporal(c,
+                                                                bright,
+                                                                radiance)
 
         img = c.grab(radiance)
         if not exposure_spatial and (img.mean() > c.img_max / 2.):
             exposure_spatial = exposure
 
         if exposure_spatial == exposure:
-            data['spatial'][illumination][exposure] = get_spatial(c, bright, radiance)
-                                                                  
+            data['spatial'][illumination][exposure] = get_spatial(c,
+                                                                  bright,
+                                                                  radiance)
+
         print(exposure, img.mean(), img.std())
 
 # Process the collected data
