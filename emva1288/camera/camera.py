@@ -48,6 +48,7 @@ class Camera(object):
         self._temperature_doubling = temperature_doubling
 
         self._wavelength = wavelength
+        self._qe = qe
         # When no specific qe is provided we simulate one
         if qe is None:
             self._qe = routines.qe(wavelength)
