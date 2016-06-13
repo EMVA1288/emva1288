@@ -13,9 +13,9 @@ def get_emva_blackoffset(cam):
     for i in cam.blackoffsets:
         cam.blackoffset = i
         img = cam.grab(0)
+        bo = i
         if np.count_nonzero(img) > pixels * .995:
             break
-        bo = i
     cam.blackoffset = bini
     return bo
 
@@ -26,12 +26,12 @@ def get_emva_gain(cam):
     # Find gain with a minum temporal noise of 0.5DN
     g = cam.Ks[0]
     for gain in cam.Ks:
-        cam.gain = gain
-        img1 = cam.grab(0)
-        img2 = cam.grab(0)
+        cam.K = gain
+        g = gain
+        img1 = cam.grab(0).astype(np.int64)
+        img2 = cam.grab(0).astype(np.int64)
         if (img1 - img2).std() > 0.5:
             break
-        g = gain
     cam.K = gini
     return g
 
