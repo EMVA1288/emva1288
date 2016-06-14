@@ -11,7 +11,10 @@ with open(path.join(here, 'README.rst')) as f:
     long_description = f.read()
 
 setup(name='emva1288',
-      packages=['emva1288', 'emva1288.report'],
+      packages=['emva1288',
+                'emva1288.report',
+                'emva1288.camera',
+                'emva1288.process'],
       version=__version__,
       description='EMVA1288 reference implementation',
       long_description=long_description,
