@@ -271,6 +271,7 @@ class Data1288(object):
         _L = []
         _avg = []
         _var = []
+        _mask = []  # For masked arrays
 
         _sum_dark = []
         _pvar_dark = []
@@ -291,6 +292,11 @@ class Data1288(object):
                 _L.append(d['L'])
                 _avg.append(d['avg'])
                 _var.append(d['var'])
+                try:
+                    _mask.append(d['mask'])
+                except KeyError:
+                    # mask not implented
+                    pass
 
             d = self._get_spatial_data(dark[t])
 
@@ -306,6 +312,7 @@ class Data1288(object):
         spatial['L'] = np.asarray(_L)
         spatial['avg'] = np.asarray(_avg)
         spatial['var'] = np.asarray(_var)
+        spatial['mask'] = np.asarray(_mask)
 
         spatial['sum_dark'] = np.asarray(_sum_dark)
         spatial['pvar_dark'] = np.asarray(_pvar_dark)
