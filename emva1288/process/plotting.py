@@ -11,25 +11,41 @@ needed to create a reference datasheet of the EMVA1288 test
 
 from __future__ import print_function
 import numpy as np
-import os
 
 from . import routines
 
 
 class Emva1288Plot(object):
-    """Base class for emva plots
-
-    The only mandatory attribute is name, the rest are for use in
-    setup_figure
-    """
+    """Base class for emva plots."""
     name = ""
+    """The figure's name (used as title if title is none)."""
+
     title = None
+    """The figure's title."""
+
     xlabel = None
+    """The x axis label."""
+
     ylabel = None
+    """The y axis label."""
+
     xscale = None
+    """The x axis scale."""
+
     yscale = None
+    """The y axis scale."""
 
     def __init__(self, figure):
+        """Base class for emva plots init function.
+
+        The only mandatory attribute is the name, the rest are for use
+        in the :meth:`setup_figure` method.
+
+        Parameters
+        ----------
+        figure : The :class:`matplotlib:matplotlib.figure.Figure`
+                 object to plot.
+        """
         self.figure = figure
         self.setup_figure()
 
@@ -37,9 +53,9 @@ class Emva1288Plot(object):
         """Simple wrapper for one plot per figure
 
         Takes the name, xlabel, ylabel, xscale and yscale
-        for one plot case
+        for one plot case.
 
-        If more than one plot, just overwrite as you wish
+        If more than one plot, just overwrite as you wish.
         """
         ax = self.figure.add_subplot(111)
         if self.title:
@@ -58,12 +74,32 @@ class Emva1288Plot(object):
         self.ax = ax
 
     def plot(self, test):
+        """Method to show the figures.
+
+        Parameters
+        ----------
+        test : Do nothing for this method but can be
+               used for the subclass method.
+
+        Raises
+        ------
+        NotImplementedError
+            If this method is not overridden.
+
+        Notes
+        -----
+        Must be overridden in subclasses.
+        """
         raise NotImplementedError
 
     def set_legend(self, ax):
-        '''
-        Shortcut to add legend
-        '''
+        """Shortcut to add legend.
+
+        Parameters
+        ----------
+        ax : The :class:`matplotlib:matplotlib.axes.Axes` object to which
+             the legend will be added.
+        """
         ax.legend(loc='best')
         legend = ax.get_legend()
         if legend is not None:
@@ -72,12 +108,26 @@ class Emva1288Plot(object):
 
     def rearrange(self):
         """Opportunity to change axis or limits after all the tests have
-        been plotted
+        been plotted.
+
+        Uses :meth:`matplotlib:matplotlib.figure.Figure.tight_layout` method.
         """
         self.figure.tight_layout()
 
     def reduce_ticks(self, ax, axis, n=4):
-        """Reduce the number of ticks in ax.axis"""
+        """Reduce the number of ticks in ax.axis
+
+        Uses the :meth:`matplotlib:matplotlib.axes.Axes.locator_params` method.
+
+        Parameters
+        ----------
+        ax : The :class:`matplotlib:matplotlib.axes.Axes` object to which
+             the number of ticks will be changed.
+        axis : str, {'x', 'y', 'both'}
+               Axis on which to operate.
+        n : int, optional
+            Number of bins between ticks to be left.
+        """
         ax.locator_params(axis=axis, nbins=n)
 
 
@@ -480,7 +530,7 @@ class PlotLogarithmicHistogramDSNU(Emva1288Plot):
 
         self.set_legend(ax)
 
-        ax.axis(ymin=1.0, ymax=np.max(hist['values'])*2)
+        ax.axis(ymin=1.0, ymax=np.max(hist['values']) * 2)
 
 
 class PlotLogarithmicHistogramPRNU(Emva1288Plot):
@@ -503,7 +553,7 @@ class PlotLogarithmicHistogramPRNU(Emva1288Plot):
                 label='Model')
 
         self.set_legend(ax)
-        ax.axis(ymin=0.5, ymax=np.max(hist['values'])*2)
+        ax.axis(ymin=0.5, ymax=np.max(hist['values']) * 2)
 
 
 class PlotAccumulatedLogHistogramDSNU(Emva1288Plot):
@@ -761,6 +811,27 @@ EVMA1288plots = [PlotPTC,
                  PlotAccumulatedLogHistogramPRNU,
                  PlotHorizontalProfile,
                  PlotVerticalProfile]
+"""
+    This list is quite exhaustive. There are the links
+    to corresponding documentation:
+
+    - :class:`~emva1288.process.plotting.PlotPTC`
+    - :class:`~emva1288.process.plotting.PlotSNR`
+    - :class:`~emva1288.process.plotting.PlotSensitivity`
+    - :class:`~emva1288.process.plotting.PlotUyDark`
+    - :class:`~emva1288.process.plotting.PlotLinearity`
+    - :class:`~emva1288.process.plotting.PlotDeviationLinearity`
+    - :class:`~emva1288.process.plotting.PlotHorizontalSpectrogramPRNU`
+    - :class:`~emva1288.process.plotting.PlotHorizontalSpectrogramDSNU`
+    - :class:`~emva1288.process.plotting.PlotVerticalSpectrogramPRNU`
+    - :class:`~emva1288.process.plotting.PlotVerticalSpectrogramDSNU`
+    - :class:`~emva1288.process.plotting.PlotLogarithmicHistogramDSNU`
+    - :class:`~emva1288.process.plotting.PlotLogarithmicHistogramPRNU`
+    - :class:`~emva1288.process.plotting.PlotAccumulatedLogHistogramPRNU`
+    - :class:`~emva1288.process.plotting.PlotAccumulatedLogHistogramDSNU`
+    - :class:`~emva1288:emva1288.process.plotting.PlotHorizontalProfile`
+    - :class:`~emva1288.process.plotting.PlotVerticalProfile`
+"""
 
 
 class Plotting1288(object):
