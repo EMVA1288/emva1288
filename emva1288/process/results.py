@@ -553,7 +553,7 @@ class Results1288(object):
         **Unit: DN2
         """
 
-        return np.mean(self.spatial['var'][0])
+        return np.mean(self.spatial['var'])
 
     @property
     def sigma_2_y_stack_dark(self):
@@ -565,7 +565,7 @@ class Results1288(object):
         **Unit:DN2
         """
 
-        return np.mean(self.spatial['var_dark'][0])
+        return np.mean(self.spatial['var_dark'])
 
     @property
     def s_2_y_measured(self):
@@ -577,7 +577,7 @@ class Results1288(object):
         **Unit:DN2
         """
 
-        return np.var(self.spatial['avg'][0], ddof=1)
+        return np.var(self.spatial['avg'], ddof=1)
 
     @property
     def s_2_y_measured_dark(self):
@@ -589,7 +589,7 @@ class Results1288(object):
         **Unit:DN2
         """
 
-        return np.var(self.spatial['avg_dark'][0], ddof=1)
+        return np.var(self.spatial['avg_dark'], ddof=1)
 
     @property
     def s_2_y(self):
@@ -602,7 +602,7 @@ class Results1288(object):
         """
 
         return self.s_2_y_measured - (self.sigma_2_y_stack /
-                                      self.spatial['L'][0])
+                                      self.spatial['L'])
 
     @property
     def s_2_y_dark(self):
@@ -615,7 +615,7 @@ class Results1288(object):
         """
 
         return self.s_2_y_measured_dark - (self.sigma_2_y_stack_dark /
-                                           self.spatial['L_dark'][0])
+                                           self.spatial['L_dark'])
 
     @property
     def DSNU1288(self):
@@ -658,8 +658,8 @@ class Results1288(object):
         """
 
         return (np.sqrt(self.s_2_y - self.s_2_y_dark) * 100 /
-                (np.mean(self.spatial['avg'][0]) -
-                 np.mean(self.spatial['avg_dark'][0])))
+                (np.mean(self.spatial['avg']) -
+                 np.mean(self.spatial['avg_dark'])))
 
     @property
     def histogram_PRNU(self):
@@ -672,12 +672,12 @@ class Results1288(object):
         """
 
         # For prnu, perform the convolution
-        y = self.spatial['sum'][0] - self.spatial['sum_dark'][0]
+        y = self.spatial['sum'] - self.spatial['sum_dark']
         y = convolve(y, self._histogram_high_pass_box)[2:-2, 2:-2]
 
         h = routines.Histogram1288(y, self._histogram_Qmax)
         # Rescale the bins
-        h['bins'] /= (self.spatial['L'][0] * 25.)
+        h['bins'] /= (self.spatial['L'] * 25.)
 
         return h
 
@@ -692,7 +692,7 @@ class Results1288(object):
         """
 
         # For prnu, perform the convolution
-        y = self.spatial['sum'][0] - self.spatial['sum_dark'][0]
+        y = self.spatial['sum'] - self.spatial['sum_dark']
         y = convolve(y, self._histogram_high_pass_box)[2:-2, 2:-2]
 
         # For the accumulated histogram substract the mean
@@ -700,7 +700,7 @@ class Results1288(object):
 
         h = routines.Histogram1288(y, self._histogram_Qmax)
         # Rescale the bins
-        h['bins'] /= (self.spatial['L'][0] * 25.)
+        h['bins'] /= (self.spatial['L'] * 25.)
 
         # Perform the cumulative summation
         h['values'] = np.cumsum(h['values'][::-1])[::-1]
@@ -719,12 +719,12 @@ class Results1288(object):
 
         # For dsnu, the image is just the dark image, upscaled to have
         # only integers
-        y = self.spatial['sum_dark'][0]
+        y = self.spatial['sum_dark']
 
         h = routines.Histogram1288(y, self._histogram_Qmax)
         # Rescale the bins, this is due to upscaling the average image to have
         # only integers
-        h['bins'] /= (self.spatial['L_dark'][0] * 25.)
+        h['bins'] /= (self.spatial['L_dark'] * 25.)
 
         return h
 
@@ -739,13 +739,13 @@ class Results1288(object):
         """
 
         # Dark image upscaled to have only integers
-        y = self.spatial['sum_dark'][0]
+        y = self.spatial['sum_dark']
         # For the accumulated dsnu histogram, substract the mean from the image
         y = np.abs(y - int(np.mean(y)))
 
         h = routines.Histogram1288(y, self._histogram_Qmax)
         # Rescale the bins
-        h['bins'] /= (self.spatial['L_dark'][0] * 25.)
+        h['bins'] /= (self.spatial['L_dark'] * 25.)
 
         # Perform the cumulative summation (the ::-1 means backwars)
         # because the cumsum function is performed contrary to what we need

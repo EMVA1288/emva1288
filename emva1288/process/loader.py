@@ -38,9 +38,7 @@ class LoadImageData(object):
                  fload_args=[],
                  fload_kwargs={}):
 
-        self.data = {'temporal': {'dark': {}, 'bright': {}},
-                     'spatial': {'dark': {}, 'bright': {}},
-                     }
+        self.data = {'temporal': {}, 'spatial': {}}
         self._fload = fload
         self._fload_args = fload_args
         self._fload_kwargs = fload_kwargs
@@ -59,23 +57,21 @@ class LoadImageData(object):
         '''
 
         for kind in ('temporal', 'spatial'):
-            b_exp = set(images[kind]['bright'].keys())
-            d_exp = set(images[kind]['dark'].keys())
+            exposures = set(images[kind].keys())
 
-            if b_exp - d_exp:
-                raise SyntaxError('%s Bright and dark must have the '
-                                  'same exposures' % kind)
+            for exposure in exposures:
+                photon_counts = list(images[kind][exposure].keys())
+                if 0.0 not in photon_counts:
+                    raise ValueError('Every exposure must have a 0.0 photons'
+                                     ' for dark information')
+                if len(photon_counts) < 2:
+                    raise ValueError('All exposure must have at least 2 points'
+                                     ' one dark and one bright')
 
-            for exposure in b_exp:
-                for photons in images[kind]['bright'][exposure]:
-                    fnames = images[kind]['bright'][exposure][photons]
+                for photons, fnames in images[kind][exposure].items():
                     data_imgs = self._get_imgs_data(fnames, kind)
-                    self.data[kind]['bright'].setdefault(exposure, {})
-                    self.data[kind]['bright'][exposure][photons] = data_imgs
-
-                fnames = images[kind]['dark'][exposure]
-                data_imgs = self._get_imgs_data(fnames, kind)
-                self.data[kind]['dark'][exposure] = data_imgs
+                    self.data[kind].setdefault(exposure, {})
+                    self.data[kind][exposure][photons] = data_imgs
 
         shape = self._shape.pop()
         self.data['height'] = shape[0]

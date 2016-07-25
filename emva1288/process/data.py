@@ -52,41 +52,10 @@ class Data1288(object):
         self.data['temporal'] = self._get_temporal(data['temporal'])
         self.data['spatial'] = self._get_spatial(data['spatial'])
 
-    def _get_float_keys(self, d, depth=2):
-        """Method to get the exposure times from the data sets and
-        the corresponding data.
-
-        Parameters
-        ----------
-        d : dict
-            The data dictionary
-        depth : int, optional
-                The number of layers of data before reaching the exposure time.
-                This is different for bright data and dark data: bright data
-                has an extra layer between the exposure time and the data that
-                corresponds to the photon count.
-
-        Returns
-        -------
-        dict : Dictionary of the data with an additional layer.
-               The keys of this dict is the exposure time (float)
-               and they map to the corresponding data dict.
-        """
-        r = {}
-        for k in d.keys():
-            if depth > 1:
-                r[float(k)] = self._get_float_keys(d[k], depth - 1)
-            else:
-                r[float(k)] = d[k]
-        return r
-
     def _get_temporal(self, data):
         """Fill the temporal dict, with the stuff that we need.
         Compute the averages and variances from the sums (sum and pvar)
 
-        Uses the :meth:`_get_float_keys` method to work out the
-        mapping of exposure times and :meth:`_get_spatial_data`
-        to process data.
         If there is only one exposure time,
         the arrays in the returned dict will all have the same length as the
         photon count array. For this case, the exposure times and the dark
@@ -117,21 +86,17 @@ class Data1288(object):
 
         Raises
         ------
-        AssertionError
-            If bright and dark data don't have the same exposures.
+        ValueError
+            If there is no one 0.0 photon count entry for each exposure time
+            and at least one bright point
         """
         temporal = {}
 
-        # Get dict with exposure time as keys
-        bright = self._get_float_keys(data['bright'])
-        dark = self._get_float_keys(data['dark'], depth=1)
-
-        assert not set(bright.keys()) - set(dark.keys()), \
-            'Dark and bright must have same exposures'
+        # List of exposure times
+        exposures = np.asarray(sorted(data.keys()))
 
         # texp is now an array of exposure times
-        texp = np.asarray(sorted(bright.keys()))
-        temporal['texp'] = texp
+        temporal['texp'] = exposures
 
         u_p = []
         u_y = []
@@ -139,21 +104,28 @@ class Data1288(object):
         u_ydark = []
         s2_ydark = []
 
-        for t in texp:
-            # photons is a list of photon counts for bright
+        for t in exposures:
+            # photons is a list of photon counts
             # images for each exposure time
-            photons = sorted(bright[t].keys())
-            for p in photons:
-                # For each photon count, get the data
-                u_p.append(p)
-                d = self._get_temporal_data(bright[t][p])
-                u_y.append(d['mean'])
-                s2_y.append(d['var'])
+            photons = sorted(data[t].keys())
+
+            if 0.0 not in photons:
+                raise ValueError('Every exposure point must have a 0.0 photon')
+
+            if len(photons) < 2:
+                raise ValueError('There must be at least one bright photon')
 
             # get data for dark image
-            d = self._get_temporal_data(dark[t])
+            d = self._get_temporal_data(data[t][0.0])
             u_ydark.append(d['mean'])
             s2_ydark.append(d['var'])
+
+            for p in photons[1:]:
+                # For each photon count, get the data
+                u_p.append(p)
+                d = self._get_temporal_data(data[t][p])
+                u_y.append(d['mean'])
+                s2_y.append(d['var'])
 
         # Append all data to temporal dict
         temporal['u_p'] = np.asarray(u_p)
@@ -165,7 +137,7 @@ class Data1288(object):
         # In case we have only one exposure, we need arrays with the
         # same length as the up
         # we just repeat the same value over and over
-        if len(temporal['texp']) == 1:
+        if len(exposures) == 1:
             l = len(temporal['u_p'])
 
             v = temporal['texp'][0]
@@ -211,8 +183,6 @@ class Data1288(object):
 
         The images (sum and pvar) are preserved,
         they are needed for processing.
-        Uses :meth:`_get_float_keys` to work out the exposure times and
-        :meth:`_get_spatial_data` to process data.
 
         Parameters
         ----------
@@ -248,74 +218,40 @@ class Data1288(object):
 
         Raises
         ------
-        AssertionError
-            If the exposure times of dark images and bright
-            images are different.
+        ValueError
+            If the there is no exactly one dark and one bright point
         """
+
+        if len(data) != 1:
+            raise ValueError('Spatial data must contain only one exposure'
+                             ' time')
+
+        # the spatial exposure is the only exposure
+        exposure = list(data.keys())[0]
+
         spatial = {}
+        spatial['texp'] = exposure
 
-        # Get dicts with exposure times as keys
-        bright = self._get_float_keys(data['bright'])
-        dark = self._get_float_keys(data['dark'], depth=1)
+        photons = sorted(data[exposure].keys())
+        if 0.0 not in photons:
+            raise ValueError('there must be a 0.0 photon count for spatial')
 
-        assert not set(bright.keys()) - set(dark.keys()), \
-            'Dark and bright must have same exposures'
+        if len(photons) != 2:
+            raise ValueError('There must be one bright and one dark')
 
-        # texp contains the exposure times
-        texp = np.asarray(sorted(bright.keys()))
-        spatial['texp'] = texp
+        # get dark spatial data
+        d = self._get_spatial_data(data[exposure][0.0], postfix='_dark')
+        spatial.update(d)
 
-        u_p = []
-        _sum = []
-        _pvar = []
-        _L = []
-        _avg = []
-        _var = []
-
-        _sum_dark = []
-        _pvar_dark = []
-        _L_dark = []
-        _avg_dark = []
-        _var_dark = []
-
-        for t in texp:
-            # photons is the list of photon counts for one exposure time
-            photons = sorted(bright[t].keys())
-
-            for p in photons:
-                d = self._get_spatial_data(bright[t][p])
-
-                u_p.append(p)
-                _sum.append(d['sum'])
-                _pvar.append(d['pvar'])
-                _L.append(d['L'])
-                _avg.append(d['avg'])
-                _var.append(d['var'])
-
-            d = self._get_spatial_data(dark[t])
-
-            _sum_dark.append(d['sum'])
-            _pvar_dark.append(d['pvar'])
-            _L_dark.append(d['L'])
-            _avg_dark.append(d['avg'])
-            _var_dark.append(d['var'])
-
-        spatial['u_p'] = np.asarray(u_p)
-        spatial['sum'] = np.asarray(_sum)
-        spatial['pvar'] = np.asarray(_pvar)
-        spatial['L'] = np.asarray(_L)
-        spatial['avg'] = np.asarray(_avg)
-        spatial['var'] = np.asarray(_var)
-
-        spatial['sum_dark'] = np.asarray(_sum_dark)
-        spatial['pvar_dark'] = np.asarray(_pvar_dark)
-        spatial['L_dark'] = np.asarray(_L_dark)
-        spatial['avg_dark'] = np.asarray(_avg_dark)
-        spatial['var_dark'] = np.asarray(_var_dark)
+        # Photon count for bright spatial
+        bphoton = photons[1]
+        d = self._get_spatial_data(data[exposure][bphoton])
+        spatial['u_p'] = bphoton
+        spatial.update(d)
 
         return spatial
 
-    def _get_spatial_data(self, d):
+    def _get_spatial_data(self, d, postfix=''):
         """Add the mean and variance to the spatial image data.
 
         The mean is the sum of the images divided by L,
@@ -345,8 +281,8 @@ class Data1288(object):
         avg_ = sum_ / (1.0 * L)
         var_ = pvar_ / (1.0 * np.square(L) * (L - 1))
 
-        return {'sum': sum_,
-                'pvar': pvar_,
-                'L': L,
-                'avg': avg_,
-                'var': var_}
+        return {'sum' + postfix: sum_,
+                'pvar' + postfix: pvar_,
+                'L' + postfix: L,
+                'avg' + postfix: avg_,
+                'var' + postfix: var_}

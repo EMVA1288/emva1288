@@ -24,10 +24,9 @@ class ParseEmvaDescriptorFile(object):
     '''
 
     def __init__(self, filename, path=None, loglevel=logging.INFO):
-        # For dark the items are in the form of
-        # exposure:{[fname1, fname2, ...]}
-        # for bright the items are in the form of
+        # The items are in the form of
         # exposure:{photons:[fname1, fname2,...]}, photons....}
+        # for dark, the number of photons is 0.0
 
         # If no path is given, the filename path will be used to fill
         # the images dict
@@ -35,8 +34,8 @@ class ParseEmvaDescriptorFile(object):
 
         self.format = {}  # bits, witdth, height
         self.version = None
-        self.images = {'temporal': {'dark': {}, 'bright': {}},
-                       'spatial': {'dark': {}, 'bright': {}}}
+        self.images = {'temporal': {},
+                       'spatial': {}}
 
         logging.basicConfig()
         self.log = logging.getLogger('Parser')
@@ -88,27 +87,19 @@ class ParseEmvaDescriptorFile(object):
 
         return kind
 
-    def _add_bright_pcount(self, exposure, photons, fnames):
-        '''
+    def _add_pcount(self, exposure, photons, fnames):
+        '''Add images to a given exposure/phton
+
         For a given exposure and photon count
         add the appropiate image filenames to the self.images dict
         '''
         kind = self._get_kind(fnames)
-        step = self.images[kind]['bright'].setdefault(exposure, {})
+        self.images[kind].setdefault(exposure, {})
 
-        if photons in step:
-            raise SyntaxError('Only one set of bright images per photon count '
-                              '%.3f' % (photons))
-
-        step[photons] = fnames
-
-    def _add_dark_pcount(self, exposure, fnames):
-        kind = self._get_kind(fnames)
-
-        if exposure in self.images[kind]['dark']:
-            raise SyntaxError('Only one set of images per dark exposure %.3f'
-                              % (exposure))
-        self.images[kind]['dark'][exposure] = fnames
+        if photons in self.images[kind][exposure]:
+            raise SyntaxError('Only one set of images exp %.3f photons %.3f'
+                              % (exposure, photons))
+        self.images[kind][exposure][photons] = fnames
 
     def _fill_info(self):
         '''
@@ -148,7 +139,7 @@ class ParseEmvaDescriptorFile(object):
                 exposure = np.float(l[1].replace(',', '.'))
                 photons = np.float(l[2].replace(',', '.'))
                 fnames = self._get_images_filenames()
-                self._add_bright_pcount(exposure, photons, fnames)
+                self._add_pcount(exposure, photons, fnames)
 
                 continue
 
@@ -159,7 +150,7 @@ class ParseEmvaDescriptorFile(object):
 
                 exposure = np.float(l[1].replace(',', '.'))
                 fnames = self._get_images_filenames()
-                self._add_dark_pcount(exposure, fnames)
+                self._add_pcount(exposure, np.float(0.0), fnames)
 
                 continue
 
