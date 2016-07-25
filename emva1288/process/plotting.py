@@ -379,7 +379,7 @@ class PlotHorizontalSpectrogramPRNU(Emva1288Plot):
     def plot(self, test):
         ax = self.ax
 
-        data = test.spatial['avg'][0] - test.spatial['avg_dark'][0]
+        data = test.spatial['avg'] - test.spatial['avg_dark']
         data_mean = np.mean(data)
 
         spectrogram = routines.FFT1288(data) / data_mean
@@ -416,7 +416,7 @@ class PlotHorizontalSpectrogramDSNU(Emva1288Plot):
     def plot(self, test):
         ax = self.ax
 
-        spectrogram = routines.FFT1288(test.spatial['avg_dark'][0])
+        spectrogram = routines.FFT1288(test.spatial['avg_dark'])
         ax.plot(routines.GetFrecs(spectrogram[:(np.shape(spectrogram)[0] //
                                                 2)]),
                 np.sqrt(spectrogram[:(np.shape(spectrogram)[0] // 2)]),
@@ -448,7 +448,7 @@ class PlotVerticalSpectrogramPRNU(Emva1288Plot):
 
     def plot(self, test):
         ax = self.ax
-        data = test.spatial['avg'][0] - test.spatial['avg_dark'][0]
+        data = test.spatial['avg'] - test.spatial['avg_dark']
         data_mean = np.mean(data)
         spectrogram = routines.FFT1288(data, rotate=True) / data_mean
 
@@ -484,7 +484,7 @@ class PlotVerticalSpectrogramDSNU(Emva1288Plot):
     def plot(self, test):
         ax = self.ax
 
-        spectrogram = routines.FFT1288(test.spatial['avg_dark'][0],
+        spectrogram = routines.FFT1288(test.spatial['avg_dark'],
                                        rotate=True)
         ax.plot(routines.GetFrecs(spectrogram[:(np.shape(spectrogram)[0] //
                                                 2)]),
@@ -677,8 +677,8 @@ class PlotHorizontalProfile(ProfileBase):
         ax = self.ax
         ax2 = self.ax2
 
-        bimg = test.spatial['avg'][0] - test.spatial['avg_dark'][0]
-        dimg = test.spatial['avg_dark'][0]
+        bimg = test.spatial['avg'] - test.spatial['avg_dark']
+        dimg = test.spatial['avg_dark']
         profiles = self.get_profiles(bimg, dimg, False)
 
         x = np.arange(profiles['bright']['length'])
@@ -746,8 +746,8 @@ class PlotVerticalProfile(ProfileBase):
         ax = self.ax
         ax2 = self.ax2
 
-        bimg = test.spatial['avg'][0] - test.spatial['avg_dark'][0]
-        dimg = test.spatial['avg_dark'][0]
+        bimg = test.spatial['avg'] - test.spatial['avg_dark']
+        dimg = test.spatial['avg_dark']
         profiles = self.get_profiles(bimg, dimg, True)
 
         y = np.arange(profiles['bright']['length'])
