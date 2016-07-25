@@ -626,19 +626,45 @@ class ProfileBase(Emva1288Plot):
             img = np.transpose(image)
         else:
             img = image
+
         profile = np.mean(img, axis=0)
         profile_min = np.min(img, axis=0)
         profile_max = np.max(img, axis=0)
 
         mid_i = np.shape(img)[0]
         profile_mid = img[mid_i // 2, :]
+
+        # Verifications for profile_mid
+        if type(profile_mid) is np.ma.core.MaskedArray:
+            if profile_mid.mask.all():
+                # If by chance mid is a column of masked constant,
+                # take the next one
+                profile_mid = img[mid_i // 2 + 1, :]
+
         length = np.shape(profile)[0]
 
         d = {'mean': profile,
              'min': profile_min,
              'max': profile_max,
              'length': length,
-             'mid': profile_mid}
+             'mid': profile_mid,
+             'shown': {}}
+
+        # Keep track of masked array.
+        # Masked array won't show if there is still
+        # masked constants in profile.
+        types = ('mean', 'min', 'max', 'mid')
+        if type(image) is np.ma.MaskedArray:
+            for typ in types:
+                masks = d[typ].mask
+                # Index lists of where there is masked constants
+                index = [i for i in range(len(masks)) if not masks[i]]
+                # Append returned dict with the non masked elements indexes
+                d['shown'][typ] = index
+        else:
+            for typ in types:
+                # A slice of None is like no slicing
+                d['shown'][typ] = None
         return d
 
     def get_profiles(self, bright, dark, transpose):
@@ -682,30 +708,43 @@ class PlotHorizontalProfile(ProfileBase):
         profiles = self.get_profiles(bimg, dimg, False)
 
         x = np.arange(profiles['bright']['length'])
-        lmid = ax.plot(x, profiles['bright']['mid'],
+
+        # If there is a mask, retrieve the index of non masked elements
+        index_mid = profiles['bright']['shown']['mid']
+        index_min = profiles['bright']['shown']['min']
+        index_max = profiles['bright']['shown']['max']
+        index_mean = profiles['bright']['shown']['mean']
+
+        lmid = ax.plot(x[index_mid], profiles['bright']['mid'][index_mid],
                        label='Mid',
                        gid='%d:marker' % test.id)[0]
-        lmin = ax.plot(x, profiles['bright']['min'],
+        lmin = ax.plot(x[index_min], profiles['bright']['min'][index_min],
                        label='Min',
                        gid='%d:marker' % test.id)[0]
-        lmax = ax.plot(x, profiles['bright']['max'],
+        lmax = ax.plot(x[index_max], profiles['bright']['max'][index_max],
                        label='Max',
                        gid='%d:marker' % test.id)[0]
-        lmean = ax.plot(x, profiles['bright']['mean'],
+        lmean = ax.plot(x[index_mean], profiles['bright']['mean'][index_mean],
                         label='Mean',
                         gid='%d:marker' % test.id)[0]
 
+        # If there is a mask, retrieve the index of non masked elements
+        index_mid = profiles['dark']['shown']['mid']
+        index_min = profiles['dark']['shown']['min']
+        index_max = profiles['dark']['shown']['max']
+        index_mean = profiles['dark']['shown']['mean']
+
         x_dark = np.arange(profiles['dark']['length'])
-        ax2.plot(x_dark, profiles['dark']['mid'],
+        ax2.plot(x_dark[index_mid], profiles['dark']['mid'][index_mid],
                  label='Mid',
                  gid='%d:data' % test.id)
-        ax2.plot(x_dark, profiles['dark']['min'],
+        ax2.plot(x_dark[index_min], profiles['dark']['min'][index_min],
                  label='Min',
                  gid='%d:data' % test.id)
-        ax2.plot(x_dark, profiles['dark']['max'],
+        ax2.plot(x_dark[index_max], profiles['dark']['max'][index_max],
                  label='Max',
                  gid='%d:data' % test.id)
-        ax2.plot(x_dark, profiles['dark']['mean'],
+        ax2.plot(x_dark[index_mean], profiles['dark']['mean'][index_mean],
                  label='Mean',
                  gid='%d:data' % test.id)
 
@@ -750,31 +789,43 @@ class PlotVerticalProfile(ProfileBase):
         dimg = test.spatial['avg_dark'][0]
         profiles = self.get_profiles(bimg, dimg, True)
 
+        # If there is a mask, retrieve the index of non masked elements
+        index_mid = profiles['bright']['shown']['mid']
+        index_min = profiles['bright']['shown']['min']
+        index_max = profiles['bright']['shown']['max']
+        index_mean = profiles['bright']['shown']['mean']
+
         y = np.arange(profiles['bright']['length'])
-        lmid = ax2.plot(profiles['bright']['mid'], y,
+        lmid = ax2.plot(profiles['bright']['mid'][index_mid], y[index_mid],
                         label='Mid',
                         gid='%d:marker' % test.id)[0]
-        lmin = ax2.plot(profiles['bright']['min'], y,
+        lmin = ax2.plot(profiles['bright']['min'][index_min], y[index_min],
                         label='Min',
                         gid='%d:marker' % test.id)[0]
-        lmax = ax2.plot(profiles['bright']['max'], y,
+        lmax = ax2.plot(profiles['bright']['max'][index_max], y[index_max],
                         label='Max',
                         gid='%d:marker' % test.id)[0]
-        lmean = ax2.plot(profiles['bright']['mean'], y,
+        lmean = ax2.plot(profiles['bright']['mean'][index_mean], y[index_mean],
                          label='Mean',
                          gid='%d:marker' % test.id)[0]
 
+        # If there is a mask, retrieve the index of non masked elements
+        index_mid = profiles['dark']['shown']['mid']
+        index_min = profiles['dark']['shown']['min']
+        index_max = profiles['dark']['shown']['max']
+        index_mean = profiles['dark']['shown']['mean']
+
         y_dark = np.arange(profiles['dark']['length'])
-        ax.plot(profiles['dark']['mid'], y_dark,
+        ax.plot(profiles['dark']['mid'][index_mid], y_dark[index_mid],
                 label='Mid',
                 gid='%d:marker' % test.id)
-        ax.plot(profiles['dark']['min'], y_dark,
+        ax.plot(profiles['dark']['min'][index_min], y_dark[index_min],
                 label='Min',
                 gid='%d:marker' % test.id)
-        ax.plot(profiles['dark']['max'], y_dark,
+        ax.plot(profiles['dark']['max'][index_max], y_dark[index_max],
                 label='Max',
                 gid='%d:marker' % test.id)
-        ax.plot(profiles['dark']['mean'], y_dark,
+        ax.plot(profiles['dark']['mean'][index_mean], y_dark[index_mean],
                 label='Mean',
                 gid='%d:marker' % test.id)
 
