@@ -86,7 +86,7 @@ for exposure in np.linspace(c.exposure_min, exposure_max, 100):
 
     # For each exposure, take to measurements (bright, dark)
     for radiance in (saturation_radiance, 0.0):
-        photons = c.get_photons(radiance=radiance)
+        photons = c.get_photons(radiance)
 
         # Get the temporal data
         data['temporal'][exposure].setdefault(photons, {})
