@@ -36,28 +36,22 @@ def get_emva_gain(cam):
     return g
 
 
-def get_temporal(cam, bright, radiance):
+def get_temporal(cam, radiance):
     img1 = cam.grab(radiance)
     img2 = cam.grab(radiance)
     imgs = get_int_imgs((img1, img2))
-    value = {'sum': np.sum(imgs['sum']), 'pvar': np.sum(imgs['pvar'])}
-    if bright:
-        return {cam.get_photons(radiance=radiance): value}
-    return value
+    return {'sum': np.sum(imgs['sum']), 'pvar': np.sum(imgs['pvar'])}
 
 
-def get_spatial(cam, bright, radiance, L=50):
+def get_spatial(cam, radiance, L=50):
     imgs = []
     for i in range(L):
         imgs.append(cam.grab(radiance))
-    value = get_int_imgs(imgs)
-    if bright:
-        return {cam.get_photons(radiance=radiance): value}
-    return value
+    return get_int_imgs(imgs)
 
 
-data = {'temporal': {'dark': {}, 'bright': {}},
-        'spatial': {'dark': {}, 'bright': {}},
+data = {'temporal': {},
+        'spatial': {},
         'width': None, 'height': None}
 
 
@@ -82,32 +76,33 @@ c.K = get_emva_gain(c)
 # Find the radiance that will saturate the camera at our maximum exposure time
 saturation_radiance = c.get_radiance_for()
 
+# Initialize the exposure for the spatial measure
 exposure_spatial = None
-for illumination in ('bright', 'dark'):
-    if illumination == 'bright':
-        bright = True
-        radiance = saturation_radiance
-    else:
-        bright = False
-        radiance = 0
 
-    for exposure in np.linspace(c.exposure_min, exposure_max, 100):
-        c.exposure = exposure
+# Loop through the exposures
+for exposure in np.linspace(c.exposure_min, exposure_max, 100):
+    c.exposure = exposure
+    data['temporal'][exposure] = {}
 
-        data['temporal'][illumination][exposure] = get_temporal(c,
-                                                                bright,
-                                                                radiance)
+    # For each exposure, take to measurements (bright, dark)
+    for radiance in (saturation_radiance, 0.0):
+        photons = c.get_photons(radiance=radiance)
 
+        # Get the temporal data
+        data['temporal'][exposure].setdefault(photons, {})
+        data['temporal'][exposure][photons] = get_temporal(c, radiance)
+
+        # Check if we are at the middle of the range, to set the spatial exp
         img = c.grab(radiance)
         if not exposure_spatial and (img.mean() > c.img_max / 2.):
             exposure_spatial = exposure
 
+        # Get the spatial data
         if exposure_spatial == exposure:
-            data['spatial'][illumination][exposure] = get_spatial(c,
-                                                                  bright,
-                                                                  radiance)
+            data['spatial'].setdefault(exposure, {})
+            data['spatial'][exposure].setdefault(photons, {})
+            data['spatial'][exposure][photons] = get_spatial(c, radiance)
 
-        print(exposure, img.mean(), img.std())
 
 # Process the collected data
 dat = process.Data1288(data)
