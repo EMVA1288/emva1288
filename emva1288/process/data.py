@@ -25,6 +25,7 @@ class Data1288(object):
 
     def __init__(self,
                  data,
+                 pixels=None,
                  loglevel=logging.INFO):
         """Data processing object init method.
 
@@ -46,7 +47,7 @@ class Data1288(object):
         self.log = logging.getLogger('Data')
         self.log.setLevel(loglevel)
 
-        self.pixels = data['width'] * data['height']
+        self.pixels = pixels or data['width'] * data['height']
 
         self.data = {}
         self.data['temporal'] = self._get_temporal(data['temporal'])
@@ -264,10 +265,13 @@ class Data1288(object):
         ----------
         d : dict
             The data dictionary containing the sum and pvar of the images.
+        postfix: str, optional
+            String to add in the resulting dictionary keys
 
         Returns
         -------
-        dict : A data dictionary processed from the input. The keys are:
+        dict : A data dictionary processed from the input. The keys (+ postfix)
+        are:
                - *'sum'*: the sum image preserved from input,
                - *'pvar'*: the pvar image preserved from input,
                - *'L'*: the number of image summed,
@@ -275,9 +279,12 @@ class Data1288(object):
                - *'var'*: the variance as described above computed
                  from the pvar image.
         """
-        sum_ = np.asarray(d['sum'], dtype=np.int64)
-        pvar_ = np.asarray(d['pvar'], dtype=np.int64)
-        L = int(d['L'])
+
+        # This cast is just in case the original images are unint
+        sum_ = d['sum'].astype(np.int64)
+        pvar_ = d['pvar'].astype(np.int64)
+
+        L = d['L']
         avg_ = sum_ / (1.0 * L)
         var_ = pvar_ / (1.0 * np.square(L) * (L - 1))
 
