@@ -179,5 +179,9 @@ class ParseEmvaDescriptorFile(object):
         if self._path is None:
             self._path = os.path.dirname(filename)
 
-        self._lines = [x.strip() for x in f.readlines() if x.strip() and
-                       not x.strip().startswith('#')]
+        try:
+            self._lines = [x.strip() for x in f.readlines() if x.strip() and
+                           not x.strip().startswith('#')]
+        except UnicodeDecodeError:
+            raise UnicodeDecodeError("File: '%s', has non-utf8 characters."
+                                     "Find them and kill them!" % filename)
