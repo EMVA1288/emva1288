@@ -622,38 +622,107 @@ class ProfileBase(Emva1288Plot):
                 'max_deviation': max_max, 'max_percentage': max_perc}
 
     def _get_image_profiles(self, image, transpose):
+        """Get the images profiles. Supports the masked arrays.
+
+        Masked arrays cannot be shown directly with continuous lines.
+        To fix this, we only return the profiles excluding the masks
+        constants.
+
+        Also returns the x arrays corresponding the the profile.
+        """
         if transpose:
             img = np.transpose(image)
         else:
             img = image
+
         profile = np.mean(img, axis=0)
         profile_min = np.min(img, axis=0)
         profile_max = np.max(img, axis=0)
 
         mid_i = np.shape(img)[0]
         profile_mid = img[mid_i // 2, :]
-        length = np.shape(profile)[0]
 
-        d = {'mean': profile,
-             'min': profile_min,
-             'max': profile_max,
-             'length': length,
-             'mid': profile_mid}
+        # Verifications for profile_mid
+        if isinstance(profile_mid, np.ma.core.MaskedArray):
+            if profile_mid.mask.all():
+                # If by chance mid is a column of masked constant,
+                # take the next one
+                profile_mid = img[mid_i // 2 + 1, :]
+
+        # use _get_x_y to get the x and profile of unmasked values
+        d = {'mean': self._get_x_y(profile),
+             'min': self._get_x_y(profile_min),
+             'max': self._get_x_y(profile_max),
+             'mid': self._get_x_y(profile_mid),
+             }
         return d
+
+    def _get_x_y(self, profile):
+        x = np.arange(len(profile))
+        if isinstance(profile, np.ma.MaskedArray):
+            masks = profile.mask
+            # Index lists of where there is masked constants
+            index = [i for i in range(len(masks)) if not masks[i]]
+            # chop out masked values
+            x = x[index]
+            profile = profile[index]
+        return (x, profile)
 
     def get_profiles(self, bright, dark, transpose):
         b_p = self._get_image_profiles(bright, transpose)
-        b_mean = np.mean(b_p['mean'])
-        self.axis_limits['bright']['length'].append(b_p['length'])
+        # index 1 is the profile (0 is x-axis)
+        b_mean = np.mean(b_p['mean'][1])
         self.axis_limits['bright']['min'].append(0.9 * b_mean)
         self.axis_limits['bright']['max'].append(1.1 * b_mean)
 
         d_p = self._get_image_profiles(dark, transpose)
-        self.axis_limits['dark']['length'].append(d_p['length'])
-        self.axis_limits['dark']['min'].append(0.9 * np.mean(d_p['min']))
-        self.axis_limits['dark']['max'].append(1.1 * np.mean(d_p['max']))
-
+        self.axis_limits['dark']['min'].append(0.9 * np.mean(d_p['min'][1]))
+        self.axis_limits['dark']['max'].append(1.1 * np.mean(d_p['max'][1]))
         return {'bright': b_p, 'dark': d_p}
+
+    def plot(self, test):
+        # index of profiles of what will be the x and y axis
+        x = 0
+        y = 1
+        legend_loc = 'upper right'
+        if self.vertical:
+            x = 1
+            y = 0
+            legend_loc = (0.8, 0.65)
+
+        ax = self.ax
+        ax2 = self.ax2
+
+        bimg = test.spatial['avg'] - test.spatial['avg_dark']
+        dimg = test.spatial['avg_dark']
+        profiles = self.get_profiles(bimg, dimg, self.vertical)
+
+        # to keep the lines number for legend
+        bright_plots = []
+        labels = []
+
+        for typ in ('mid', 'min', 'max', 'mean'):
+            # label has first letter capital
+            label = typ[0].upper() + typ[1:]
+            labels.append(label)
+
+            # bright plot
+            l = ax.plot(profiles['bright'][typ][x],
+                        profiles['bright'][typ][y],
+                        label=label,
+                        gid='%d:marker' % test.id)[0]
+            bright_plots.append(l)
+
+            # dark plot
+            ax2.plot(profiles['dark'][typ][x],
+                     profiles['dark'][typ][y],
+                     label=label,
+                     gid='%d:data' % test.id)
+
+        # Place legend
+        self.figure.legend(bright_plots,
+                           labels,
+                           loc=legend_loc)
 
 
 class PlotHorizontalProfile(ProfileBase):
@@ -662,6 +731,7 @@ class PlotHorizontalProfile(ProfileBase):
     '''
 
     name = 'Horizontal profile'
+    vertical = False
 
     def setup_figure(self):
         self.ax = self.figure.add_subplot(211)
@@ -672,46 +742,6 @@ class PlotHorizontalProfile(ProfileBase):
         self.ax2.set_title('DSNU')
         self.ax2.set_xlabel('Index of the line')
         self.ax2.set_ylabel('Vertical line [DN]')
-
-    def plot(self, test):
-        ax = self.ax
-        ax2 = self.ax2
-
-        bimg = test.spatial['avg'] - test.spatial['avg_dark']
-        dimg = test.spatial['avg_dark']
-        profiles = self.get_profiles(bimg, dimg, False)
-
-        x = np.arange(profiles['bright']['length'])
-        lmid = ax.plot(x, profiles['bright']['mid'],
-                       label='Mid',
-                       gid='%d:marker' % test.id)[0]
-        lmin = ax.plot(x, profiles['bright']['min'],
-                       label='Min',
-                       gid='%d:marker' % test.id)[0]
-        lmax = ax.plot(x, profiles['bright']['max'],
-                       label='Max',
-                       gid='%d:marker' % test.id)[0]
-        lmean = ax.plot(x, profiles['bright']['mean'],
-                        label='Mean',
-                        gid='%d:marker' % test.id)[0]
-
-        x_dark = np.arange(profiles['dark']['length'])
-        ax2.plot(x_dark, profiles['dark']['mid'],
-                 label='Mid',
-                 gid='%d:data' % test.id)
-        ax2.plot(x_dark, profiles['dark']['min'],
-                 label='Min',
-                 gid='%d:data' % test.id)
-        ax2.plot(x_dark, profiles['dark']['max'],
-                 label='Max',
-                 gid='%d:data' % test.id)
-        ax2.plot(x_dark, profiles['dark']['mean'],
-                 label='Mean',
-                 gid='%d:data' % test.id)
-
-        self.figure.legend((lmid, lmin, lmax, lmean),
-                           ('Mid', 'Min', 'Max', 'Mean'),
-                           'upper right')
 
     def rearrange(self):
         self.ax.set_xticks([])
@@ -731,65 +761,26 @@ class PlotVerticalProfile(ProfileBase):
     '''
 
     name = 'Vertical profile'
+    vertical = True
 
     def setup_figure(self):
-        self.ax = self.figure.add_subplot(121)
-        self.ax2 = self.figure.add_subplot(122)
+        self.ax2 = self.figure.add_subplot(121)
+        self.ax = self.figure.add_subplot(122)
         self.figure.suptitle(self.name)
-        self.ax.set_title('DSNU')
-        self.ax.set_xlabel('Vertical line [DN]')
-        self.ax.set_ylabel('Index of the line')
-        self.ax2.set_title('PRNU')
+        self.ax2.set_title('DSNU')
         self.ax2.set_xlabel('Vertical line [DN]')
-
-    def plot(self, test):
-        ax = self.ax
-        ax2 = self.ax2
-
-        bimg = test.spatial['avg'] - test.spatial['avg_dark']
-        dimg = test.spatial['avg_dark']
-        profiles = self.get_profiles(bimg, dimg, True)
-
-        y = np.arange(profiles['bright']['length'])
-        lmid = ax2.plot(profiles['bright']['mid'], y,
-                        label='Mid',
-                        gid='%d:marker' % test.id)[0]
-        lmin = ax2.plot(profiles['bright']['min'], y,
-                        label='Min',
-                        gid='%d:marker' % test.id)[0]
-        lmax = ax2.plot(profiles['bright']['max'], y,
-                        label='Max',
-                        gid='%d:marker' % test.id)[0]
-        lmean = ax2.plot(profiles['bright']['mean'], y,
-                         label='Mean',
-                         gid='%d:marker' % test.id)[0]
-
-        y_dark = np.arange(profiles['dark']['length'])
-        ax.plot(profiles['dark']['mid'], y_dark,
-                label='Mid',
-                gid='%d:marker' % test.id)
-        ax.plot(profiles['dark']['min'], y_dark,
-                label='Min',
-                gid='%d:marker' % test.id)
-        ax.plot(profiles['dark']['max'], y_dark,
-                label='Max',
-                gid='%d:marker' % test.id)
-        ax.plot(profiles['dark']['mean'], y_dark,
-                label='Mean',
-                gid='%d:marker' % test.id)
-
-        self.figure.legend((lmid, lmin, lmax, lmean),
-                           ('Mid', 'Min', 'Max', 'Mean'),
-                           loc=(0.8, 0.65))
+        self.ax2.set_ylabel('Index of the line')
+        self.ax.set_title('PRNU')
+        self.ax.set_xlabel('Vertical line [DN]')
 
     def rearrange(self):
-        self.ax2.set_yticks([])
-        self.ax2.axis(xmin=min(self.axis_limits['bright']['min']),
-                      xmax=max(self.axis_limits['bright']['max']))
-        self.ax.axis(xmin=min(self.axis_limits['dark']['min']),
-                     xmax=max(self.axis_limits['dark']['max']))
-        self.ax.invert_yaxis()
+        self.ax.set_yticks([])
+        self.ax.axis(xmin=min(self.axis_limits['bright']['min']),
+                     xmax=max(self.axis_limits['bright']['max']))
+        self.ax2.axis(xmin=min(self.axis_limits['dark']['min']),
+                      xmax=max(self.axis_limits['dark']['max']))
         self.ax2.invert_yaxis()
+        self.ax.invert_yaxis()
         self.reduce_ticks(self.ax2, 'x')
         self.reduce_ticks(self.ax, 'x')
         self.figure.tight_layout()
