@@ -621,7 +621,7 @@ class ProfileBase(Emva1288Plot):
                 'min_label': min_label, 'max_label': max_label,
                 'max_deviation': max_max, 'max_percentage': max_perc}
 
-    def _get_image_profiles(self, image, transpose):
+    def _get_image_profiles(self, image):
         """Get the images profiles. Supports the masked arrays.
 
         Masked arrays cannot be shown directly with continuous lines.
@@ -630,10 +630,9 @@ class ProfileBase(Emva1288Plot):
 
         Also returns the x arrays corresponding the the profile.
         """
-        if transpose:
+        img = image
+        if self.vertical:
             img = np.transpose(image)
-        else:
-            img = image
 
         profile = np.mean(img, axis=0)
         profile_min = np.min(img, axis=0)
@@ -668,14 +667,14 @@ class ProfileBase(Emva1288Plot):
             profile = profile[index]
         return (x, profile)
 
-    def get_profiles(self, bright, dark, transpose):
-        b_p = self._get_image_profiles(bright, transpose)
+    def get_profiles(self, bright, dark):
+        b_p = self._get_image_profiles(bright)
         # index 1 is the profile (0 is x-axis)
         b_mean = np.mean(b_p['mean'][1])
         self.axis_limits['bright']['min'].append(0.9 * b_mean)
         self.axis_limits['bright']['max'].append(1.1 * b_mean)
 
-        d_p = self._get_image_profiles(dark, transpose)
+        d_p = self._get_image_profiles(dark)
         self.axis_limits['dark']['min'].append(0.9 * np.mean(d_p['min'][1]))
         self.axis_limits['dark']['max'].append(1.1 * np.mean(d_p['max'][1]))
         return {'bright': b_p, 'dark': d_p}
@@ -695,7 +694,7 @@ class ProfileBase(Emva1288Plot):
 
         bimg = test.spatial['avg'] - test.spatial['avg_dark']
         dimg = test.spatial['avg_dark']
-        profiles = self.get_profiles(bimg, dimg, self.vertical)
+        profiles = self.get_profiles(bimg, dimg)
 
         # to keep the lines number for legend
         bright_plots = []
