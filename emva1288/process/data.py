@@ -193,6 +193,7 @@ class Data1288(object):
         -------
         dict : A dict containing all spatial test data.
                The keys are the following:
+
                - *'texp'*: the array of exposure times for spatial tests,
                - *'u_p'*: the array of photon count average for
                  each exposure times.

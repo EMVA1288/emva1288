@@ -8,3 +8,4 @@
     process
     report
     unittests
+    sphinx_directives

@@ -202,15 +202,18 @@ def Histogram1288(img, Qmax):
 
 
 def cls_1288_info(cls):
-    '''
-    Returns a dict "d" of the form
-    d = {SectionName : {MethodName: {TagName: TagValue, ...}}}
-    TagName and TagValue are pairs in the docstring with the format
-    **Tagname: TagValue
+    '''Dictionnary that represents results
 
-    SectionName correspond a tag **Section: SectionName
+    Parameters
+    ----------
+    cls : Class from wich to extract the information
 
-    If there is no such tag, the SectionName used for the method is 'other'
+    Return
+    ------
+    dict :
+        Dictionnary extracted using
+        :class:`~emva1288.sphinx_directives.Emva1288Directive`
+
     '''
 
     d = {}
@@ -225,11 +228,19 @@ def cls_1288_info(cls):
 
         # to store the relevant tag lines
         tag_lines = []
+        n = len(lines)
 
+        flag = False
         for line in lines:
-            # Get only those that are relevant (start with **)
-            if line.startswith('**'):
-                tag_lines.append(line[2:])
+            # Get only those that are relevant (start with .. emva1288::)
+            if line.startswith('.. emva1288::'):
+                flag = True
+                continue
+            if flag:
+                if not line.strip():
+                    flag = False
+                    continue
+                tag_lines.append(line)
         # if there are not relevant lines skip and go to next method
         if not tag_lines:
             continue
@@ -237,15 +248,15 @@ def cls_1288_info(cls):
         # To store the info from the doc
         method_info = {}
         for line in tag_lines:
-            tags = [x.strip() for x in line.split(':')]
+            tags = [x.strip() for x in line.split(':', 2) if x.strip()]
             # Each valid tag has to be xx:yy
             if len(tags) != 2:
                 continue
             # Fill the dict
-            method_info[tags[0]] = tags[1]
+            method_info[tags[0].lower()] = tags[1]
 
         # extract the section, or put it as 'other'
-        section = method_info.pop('Section', 'other')
+        section = method_info.pop('section', 'other')
 
         # Add or get the current section branch of the dict
         s = d.setdefault(section, {})
@@ -274,9 +285,9 @@ def obj_to_dict(obj):
                 val = val()
 
             if isinstance(val, dict):
-                d[section][methodname]['Data'] = val
+                d[section][methodname]['data'] = val
             else:
-                d[section][methodname]['Value'] = val
+                d[section][methodname]['value'] = val
     return d
 
 
