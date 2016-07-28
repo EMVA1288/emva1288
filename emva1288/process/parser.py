@@ -74,7 +74,7 @@ class ParseEmvaDescriptorFile(object):
                 # image line
                 self._lines.append(line)
                 break
-            if len(l) != 2:
+            if len(l) != 2:  # pragma: no cover
                 raise SyntaxError('Wrong format: "%s" should be "i filename"'
                                   % line)
                 break
@@ -83,7 +83,7 @@ class ParseEmvaDescriptorFile(object):
             path = os.path.join(self._path, *npath.split('\\'))
             fnames.append(path)
 
-        if len(fnames) < 2:
+        if len(fnames) < 2:  # pragma: no cover
             raise SyntaxError('Each image series, has to '
                               'have at least two images')
 
@@ -118,7 +118,7 @@ class ParseEmvaDescriptorFile(object):
         # if this dict for this exposure time and this
         # photons count already existed, raise an error in order to not
         # overwrite existing data.
-        if photons in self.images[kind][exposure]:
+        if photons in self.images[kind][exposure]:  # pragma: no cover
             raise SyntaxError('Only one set of images exp %.3f photons %.3f'
                               % (exposure, photons))
 
@@ -156,12 +156,13 @@ class ParseEmvaDescriptorFile(object):
                 # for lines that starts with n, there is always 4 elements
                 # n + bits + width + height
                 # There should be only one of this line in the file
-                if len(l) != 4:
+                if len(l) != 4:  # pragma: no cover
                     raise SyntaxError('Wrong format: "%s" should be "n bits '
                                       'width height"' % line)
 
-                if self.format:
-                    # if it is the second line found of this type raise error
+                if self.format:  # pragma: no cover
+                    # if it is the second line found
+                    # of this type raise error
                     raise SyntaxError('Only one "n bits width height" is '
                                       'allowed per file')
 
@@ -173,7 +174,7 @@ class ParseEmvaDescriptorFile(object):
             if l[0] == 'b':
                 # For lines that starts with b. there is always 3 elements
                 # b + exposureTime + numberPhotons (bright images)
-                if len(l) != 3:
+                if len(l) != 3:  # pragma: no cover
                     raise SyntaxError('Wrong format: "%s" should be "b '
                                       'exposure photons"' % line)
 
@@ -191,7 +192,7 @@ class ParseEmvaDescriptorFile(object):
             if l[0] == 'd':
                 # For lines that starts with d, there is always 2 elements
                 # d + exposureTime (dark images)
-                if len(l) != 2:
+                if len(l) != 2:  # pragma: no cover
                     raise SyntaxError('Wrong format: "%s" should be "d '
                                       'exposure"' % line)
 
@@ -205,7 +206,7 @@ class ParseEmvaDescriptorFile(object):
                 continue
 
             # If line is of an unknown format, warn user.
-            self.log.warning('Unknown command ' + line)
+            self.log.warning('Unknown command ' + line)  # pragma: no cover
 
     def _split_line(self, line):
         """
@@ -214,7 +215,7 @@ class ParseEmvaDescriptorFile(object):
         split by white spaces and strip white spaces from elements
         """
         l = [x.strip() for x in line.split()]
-        if (not l) or (len(l) < 2):
+        if (not l) or (len(l) < 2):  # pragma: no cover
             raise SyntaxError('Wrong format line: %s' % line)
         return l
 
@@ -234,7 +235,7 @@ class ParseEmvaDescriptorFile(object):
         try:
             self._lines = [x.strip() for x in f.readlines() if x.strip() and
                            not x.strip().startswith('#')]
-        except UnicodeDecodeError:
+        except UnicodeDecodeError:  # pragma: no cover
             # If there is an unknown character in the file, speak it!
             raise UnicodeDecodeError("File: '%s', has non-utf8 characters."
                                      "Find them and kill them!" % filename)
