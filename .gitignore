@@ -9,7 +9,7 @@
 .project
 .pydevproject
 .idea
-.swp
+*.swp
 
 # Compiled source #
 ###################
@@ -45,3 +45,6 @@ MANIFEST
 .settings
 *.egg-info
 doc/_build
+# Coverage info
+.coverage
+cover
