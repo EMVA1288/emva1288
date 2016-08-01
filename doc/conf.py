@@ -30,10 +30,22 @@ import os
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 
+autodoc_mock_imports = ['scipy',
+                        'scipy.optimize',
+                        'scipy.ndimage',
+                        'numpy',
+                        'matplotlib',
+                        'matplotlib.figure',
+                        'matplotlib.backends',
+                        'matplotlib.backends.backend_pdf',
+                        'nose',
+                        'nose.tools',
+                        'pep8',
+                        'lxml']
+
+
 # Add local extensions
 sys.path.append(os.path.abspath('exts'))
-sys.path.append(os.path.abspath('..'))
-print('patt', os.path.abspath('..'))
 
 extensions = [
     'sphinx.ext.autodoc',

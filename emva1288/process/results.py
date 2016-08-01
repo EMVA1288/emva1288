@@ -12,7 +12,7 @@ values.
 from __future__ import print_function
 import logging
 import numpy as np
-from . import routines
+from emva1288.process import routines
 from scipy.ndimage import convolve
 
 
