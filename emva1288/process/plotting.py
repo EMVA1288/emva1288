@@ -702,7 +702,7 @@ class ProfileBase(Emva1288Plot):
 
         for typ in ('mid', 'min', 'max', 'mean'):
             # label has first letter capital
-            label = typ[0].upper() + typ[1:]
+            label = typ.capitalize()
             labels.append(label)
 
             # bright plot
