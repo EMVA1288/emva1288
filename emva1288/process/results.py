@@ -47,27 +47,26 @@ class Results1288(object):
 
     @property
     def s2q(self):
+        """Quantification noise"""
         return self._s2q
 
     @property
     def index_start(self):
-        """
-        **Section: info
-        **Short: The array indexes start at
-        **Symbol:
-        **Comment:
-        **Unit:
+        """The array indexes start at
+
+        .. emva1288::
+            :Section: info
+            :Short: Start array index
         """
         return self._index_start
 
     @property
     def index_u_ysat(self):
-        """
-        **Section: sensitivity
-        **Short: Saturation Point
-        **Symbol:
-        **Comment: Index of saturation
-        **Unit:
+        """Index of saturation
+
+        .. emva1288::
+            :Section: sensitivity
+            :Short: Saturation index
         """
 
         if self._index_u_ysat:
@@ -96,10 +95,10 @@ class Results1288(object):
     def index_sensitivity_max(self):
         """Index for linear fits in sensitivity part of the standard
         (70% of saturation)
-        **Section: sensitivity
-        **Symbol:
-        **Unit:
-        **Short:Sensitivity fit maximum index
+
+        .. emva1288::
+            :Section: sensitivity
+            :Short: Sensitivity fit maximum index
         """
 
         Y = self.temporal['u_y'] - self.temporal['u_ydark']
@@ -108,24 +107,28 @@ class Results1288(object):
 
     @property
     def index_sensitivity_min(self):
-        """
-        **Section: sensitivity
-        **Short:Sensitivity fit minimum index
-        **Symbol:
-        **Comment:Index for linear fits in sensitivity part of the standard
+        """Sensitivity minimum index
+
+        Index for linear fits in sensitivity part of the standard
         (70% of saturation)
-        **Unit:
+
+        .. emva1288::
+            :Section: sensitivity
+            :Short: Sensitivity fit minimum index
         """
         return self._index_sensitivity_min
 
     @property
     def R(self):
-        """
-        **Section: sensitivity
-        **Short:Responsivity
-        **Symbol:R
-        **Comment:Slope of the (u_y - u_y_dark) Vs u_p. Fit with offset = 0
-        **Unit:DN/p
+        """Responsivity
+
+        Slope of the (u_y - u_y_dark) Vs u_p. Fit with offset = 0
+
+        .. emva1288::
+            :Section: sensitivity
+            :Short: Responsivity
+            :Symbol: R
+            :Unit: DN/p
         """
 
         Y = self.temporal['u_y'] - self.temporal['u_ydark']
@@ -140,14 +143,17 @@ class Results1288(object):
 
     @property
     def K(self):
-        """
-        **Section: sensitivity
-        **Short:System gain
-        **Symbol:K
-        **Comment:Slope of (s2_y - s2_y_dark) Vs (u_y - u_y_dark). Fit with
+        """Overall system gain
+
+        Slope of (s2_y - s2_y_dark) Vs (u_y - u_y_dark). Fit with
         offset = 0
-        **Unit: $DN/e^-$
-        **LatexName:K
+
+        .. emva1288::
+            :Section: sensitivity
+            :Short: System gain
+            :Symbol: K
+            :Unit: $DN/e^-$
+            :LatexName: K
         """
 
         X = self.temporal['u_y'] - self.temporal['u_ydark']
@@ -161,39 +167,42 @@ class Results1288(object):
         return val[0]
 
     def inverse_K(self):
-        """
-        **Section: sensitivity
-        **Short:Inverse system gain
-        **Symbol: 1/K
-        **Comment:
-        **Unit: $e^-/DN$
-        **LatexName: InvK
+        """Inverse of overall system gain
+
+        .. emva1288::
+            :Section: sensitivity
+            :Short: Inverse of overall system gain
+            :Symbol: 1/K
+            :Unit: $e^-/DN$
+            :LatexName: InvK
         """
 
         return 1. / self.K
 
     @property
     def QE(self):
-        """
-        **Section: sensitivity
-        **Short: Quantum efficiency
-        **Symbol: $\eta$
-        **Comment:
-        **Unit: \%
-        **LatexName: QE
+        """Quantum efficiency
+
+        .. emva1288::
+            :Section: sensitivity
+            :Short: Quantum efficiency
+            :Symbol: $\eta$
+            :Unit: \%
+            :LatexName: QE
         """
 
         return 100.0 * self.R / self.K
 
     @property
     def sigma_y_dark(self):
-        """
-        **Section: sensitivity
-        **Short: Temporal Dark Noise
-        **Symbol: $\sigma_{y.dark}$
-        **Comment:
-        **Unit: DN
-        **LatexName: SigmaYDark
+        """Temporal Dark Noise
+
+        .. emva1288::
+            :Section: sensitivity
+            :Short: Temporal Dark Noise
+            :Symbol: $\sigma_{y.dark}$
+            :Unit: DN
+            :LatexName: SigmaYDark
         """
 
         if len(np.unique(self.temporal['texp'])) <= 2:
@@ -213,39 +222,42 @@ class Results1288(object):
 
     @property
     def sigma_d(self):
-        """
-        **Section: sensitivity
-        **Short: Temporal Dark Noise
-        **Symbol:$\sigma_d$
-        **Comment:
-        **Unit: $e^-$
-        **LatexName: SigmaDark
+        """Temporal Dark Noise
+
+        .. emva1288::
+            :Section: sensitivity
+            :Short: Temporal Dark Noise
+            :Symbol: $\sigma_d$
+            :Unit: $e^-$
+            :LatexName: SigmaDark
         """
 
         return np.sqrt((self.sigma_y_dark ** 2) - self._s2q) / self.K
 
     @property
     def u_p_min(self):
-        """
-        **Section: sensitivity
-        **Short: Absolute sensitivity threshold
-        **Symbol:$\mu_{p.min}$
-        **Comment:
-        **Unit: $p$
-        **LatexName: UPMin
+        """Absolute sensitivity threshold
+
+        .. emva1288::
+            :Section: sensitivity
+            :Short: Absolute sensitivity threshold
+            :Symbol: $\mu_{p.min}$
+            :Unit: $p$
+            :LatexName: UPMin
         """
 
         return (100.0 / self.QE) * ((self.sigma_y_dark / self.K) + 0.5)
 
     @property
     def u_p_min_area(self):
-        """
-        **Section: sensitivity
-        **Short: Sensitivity threshold
-        **Symbol:$\mu_{p.min.area}$
-        **Comment:
-        **Unit: $p/\mu m^2$
-        **LatexName: UPMin
+        """Sensitivity threshold per area
+
+        .. emva1288::
+            :Section: sensitivity
+            :Short: Sensitivity threshold
+            :Symbol: $\mu_{p.min.area}$
+            :Unit: $p/\mu m^2$
+            :LatexName: UPMin
         """
 
         if not self.pixel_area:
@@ -255,25 +267,27 @@ class Results1288(object):
 
     @property
     def u_e_min(self):
-        """
-        **Section: sensitivity
-        **Short: Sensitivity threshold
-        **Symbol:$\mu_{e.min}$
-        **Comment:
-        **Unit: $e^-$
-        **LatexName: UEMin
+        """Sensitivity threshold
+
+        .. emva1288::
+            :Section: sensitivity
+            :Short: Sensitivity threshold
+            :Symbol: $\mu_{e.min}$
+            :Unit: $e^-$
+            :LatexName: UEMin
         """
         return self.QE * self.u_p_min / 100.0
 
     @property
     def u_e_min_area(self):
-        """
-        **Section: sensitivity
-        **Short: Sensitivity threshold
-        **Symbol:$\mu_{e.min.area}$
-        **Comment:
-        **Unit: $e^-/\mu m^2$
-        **LatexName: UEMin
+        """Sensitivity threshold
+
+        .. emva1288::
+            :Section: sensitivity
+            :Short: Sensitivity threshold
+            :Symbol: $\mu_{e.min.area}$
+            :Unit: $e^-/\mu m^2$
+            :LatexName: UEMin
         """
         if not self.pixel_area:
             return None
@@ -282,26 +296,28 @@ class Results1288(object):
 
     @property
     def u_p_sat(self):
-        """
-        **Section: sensitivity
-        **Short:Saturation Capacity
-        **Symbol:$\mu_{p.sat}$
-        **Comment:
-        **Unit: $p$
-        **LatexName: UPSat
+        """Saturation Capacity
+
+        .. emva1288::
+            :Section: sensitivity
+            :Short: Saturation Capacity
+            :Symbol: $\mu_{p.sat}$
+            :Unit: $p$
+            :LatexName: UPSat
         """
 
         return self.temporal['u_p'][self.index_u_ysat]
 
     @property
     def u_p_sat_area(self):
-        """
-        **Section: sensitivity
-        **Short:Saturation Capacity
-        **Symbol:$\mu_{p.sat.area}$
-        **Comment:
-        **Unit: $p/\mu m^2$
-        **LatexName: UPSat
+        """Saturation Capacity per pixel area
+
+        .. emva1288::
+            :Section: sensitivity
+            :Short: Saturation Capacity
+            :Symbol: $\mu_{p.sat.area}$
+            :Unit: $p/\mu m^2$
+            :LatexName: UPSat
         """
 
         if not self.pixel_area:
@@ -311,26 +327,30 @@ class Results1288(object):
 
     @property
     def u_e_sat(self):
-        """
-        **Section: sensitivity
-        **Short:Saturation Capacity
-        **Symbol:$\mu_{e.sat}$
-        **Comment:Number of electrons at saturation
-        **Unit: $e^-$
-        **LatexName: UESat
+        """Saturation Capacity
+
+        Number of electrons at saturation
+
+        .. emva1288::
+            :Section: sensitivity
+            :Short: Saturation Capacity
+            :Symbol: $\mu_{e.sat}$
+            :Unit: $e^-$
+            :LatexName: UESat
         """
 
         return self.QE * self.u_p_sat / 100.0
 
     @property
     def u_e_sat_area(self):
-        """
-        **Section: sensitivity
-        **Short:Saturation Capacity
-        **Symbol:$\mu_{e.sat.area}$
-        **Comment:
-        **Unit: $e^-/\mu m^2$
-        **LatexName: UESat
+        """Saturation Capacity
+
+        .. emva1288::
+            :Section: sensitivity
+            :Short: Saturation Capacity
+            :Symbol: $\mu_{e.sat.area}$
+            :Unit: $e^-/\mu m^2$
+            :LatexName: UESat
         """
 
         if not self.pixel_area:
@@ -340,98 +360,104 @@ class Results1288(object):
 
     @property
     def SNR_max(self):
-        """
-        **Section: sensitivity
-        **Short: Signal-to-Noise Ratio
-        **Symbol: $SNR_{max}$
-        **Comment:
-        **Unit:
-        **LatexName: SNRMax
+        """Maximum Signal-to-Noise Ratio
+
+        .. emva1288::
+            :Section: sensitivity
+            :Short: Signal-to-Noise Ratio
+            :Symbol: $SNR_{max}$
+            :LatexName: SNRMax
         """
 
         return np.sqrt(self.u_e_sat)
 
     def SNR_max_dB(self):
-        """
-        **Section: sensitivity
-        **Short:Maximum Signal to Noise Ratio in Db
-        **Symbol: $SNR_{max.dB}$
-        **Comment:
-        **Unit: dB
-        **LatexName: SNRMaxDB
+        """Maximum Signal to Noise Ratio in Db
+
+        .. emva1288::
+            :Section: sensitivity
+            :Short: Maximum Signal to Noise Ratio in Db
+            :Symbol: $SNR_{max.dB}$
+            :Unit: dB
+            :LatexName: SNRMaxDB
         """
 
         return 20. * np.log10(self.SNR_max)
 
     def SNR_max_bit(self):
-        """
-        **Section: sensitivity
-        **Short: Maximum Signal to Noise Ratio in Bits
-        **Symbol: $SNR_{max.bit}$
-        **Comment:
-        **Unit: bit
-        **LatexName: SNRMaxBit
+        """Maximum Signal to Noise Ratio in Bits
+
+        .. emva1288::
+            :Section: sensitivity
+            :Short: Maximum Signal to Noise Ratio in Bits
+            :Symbol: $SNR_{max.bit}$
+            :Unit: bit
+            :LatexName: SNRMaxBit
         """
 
         return np.log2(self.SNR_max)
 
     def inverse_SNR_max(self):
-        """
-        **Section: sensitivity
-        **Short: Inverse Maximum Signal to Noise Ratio
-        **Symbol: $SNR_{max}^{-1}$
-        **Comment:
-        **Unit: \%
-        **LatexName: InvSNRMax
+        """Inverse Maximum Signal to Noise Ratio
+
+        .. emva1288::
+            :Section: sensitivity
+            :Short: Inverse Maximum Signal to Noise Ratio
+            :Symbol: $SNR_{max}^{-1}$
+            :Unit: \%
+            :LatexName: InvSNRMax
         """
 
         return 100. / self.SNR_max
 
     @property
     def DR(self):
-        """
-        **Section: sensitivity
-        **Short: Dynamic Range
-        **Symbol: DR
-        **Comment:
-        **Unit:
-        **LatexName: DR
+        """Dynamic Range
+
+        .. emva1288::
+            :Section: sensitivity
+            :Short: Dynamic Range
+            :Symbol: DR
+            :LatexName: DR
         """
 
         return self.u_p_sat / self.u_p_min
 
     def DR_dB(self):
-        """
-        **Section: sensitivity
-        **Short: Dynamic Range
-        **Symbol: $DR_{dB}$
-        **Comment:
-        **Unit: dB
-        **LatexName: DRDB
+        """Dynamic Range
+
+        .. emva1288::
+            :Section: sensitivity
+            :Short: Dynamic Range
+            :Symbol: $DR_{dB}$
+            :Unit: dB
+            :LatexName: DRDB
         """
 
         return 20. * np.log10(self.DR)
 
     def DR_bit(self):
-        """
-        **Section: sensitivity
-        **Short: Dynamic Range
-        **Symbol: $DR_{bit}$
-        **Comment:
-        **Unit: bit
-        **LatexName: DRBit
+        """Dynamic Range
+
+        .. emva1288::
+            :Section: sensitivity
+            :Short: Dynamic Range
+            :Symbol: $DR_{bit}$
+            :Unit: bit
+            :LatexName: DRBit
         """
 
         return np.log2(self.DR)
 
     @property
     def index_linearity_min(self):
-        """
-        **Section: linearity
-        **Short:Linearity fit minimun index
-        **Symbol:
-        **Comment:Minimum index for linear fit in (5% of saturation)
-        **Unit:
+        """Linearity fit minimun index
+
+        Minimum index for linear fit in (5% of saturation)
+
+        .. emva1288:
+            :Section: linearity
+            :Short: Linearity fit minimun index
         """
         Y = self.temporal['u_y'] - self.temporal['u_ydark']
         vmin = 0.05 * (Y[self.index_u_ysat])
@@ -440,12 +466,11 @@ class Results1288(object):
 
     @property
     def index_linearity_max(self):
-        """
-        **Section: linearity
-        **Short: Linearity fit maximum index
-        **Symbol:
-        **Comment:
-        **Unit:
+        """Linearity fit maximum index
+
+        .. emva1288::
+            :Section: linearity
+            :Short: Linearity fit maximum index
         """
 
         Y = self.temporal['u_y'] - self.temporal['u_ydark']
@@ -484,39 +509,42 @@ class Results1288(object):
 
     @property
     def LE_min(self):
-        """
-        **Section: linearity
-        **Short: Min Linearity error
-        **Symbol: $LE_{min}$
-        **Comment:
-        **Unit: \%
-        **LatexName: LEMin
+        """ Min Linearity error
+
+        .. emva1288::
+            :Section: linearity
+            :Short: Min Linearity error
+            :Symbol: $LE_{min}$
+            :Unit: \%
+            :LatexName: LEMin
         """
 
         return self.linearity()['linearity_error_min']
 
     @property
     def LE_max(self):
-        """
-        **Section: linearity
-        **Short: Max Linearity error
-        **Symbol: $LE_{max}$
-        **Comment:
-        **Unit: \%
-        **LatexName: LEMax
+        """Max Linearity error
+
+        .. emva1288::
+            :Section: linearity
+            :Short: Max Linearity error
+            :Symbol: $LE_{max}$
+            :Unit: \%
+            :LatexName: LEMax
         """
 
         return self.linearity()['linearity_error_max']
 
     @property
     def u_I_var(self):
-        """
-        **Section: dark_current
-        **Short:Dark Current from variance
-        **Symbol:$\mu_{I.var}$
-        **Comment:
-        **Unit: $e^-/s$
-        **LatexName: UIVar
+        """Dark Current from variance
+
+        .. emva1288::
+            :Section: dark_current
+            :Short: Dark Current from variance
+            :Symbol: $\mu_{I.var}$
+            :Unit: $e^-/s$
+            :LatexName: UIVar
         """
 
         fit, _error = routines.LinearB(self.temporal['texp'],
@@ -528,12 +556,13 @@ class Results1288(object):
 
     @property
     def u_I_mean(self):
-        """
-        **Section: dark_current
-        **Short:Dark Current from mean
-        **Symbol:$\mu_{I.mean}$
-        **Comment:
-        **Unit: e/s
+        """Dark Current from mean
+
+        .. emva1288::
+            :Section: dark_current
+            :Short: Dark Current from mean
+            :Symbol: $\mu_{I.mean}$
+            :Unit: e/s
         """
 
         if len(np.unique(self.temporal['texp'])) <= 2:
@@ -545,60 +574,74 @@ class Results1288(object):
 
     @property
     def sigma_2_y_stack(self):
-        """
-        **Section: spatial
-        **Short: Temporal variance stack
-        **Symbol: $\sigma^2_{y.stack}$
-        **Comment: Mean value of the bright variance image
-        **Unit: DN2
+        """Temporal variance stack
+
+        Mean value of the bright variance image
+
+        .. emva1288::
+            :Section: spatial
+            :Short: Temporal variance stack
+            :Symbol: $\sigma^2_{y.stack}$
+            :Unit: DN2
         """
 
         return np.mean(self.spatial['var'])
 
     @property
     def sigma_2_y_stack_dark(self):
-        """
-        **Section: spatial
-        **Short: Temporal variance stack dark
-        **Symbol:$\sigma^2_{y.stack.dark}$
-        **Comment:Mean value of the dark variance image.
-        **Unit:DN2
+        """Temporal variance stack dark
+
+        Mean value of the dark variance image.
+
+        .. emva1288::
+            :Section: spatial
+            :Short: Temporal variance stack dark
+            :Symbol: $\sigma^2_{y.stack.dark}$
+            :Unit: DN2
         """
 
         return np.mean(self.spatial['var_dark'])
 
     @property
     def s_2_y_measured(self):
-        """
-        **Section: spatial
-        **Short: Spatial variance measure
-        **Symbol:$s^2_{y.measured}$
-        **Comment:Variance value of the bright variance image
-        **Unit:DN2
+        """Spatial variance measure
+
+        Variance value of the bright variance image
+
+        .. emva1288::
+            :Section: spatial
+            :Short: Spatial variance measure
+            :Symbol: $s^2_{y.measured}$
+            :Unit: DN2
         """
 
         return np.var(self.spatial['avg'], ddof=1)
 
     @property
     def s_2_y_measured_dark(self):
-        """
-        **Section: spatial
-        **Short: Spatial variance measured dark
-        **Symbol:$s^2_{y.measured.dark}$
-        **Comment:Variance value of the dark variance image
-        **Unit:DN2
+        """Spatial variance measured dark
+
+        Variance value of the dark variance image
+
+        .. emva1288::
+            :Section: spatial
+            :Short: Spatial variance measured dark
+            :Symbol: $s^2_{y.measured.dark}$
+            :Unit: DN2
         """
 
         return np.var(self.spatial['avg_dark'], ddof=1)
 
     @property
     def s_2_y(self):
-        """
-        **Section: spatial
-        **Short: Spatial variance from image
-        **Symbol:$s^2_{y}$
-        **Comment:s_2_y_measured - sigma_2_y_stack / number_images
-        **Unit:DN2
+        """Spatial variance from image
+
+
+        .. emva1288::
+            :Section: spatial
+            :Short: Spatial variance from image
+            :Symbol: $s^2_{y}$
+            :Unit: DN2
         """
 
         return self.s_2_y_measured - (self.sigma_2_y_stack /
@@ -606,12 +649,13 @@ class Results1288(object):
 
     @property
     def s_2_y_dark(self):
-        """
-        **Section: spatial
-        **Short: Spatial variance from image
-        **Symbol:$s^2_{y}$
-        **Comment:s_2_y_measured - sigma_2_y_stack / number_images
-        **Unit:DN2
+        """Spatial variance from image
+
+        .. emva1288:
+            :Section: spatial
+            :Short: Spatial variance from image
+            :Symbol: $s^2_{y}$
+            :Unit: DN2
         """
 
         return self.s_2_y_measured_dark - (self.sigma_2_y_stack_dark /
@@ -619,13 +663,14 @@ class Results1288(object):
 
     @property
     def DSNU1288(self):
-        """
-        **Section: spatial
-        **Short: DSNU
-        **Symbol: $DSNU_{1288}$
-        **Comment:
-        **Unit: $e^-$
-        **LatexName: DSNU
+        """DSNU
+
+        .. emva1288::
+            :Section: spatial
+            :Short: DSNU
+            :Symbol: $DSNU_{1288}$
+            :Unit: $e^-$
+            :LatexName: DSNU
         """
 
         if self.s_2_y_dark < 0.:
@@ -633,13 +678,14 @@ class Results1288(object):
         return np.sqrt(self.s_2_y_dark) / self.K
 
     def DSNU1288_DN(self):
-        """
-        **Section: spatial
-        **Short: DSNU in DN
-        **Symbol: $DSNU_{1288.DN}$
-        **Comment:
-        **Unit: DN
-        **LatexName: DSNUDN
+        """DSNU in DN
+
+        .. emva1288::
+            :Section: spatial
+            :Short: DSNU in DN
+            :Symbol: $DSNU_{1288.DN}$
+            :Unit: DN
+            :LatexName: DSNUDN
         """
 
         if self.s_2_y_dark < 0:
@@ -648,13 +694,14 @@ class Results1288(object):
 
     @property
     def PRNU1288(self):
-        """
-        **Section: spatial
-        **Short: PRNU
-        **Symbol: $PRNU_{1288}$
-        **Comment:
-        **Unit: \%
-        **LatexName: PRNU
+        """PRNU
+
+        .. emva1288::
+            :Section: spatial
+            :Short: PRNU
+            :Symbol: $PRNU_{1288}$
+            :Unit: \%
+            :LatexName: PRNU
         """
 
         return (np.sqrt(self.s_2_y - self.s_2_y_dark) * 100 /
@@ -663,12 +710,11 @@ class Results1288(object):
 
     @property
     def histogram_PRNU(self):
-        """
-        **Section: defect_pixel
-        **Short: PRNU histogram
-        **Symbol:
-        **Comment:
-        **Unit:
+        """PRNU histogram
+
+        .. emva1288::
+            :Section: defect_pixel
+            :Short: PRNU histogram
         """
 
         # For prnu, perform the convolution
@@ -683,12 +729,11 @@ class Results1288(object):
 
     @property
     def histogram_PRNU_accumulated(self):
-        """
-        **Section: defect_pixel
-        **Short: accumulated PRNU histogram
-        **Symbol:
-        **Comment:
-        **Unit:
+        """Accumulated PRNU histogram
+
+        .. emva1288::
+            :Section: defect_pixel
+            :Short: accumulated PRNU histogram
         """
 
         # For prnu, perform the convolution
@@ -709,12 +754,11 @@ class Results1288(object):
 
     @property
     def histogram_DSNU(self):
-        """
-        **Section: defect_pixel
-        **Short: DSNU histogram
-        **Symbol:
-        **Comment:
-        **Unit:
+        """DSNU histogram
+
+        .. emva1288::
+            :Section: defect_pixel
+            :Short: DSNU histogram
         """
 
         # For dsnu, the image is just the dark image, upscaled to have
@@ -730,12 +774,11 @@ class Results1288(object):
 
     @property
     def histogram_DSNU_accumulated(self):
-        """
-        **Section: defect_pixel
-        **Short: accumulated DSNU histogram
-        **Symbol:
-        **Comment:
-        **Unit:
+        """Accumulated DSNU histogram
+
+        .. emva1288::
+            :Section: defect_pixel
+            :Short: accumulated DSNU histogram
         """
 
         # Dark image upscaled to have only integers
@@ -763,22 +806,24 @@ class Results1288(object):
     def results(self):
         d = routines.obj_to_dict(self)
         results = {}
+
         for section in sorted(d.keys()):
             results[section] = {}
             for method in sorted(d[section].keys()):
                 s = d[section][method]
-                if s.get('Value', False) is not False:
+                if s.get('value', False) is not False:
                     results[section][method] = {
-                        'short': s['Short'],
-                        'symbol': s['Symbol'],
-                        'value': s['Value'],
-                        'unit': s['Unit'],
-                        'latexname': s.get('LatexName')}
+                        'short': s.get('short'),
+                        'symbol': s.get('symbol'),
+                        'value': s['value'],
+                        'unit': s.get('unit'),
+                        'latexname': s.get('latexname')}
 
         return results
 
     def print_results(self):
         d = self.results
+
         for section in sorted(d.keys()):
             print('*' * 50)
             print(section)
@@ -786,8 +831,8 @@ class Results1288(object):
 
             for method in sorted(d[section].keys()):
                 s = d[section][method]
-                print('{:<50}{:<30}{:>10}'.format(s['short'],
-                                                  s['symbol'],
-                                                  str(s['value'])))
+                print('{:<50}{:<30}{:>10}'.format(s.get('short'),
+                                                  str(s.get('symbol')),
+                                                  str(s.get('value'))))
         print('*' * 50)
         print(' ')

@@ -34,6 +34,7 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
+    'emva1288.sphinx_directives'
     ]
 
 intersphinx_mapping = {'matplotlib': ('http://matplotlib.org/', ('obj_inv/matplotlib.inv', ), ),
