@@ -32,6 +32,8 @@ import os
 
 # Add local extensions
 sys.path.append(os.path.abspath('exts'))
+sys.path.append(os.path.abspath('..'))
+print('patt', os.path.abspath('..'))
 
 extensions = [
     'sphinx.ext.autodoc',
