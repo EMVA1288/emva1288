@@ -29,12 +29,16 @@ import os
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
+
+# Add local extensions
+sys.path.append(os.path.abspath('exts'))
+
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
     'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
-    'emva1288.sphinx_directives'
+    'sphinx_directives'
     ]
 
 intersphinx_mapping = {'matplotlib': ('http://matplotlib.org/', ('obj_inv/matplotlib.inv', ), ),
