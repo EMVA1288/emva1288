@@ -215,13 +215,15 @@ class Camera(object):
         radiance = routines.get_radiance(exposure,
                                          self._wavelength,
                                          up,
-                                         self._pixel_area,
+                                         self.pixel_area,
                                          self._f_number)
         return radiance
 
-    def get_photons(self, radiance):
-        return routines.get_photons(self.exposure,
+    def get_photons(self, radiance, exposure=None):
+        if exposure is None:
+            exposure = self.exposure
+        return routines.get_photons(exposure,
                                     self._wavelength,
                                     radiance,
-                                    self._pixel_area,
+                                    self.pixel_area,
                                     self._f_number)
