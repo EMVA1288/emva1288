@@ -5,9 +5,14 @@ process a descriptor file, print the results and plot the graphics
 
 import os
 from emva1288 import process
+from emva1288.camera.dataset_generator import DatasetGenerator
 
-dir_ = '/home/work/1288/datasets/'
-fname = 'EMVA1288_ReferenceSet_003_Simulation_12Bit/EMVA1288_Data.txt'
+# dir_ = '/home/work/1288/datasets/'
+# fname = 'EMVA1288_ReferenceSet_003_Simulation_12Bit/EMVA1288_Data.txt'
+
+dataset_generator = DatasetGenerator(img_x=100, img_y=50, bit_depth=8)
+dir_ = dataset_generator.outdir
+fname = 'EMVA1288descriptor.txt'
 
 # Parse the descriptor file
 parser = process.ParseEmvaDescriptorFile(os.path.join(dir_, fname))

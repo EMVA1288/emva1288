@@ -1,30 +1,30 @@
-emva1288.camera package
-=======================
+Camera Module
+=============
 
-Submodules
-----------
+.. contents::
+    :local:
 
-emva1288.camera.camera module
------------------------------
+:mod:`~emva1288.camera.camera`
+------------------------------
 
 .. automodule:: emva1288.camera.camera
     :members:
     :undoc-members:
     :show-inheritance:
 
-emva1288.camera.routines module
--------------------------------
+:mod:`~emva1288.camera.routines`
+--------------------------------
 
 .. automodule:: emva1288.camera.routines
     :members:
     :undoc-members:
     :show-inheritance:
 
+:mod:`~emva1288.camera.dataset_generator`
+-----------------------------------------
 
-Module contents
----------------
-
-.. automodule:: emva1288.camera
+.. automodule:: emva1288.camera.dataset_generator
     :members:
     :undoc-members:
     :show-inheritance:
+    :special-members: __init__
