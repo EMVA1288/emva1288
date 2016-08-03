@@ -42,11 +42,11 @@ class TestLoader(unittest.TestCase):
         temporal_data = data['temporal'][first_exp_time]
         self.assertEqual(len(temporal_data), 2)
         self.assertTrue(0.0 in temporal_data.keys())
-        # there should be steps - 1 data sets for temporal (-1 because spatial)
-        self.assertEqual(len(self.loader.data['temporal']), self._steps - 1)
+        # there should be steps data sets for temporal
+        self.assertEqual(len(self.loader.data['temporal']), self._steps)
 
-        # spatial occurs at half run of both dark and bright
-        spatial_texp = self.dataset.points[self._steps // 2]['exposure']
+        spatial_texp = list(self.dataset.points['spatial'].keys())[0]
+
         # spatial data should contain 2 sets (one dark and one bright)
         spatial_data = data['spatial'][spatial_texp]
         self.assertEqual(len(spatial_data), 2)

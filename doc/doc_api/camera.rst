@@ -36,3 +36,12 @@ a complete set of images of an EMVA1288 test.
     :undoc-members:
     :show-inheritance:
     :special-members: __init__
+
+:mod:`~emva1288.camera.points_generator`
+----------------------------------------
+
+.. automodule:: emva1288.camera.points_generator
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :special-members: __init__
