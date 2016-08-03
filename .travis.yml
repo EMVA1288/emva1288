@@ -25,7 +25,7 @@ before_install:
 
 # Install packages
 install:
-  - conda create --yes -n env_name python=$TRAVIS_PYTHON_VERSION pip numpy matplotlib nose scipy pep8 coverage
+  - conda create --yes -n env_name python=$TRAVIS_PYTHON_VERSION pip numpy matplotlib nose scipy pep8 coverage sphinx
   - source activate env_name
   - python setup.py install
 

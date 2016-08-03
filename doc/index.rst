@@ -11,14 +11,12 @@ Contents:
 .. toctree::
     :maxdepth: 2
 
-    README
-
 The emva1288 API
 ################
 
 .. toctree::
    :maxdepth: 4
-   
+
    doc_api/emva1288
 
 Indices and tables
@@ -27,4 +25,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
