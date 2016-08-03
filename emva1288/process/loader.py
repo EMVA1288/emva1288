@@ -144,7 +144,7 @@ class LoadImageData(object):
 
             # Add the image shape to the set
             self._shape.add(img.shape)
-            if len(self._shape) > 1:
+            if len(self._shape) > 1:  # pragma: no cover
                 # If the shape set contains more than 1 element, this means
                 # not all images have the same shape.
                 raise ValueError('All images must have the same shape')
