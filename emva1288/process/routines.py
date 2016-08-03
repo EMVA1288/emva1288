@@ -367,21 +367,21 @@ def xml_to_dict(xml):
     # loop to reconstruct arrays from strings in Data elements
     for section, method in d.items():
         for methodname, value in method.items():
-            if 'Data' in value:
-                for data in value['Data']:
-                    v = value['Data'][data]
+            if 'data' in value:
+                for data in value['data']:
+                    v = value['data'][data]
                     v = v.strip()
                     v = v.split()
-                    d[section][methodname]['Data'][data] = np.asfarray(v)
+                    d[section][methodname]['data'][data] = np.asfarray(v)
             else:
                 # sometimes the decimal point is written with , instead of .
-                v = value['Value'].replace(',', '.')
+                v = value['value'].replace(',', '.')
                 # special cases, None, etc...
                 if v == 'None':
                     v = None
                 else:
                     v = float(v)
-                d[section][methodname]['Value'] = v
+                d[section][methodname]['value'] = v
     return d
 
 
@@ -406,8 +406,8 @@ def compare_xml(x1, x2):
     if f1 is None or f2 is None:
         return
 
-    c1 = f1.keys()
-    c2 = f2.keys()
+    c1 = list(f1.keys())
+    c2 = list(f2.keys())
 
     # loop throught the combined categories
     for category in set(c1) | set(c2):
@@ -435,15 +435,15 @@ def compare_xml(x1, x2):
                 a2 = None
             # get the value and the data
             else:
-                v1 = f1[category][methodname].get('Value', None)
-                a1 = f1[category][methodname].get('Data', None)
+                v1 = f1[category][methodname].get('value', None)
+                a1 = f1[category][methodname].get('data', None)
 
             if methodname not in m2:
                 v2 = None
                 a2 = None
             else:
-                v2 = f2[category][methodname].get('Value', None)
-                a2 = f2[category][methodname].get('Data', None)
+                v2 = f2[category][methodname].get('value', None)
+                a2 = f2[category][methodname].get('data', None)
 
             # first we check for values and then for data
             # if both present only values will be taken in count for comparison
