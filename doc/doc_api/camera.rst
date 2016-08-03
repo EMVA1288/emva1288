@@ -11,6 +11,7 @@ Camera Module
     :members:
     :undoc-members:
     :show-inheritance:
+    :special-members: __init__
 
 :mod:`~emva1288.camera.routines`
 --------------------------------
