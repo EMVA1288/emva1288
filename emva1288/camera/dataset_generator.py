@@ -67,12 +67,6 @@ class DatasetGenerator:
 
         Parameters
         ----------
-        gain : int, optional
-               The camera's gain index (it sets the camera's real gain
-               choosing in its Ks attribute).
-        blackref : int, optional
-                   The camera's blackoffset index (it sets the camera's real
-                   blackoffset choosing in its blackoffsets attribute).
         L : int, optional
             The number of image taken during a spatial test point.
         version : str, optional
