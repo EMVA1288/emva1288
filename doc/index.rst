@@ -6,17 +6,13 @@
 Welcome to emva1288's documentation!
 ====================================
 
-Contents:
 
 .. toctree::
-    :maxdepth: 2
-
-The emva1288 API
-################
-
-.. toctree::
-   :maxdepth: 4
-
+   :maxdepth: 4 
+   
+   readme_link
+   installation
+   tutorial
    doc_api/emva1288
 
 Indices and tables

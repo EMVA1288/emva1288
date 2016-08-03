@@ -1,5 +1,5 @@
-:mod:`emva1288`
-===============
+EMVA1288 API Documentation
+==========================
 
 
 .. toctree::
@@ -7,5 +7,4 @@
     camera
     process
     report
-    unittests
     sphinx_directives
