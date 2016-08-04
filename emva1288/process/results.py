@@ -804,13 +804,16 @@ class Results1288(object):
 
     @property
     def results(self):
+        """Dictionnary with all the values and metadata for EMVA1288 values"""
         return routines.obj_to_dict(self)
 
     @property
     def results_by_section(self):
+        """Results ordered by section"""
         return routines._sections_first(self.results)
 
     def print_results(self):
+        """Print results to the screen"""
         results = self.results_by_section
 
         for section, attributes in results.items():
