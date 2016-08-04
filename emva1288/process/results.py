@@ -797,42 +797,33 @@ class Results1288(object):
         return h
 
     def xml(self, filename=None):
-        d = routines.obj_to_dict(self)
+        results = self.results_by_section
         if not filename:
-            return routines.dict_to_xml(d)
-        routines.dict_to_xml(d, filename=filename)
+            return routines.dict_to_xml(results)
+        routines.dict_to_xml(results, filename=filename)
 
     @property
     def results(self):
-        d = routines.obj_to_dict(self)
-        results = {}
+        return routines.obj_to_dict(self)
 
-        for section in sorted(d.keys()):
-            results[section] = {}
-            for method in sorted(d[section].keys()):
-                s = d[section][method]
-                if s.get('value', False) is not False:
-                    results[section][method] = {
-                        'short': s.get('short'),
-                        'symbol': s.get('symbol'),
-                        'value': s['value'],
-                        'unit': s.get('unit'),
-                        'latexname': s.get('latexname')}
-
-        return results
+    @property
+    def results_by_section(self):
+        return routines._sections_first(self.results)
 
     def print_results(self):
-        d = self.results
+        results = self.results_by_section
 
-        for section in sorted(d.keys()):
+        for section, attributes in results.items():
             print('*' * 50)
             print(section)
             print('-' * 50)
 
-            for method in sorted(d[section].keys()):
-                s = d[section][method]
-                print('{:<50}{:<30}{:>10}'.format(s.get('short'),
-                                                  str(s.get('symbol')),
-                                                  str(s.get('value'))))
+            for attribute, info in attributes.items():
+                if 'value' not in info:
+                    continue
+
+                print('{:<50}{:<30}{:>10}'.format(info.get('short'),
+                                                  str(info.get('symbol')),
+                                                  str(info.get('value'))))
         print('*' * 50)
         print(' ')

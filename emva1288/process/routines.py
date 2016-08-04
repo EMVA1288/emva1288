@@ -12,6 +12,7 @@ import os
 from scipy.optimize import leastsq
 from lxml import etree
 from PIL import Image
+from collections import OrderedDict
 
 
 SIGNIFICANT_DIGITS = 7
@@ -211,15 +212,23 @@ def cls_1288_info(cls):
     Return
     ------
     dict :
-        Dictionnary extracted using
+        Dictionnary extracted using the format defined by
         :class:`~emva1288.sphinx_directives.Emva1288Directive`
+
+    ..
+        {attribute1: {'section': section name,
+                      'units': attribute units,
+                      'short': attribute short description,
+                      'latexname': latex name for the attribute,
+                      'symbol': symbol to represent the value}}
 
     '''
 
-    d = {}
-    for i, v in cls.__dict__.items():
+    d = OrderedDict()
+    items = [name for name in sorted(cls.__dict__.keys())]
+    for attribute_name in items:
         # Extract the doc from the Processing methods
-        doc = v.__doc__
+        doc = getattr(cls, attribute_name).__doc__
         if not doc:
             continue
 
@@ -246,22 +255,34 @@ def cls_1288_info(cls):
             continue
 
         # To store the info from the doc
-        method_info = {}
+        attribute_info = {}
         for line in tag_lines:
             tags = [x.strip() for x in line.split(':', 2) if x.strip()]
             # Each valid tag has to be xx:yy
             if len(tags) != 2:
                 continue
             # Fill the dict
-            method_info[tags[0].lower()] = tags[1]
+            attribute_info[tags[0].lower()] = tags[1]
 
-        # extract the section, or put it as 'other'
-        section = method_info.pop('section', 'other')
+        # If there is no section set it as other
+        attribute_info.setdefault('section', 'other')
+        d[attribute_name] = attribute_info
+    return d
 
-        # Add or get the current section branch of the dict
-        s = d.setdefault(section, {})
-        # Add the method info to the section in the final dict
-        s[i] = method_info
+
+def _sections_first(dct):
+    """For backwards compatibility where we use to have
+    results with section as first keys
+    """
+    d = OrderedDict()
+
+    sections = sorted({k['section'] for k in dct.values()})
+    for section in sections:
+        d[section] = OrderedDict()
+        for k, v in dct.items():
+            if v['section'] != section:
+                continue
+            d[section][k] = v
     return d
 
 
@@ -276,18 +297,16 @@ def obj_to_dict(obj):
     d[SectionName][MethodName][Value] = ReturnValue
     '''
     d = cls_1288_info(obj.__class__)
-    for section in d.keys():
-        for methodname in d[section].keys():
+    for attribute in d.keys():
+        # Get the value for the given attribute
+        val = getattr(obj, attribute)
+        if callable(val):
+            val = val()
 
-            # Get the value for the given method
-            val = getattr(obj, methodname)
-            if callable(val):
-                val = val()
-
-            if isinstance(val, dict):
-                d[section][methodname]['data'] = val
-            else:
-                d[section][methodname]['value'] = val
+        if isinstance(val, dict):
+            d[attribute]['data'] = val
+        else:
+            d[attribute]['value'] = val
     return d
 
 
