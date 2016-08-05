@@ -5,16 +5,16 @@ from emva1288.process.loader import LoadImageData
 
 
 class TestLoader(unittest.TestCase):
-    _img_x = 100
-    _img_y = 50
+    _height = 50
+    _width = 100
     _bit_depth = 8
     _L = 50
     _steps = 10
 
     def _init(self):
         # Create dataset to load
-        dataset = DatasetGenerator(img_x=self._img_x,
-                                   img_y=self._img_y,
+        dataset = DatasetGenerator(height=self._height,
+                                   width=self._width,
                                    bit_depth=self._bit_depth,
                                    L=self._L,
                                    steps=self._steps)
@@ -35,8 +35,8 @@ class TestLoader(unittest.TestCase):
 
         # test that the data attribute contains the good infos
         data = self.loader.data
-        self.assertEqual(data['height'], self._img_x)
-        self.assertEqual(data['width'], self._img_y)
+        self.assertEqual(data['height'], self._height)
+        self.assertEqual(data['width'], self._width)
         first_exp_time = self.dataset.cam.exposure_min
         # temporal data should contain 2 datasets (one bright one dark)
         temporal_data = data['temporal'][first_exp_time]
@@ -60,8 +60,8 @@ class TestLoader(unittest.TestCase):
             self.assertTrue(typ in spatial_data[0.0].keys())
             self.assertTrue(typ in temporal_data[0.0].keys())
             # spatial data is sum images and pvar
-            self.assertEqual(spatial_data[0.0][typ].shape, (self._img_x,
-                                                            self._img_y))
+            self.assertEqual(spatial_data[0.0][typ].shape, (self._height,
+                                                            self._width))
 
         del self.parser
         del self.dataset

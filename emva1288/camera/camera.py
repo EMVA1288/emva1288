@@ -9,8 +9,8 @@ class Camera(object):
                  f_number=8,  # F-number of the light source/camera setup
                  pixel_area=25,  # um^2
                  bit_depth=8,  # Bit depth of the image [8, 10, 12, 14]
-                 img_x=640,
-                 img_y=480,
+                 width=640,
+                 height=480,
 
                  temperature=22,  # Sensor temperature in ^oC
                  temperature_ref=30,  # Reference temperature
@@ -35,7 +35,10 @@ class Camera(object):
 
                  dark_current_ref=0,
                  dark_signal_0=0,
-                 sigma2_dark_0=10
+                 sigma2_dark_0=10,
+
+                 dsnu=None,
+                 prnu=None
                  ):
         """Camera simulator init method.
 
@@ -47,10 +50,10 @@ class Camera(object):
                      The area of one pixel (in um ^ 2)
         bit_depth : int, optiona
                     The number of bits allowed for one pixel value.
-        img_x : int, optional
-                The number of pixel in the x axis.
-        img_y : int, optional
-                The number of pixels in the y axis.
+        width : int, optional
+                The number of columns in the the image.
+        height : int, optional
+                The number of rows in the image.
         temperature : float, optional
                       The camera's sensor temperature in degrees Celsius.
         temperature_ref : float, optional
@@ -100,14 +103,20 @@ class Camera(object):
         sigma2_dark_0 : float, optional
                         The offset for the computation of the dark signal
                         (the dark signal standart deviation).
+        dsnu : np.array, optional
+               DSNU image in electrons, array with the same shape of the image
+               that is added to every image
+        prnu : np.array, optional
+               PRNU image in percentages (1 = 100%), array with the same shape
+               of the image. Every image is multiplied by it
         """
 
         self._f_number = f_number
         self._pixel_area = pixel_area
         self._bit_depth = bit_depth
         self._img_max = 2 ** int(bit_depth) - 1
-        self._img_x = img_x
-        self._img_y = img_y
+        self._width = width
+        self._height = height
 
         self._temperature = temperature
         self._temperature_ref = temperature_ref
@@ -136,6 +145,9 @@ class Camera(object):
         self._blackoffset = None
         self.blackoffset = blackoffset
 
+        self._dsnu = dsnu or np.zeros((self.height, self.width))
+        self._prnu = prnu or np.ones((self.height, self.width))
+
     @property
     def bit_depth(self):
         """The number of bits allowed for a gray value for one pixel."""
@@ -152,14 +164,14 @@ class Camera(object):
         return self._img_max
 
     @property
-    def img_x(self):
-        """The number of pixel in the x axis."""
-        return self._img_x
+    def width(self):
+        """The number of columns"""
+        return self._width
 
     @property
-    def img_y(self):
-        """The number of pixel in the y axis."""
-        return self._img_y
+    def height(self):
+        """The number of rows"""
+        return self._height
 
     @property
     def exposure(self):
@@ -236,7 +248,12 @@ class Camera(object):
         u_y = self._u_y(radiance)
         s2_y = np.sqrt(self._s2_y(radiance))
         img = np.random.normal(loc=u_y, scale=s2_y,
-                               size=(self._img_x, self._img_y))
+                               size=(self.height, self.width))
+
+        # not the best but hope it works as approach for prnu dsnu
+        img *= self._prnu
+        img += self.K * self._dsnu
+
         img += self.blackoffset
         np.rint(img, img)
         np.clip(img, 0, clipping_point, img)

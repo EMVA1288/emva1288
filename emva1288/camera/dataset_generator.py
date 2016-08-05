@@ -31,7 +31,7 @@ def _get_emva_blackoffset(cam):
     bini = cam.blackoffset
     # Find black offset with a maximum of 0.5% of values at Zero
     bo = cam.blackoffsets[0]
-    pixels = cam.img_x * cam.img_y
+    pixels = cam.width * cam.height
     for i in cam.blackoffsets:
         cam.blackoffset = i
         img = cam.grab(0)
@@ -191,8 +191,8 @@ class DatasetGenerator:
             f.write("v %s\n" % self._version)
             # wtite camera's properties
             f.write("n %i %i %i\n" % (self.cam.bit_depth,
-                                      self.cam.img_x,
-                                      self.cam.img_y))
+                                      self.cam.width,
+                                      self.cam.height))
             for kind in ('temporal', 'spatial'):
 
                 # number of image to take

@@ -7,8 +7,8 @@ class TestParser(unittest.TestCase):
     # attrbutes for dataset generator
     _bit_depth = 8
     _version = '3.0'
-    _img_x = 100
-    _img_y = 50
+    _height = 50
+    _width = 100
     _L = 50
     _steps = 10
 
@@ -18,8 +18,8 @@ class TestParser(unittest.TestCase):
     def setUp(self):
         # create data descriptor file for parser
         self.d_generator = DatasetGenerator(bit_depth=self._bit_depth,
-                                            img_x=self._img_x,
-                                            img_y=self._img_y,
+                                            height=self._height,
+                                            width=self._width,
                                             L=self._L,
                                             version=self._version,
                                             steps=self._steps)
@@ -34,8 +34,8 @@ class TestParser(unittest.TestCase):
         parser = ParseEmvaDescriptorFile(descriptor_file)
         # data manually taken from the file:
         bits = self._bit_depth
-        height = self._img_y
-        width = self._img_x
+        height = self._height
+        width = self._width
         times = self.d_generator.points['temporal'].keys()
         first_exp_time = list(times)[0]
         first_rad = self.d_generator.points['temporal'][first_exp_time][0]
