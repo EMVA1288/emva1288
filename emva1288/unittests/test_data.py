@@ -6,8 +6,8 @@ from emva1288.process.data import Data1288
 
 
 class TestData(unittest.TestCase):
-    _img_x = 100
-    _img_y = 50
+    _height = 50
+    _width = 100
     _bit_depth = 8
     _L = 50
     _steps = 10
@@ -16,8 +16,8 @@ class TestData(unittest.TestCase):
 
     def _init(self):
         # create dataset
-        dataset = DatasetGenerator(img_x=self._img_x,
-                                   img_y=self._img_y,
+        dataset = DatasetGenerator(height=self._height,
+                                   width=self._width,
                                    bit_depth=self._bit_depth,
                                    L=self._L,
                                    steps=self._steps,
@@ -44,7 +44,7 @@ class TestData(unittest.TestCase):
         self.data = d
 
         # test number of pixels
-        self.assertEqual(self.data.pixels, self._img_x * self._img_y)
+        self.assertEqual(self.data.pixels, self._height * self._width)
 
         # test data attribute
         #####################
@@ -64,8 +64,8 @@ class TestData(unittest.TestCase):
         for typ in ('avg', 'avg_dark', 'pvar', 'pvar_dark', 'sum',
                     'sum_dark', 'var', 'var_dark'):
             self.assertTrue(typ in data['spatial'].keys())
-            self.assertEqual(data['spatial'][typ].shape, (self._img_x,
-                                                          self._img_y))
+            self.assertEqual(data['spatial'][typ].shape, (self._height,
+                                                          self._width))
 
         # test temporal
         # all temporal data are arrays of length steps
