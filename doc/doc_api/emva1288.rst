@@ -1,5 +1,5 @@
-EMVA1288 API Documentation
-==========================
+API Documentation
+=================
 
 
 .. toctree::

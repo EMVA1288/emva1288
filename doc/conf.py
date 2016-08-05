@@ -139,21 +139,21 @@ todo_include_todos = False
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'alabaster'
+html_theme = "sphinx_rtd_theme"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 
-html_theme_options = {
-    'github_user': 'EMVA1288',
-    'github_repo': 'emva1288',
-    'github_banner': True,
-    'show_powered_by': False
-}
+#html_theme_options = {
+    # 'github_user': 'EMVA1288',
+    # 'github_repo': 'emva1288',
+    # 'github_banner': True,
+    # 'show_powered_by': False
+# }
 
 # Add any paths that contain custom themes here, relative to this directory.
-#html_theme_path = []
+html_theme_path = ["_themes", ]
 
 # The name for this set of Sphinx documents.
 # "<project> v<release> documentation" by default.
