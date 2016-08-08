@@ -85,7 +85,7 @@ def LinearB(Xi, Yi):
     X = np.asfarray(Xi)
     Y = np.asfarray(Yi)
 
-    # we want a function y = m * x
+    # we want a function y = m * x + b
     def fp(v, x):
         return x * v[0] + v[1]
 
@@ -203,26 +203,26 @@ def Histogram1288(img, Qmax):
 
 
 def cls_1288_info(cls):
-    '''Dictionnary that represents results
+    """Dictionnary that represents results.
 
     Parameters
     ----------
-    cls : Class from wich to extract the information
+    cls : Class from wich to extract the information.
 
-    Return
-    ------
+    Returns
+    -------
     dict :
         Dictionnary extracted using the format defined by
-        :class:`~emva1288.sphinx_directives.Emva1288Directive`
+        a custom sphinx directive
+        with the following format::
 
-    ..
-        {attribute1: {'section': section name,
-                      'units': attribute units,
-                      'short': attribute short description,
-                      'latexname': latex name for the attribute,
-                      'symbol': symbol to represent the value}}
+          {attribute1: {'section': section name,
+                        'units': attribute units,
+                        'short': attribute short description,
+                        'latexname': latex name for the attribute,
+                        'symbol': symbol to represent the value}}
 
-    '''
+    """
 
     d = OrderedDict()
     items = [name for name in sorted(cls.__dict__.keys())]
