@@ -102,7 +102,7 @@ class DatasetGenerator:
         self._steps = steps  # number of points to take
         self.cam = Cam(**kwargs)
         # set the camera parameters for the test
-        self.cam.exposure = self.cam.exposure_max
+        self.cam.exposure = self.cam.exposure_min
         self.cam.blackoffset = _get_emva_blackoffset(self.cam)
         self.cam.K = _get_emva_gain(self.cam)
 
@@ -157,9 +157,9 @@ class DatasetGenerator:
             # dark image
             return "d %.1f" % exposure
         # bright image
-        # round photons count to one decimal
-        return "b %.1f %.1f" % (exposure,
-                                round(self.cam.get_photons(radiance), 1))
+        # round photons count to three decimals
+        return "b %.1f %.3f" % (exposure,
+                                round(self.cam.get_photons(radiance), 3))
 
     def _get_image_names(self, number, L):
         """Create an image filename."""

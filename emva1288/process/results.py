@@ -506,7 +506,7 @@ class Results1288(object):
 
         Minimum index for linear fit (5% of saturation).
 
-        .. emva1288:
+        .. emva1288::
             :Section: linearity
             :Short: Linearity fit minimun index
         """
@@ -636,7 +636,7 @@ class Results1288(object):
         if fit[0] < 0:
             return np.nan
         # Multiply by 10^9 because exposure times are in nanoseconds
-        return np.sqrt(fit[0] * (10 ** 9)) / self.K
+        return fit[0] * (10 ** 9) / (self.K ** 2)
 
     @property
     def u_I_mean(self):
@@ -661,7 +661,7 @@ class Results1288(object):
 
         fit, _error = routines.LinearB(self.temporal['texp'],
                                        self.temporal['u_ydark'])
-        # Mulrtiply by 10 ^ 9 because exposure time in nanoseconds
+        # Multiply by 10 ^ 9 because exposure time in nanoseconds
         return fit[0] * (10 ** 9) / self.K
 
     @property
@@ -743,7 +743,7 @@ class Results1288(object):
     def s_2_y_dark(self):
         """Spatial variance from image,
 
-        .. emva1288:
+        .. emva1288::
             :Section: spatial
             :Short: Spatial variance from image
             :Symbol: $s^2_{y}$
@@ -919,7 +919,7 @@ class Results1288(object):
 
         return h
 
-    def xml(self, filename=None):
+    def xml(self, filename=None):  # pragma: no cover
         """Method that writes the results in xml format to a file.
 
         Parameters
@@ -947,11 +947,11 @@ class Results1288(object):
         return routines.obj_to_dict(self)
 
     @property
-    def results_by_section(self):
+    def results_by_section(self):  # pragma: no cover
         """Results ordered by section."""
         return routines._sections_first(self.results)
 
-    def print_results(self):
+    def print_results(self):  # pragma: no cover
         """Print results to the screen."""
         results = self.results_by_section
 

@@ -20,11 +20,11 @@ class Camera(object):
                  qe=None,  # Quantum efficiency for the given wavelength
 
                  exposure=1000000,  # Exposure time in ns
-                 exposure_min=10000,  # Minimum exposure time in ns
+                 exposure_min=50000,  # Minimum exposure time in ns
                  exposure_max=500000000,  # Maximum exposure time in ns
 
-                 K=0.01,  # Overall system gain
-                 K_min=0.01,
+                 K=0.1,  # Overall system gain
+                 K_min=0.1,
                  K_max=17.,
                  K_steps=255,
 
@@ -33,9 +33,9 @@ class Camera(object):
                  blackoffset_max=16,
                  blackoffset_steps=255,
 
-                 dark_current_ref=0,
+                 dark_current_ref=30,
                  dark_signal_0=0,
-                 sigma2_dark_0=10,
+                 sigma2_dark_0=0,
 
                  dsnu=None,
                  prnu=None
@@ -104,7 +104,7 @@ class Camera(object):
                         The offset for the computation of the dark signal
                         (the dark signal standart deviation).
         dsnu : np.array, optional
-               DSNU image in electrons, array with the same shape of the image
+               DSNU image in DN, array with the same shape of the image
                that is added to every image
         prnu : np.array, optional
                PRNU image in percentages (1 = 100%), array with the same shape
@@ -145,8 +145,12 @@ class Camera(object):
         self._blackoffset = None
         self.blackoffset = blackoffset
 
-        self._dsnu = dsnu or np.zeros((self.height, self.width))
-        self._prnu = prnu or np.ones((self.height, self.width))
+        self._dsnu = dsnu
+        self._prnu = prnu
+        if dsnu is None:
+            self._dsnu = np.zeros((self.height, self.width))
+        if prnu is None:
+            self._prnu = np.ones((self.height, self.width))
 
     @property
     def bit_depth(self):
@@ -252,7 +256,7 @@ class Camera(object):
 
         # not the best but hope it works as approach for prnu dsnu
         img *= self._prnu
-        img += self.K * self._dsnu
+        img += self._dsnu
 
         img += self.blackoffset
         np.rint(img, img)
