@@ -41,7 +41,7 @@ class TestParser(unittest.TestCase):
         first_rad = self.d_generator.points['temporal'][first_exp_time][0]
         first_pcount = round(self.d_generator.cam.get_photons(first_rad,
                                                               first_exp_time),
-                             1)
+                             3)
 
         # check data have correctly been parsed
         self.assertEqual(parser.version, self._version)
@@ -59,7 +59,7 @@ class TestParser(unittest.TestCase):
         spatial_rad = list(points.values())[0][0]
         # round here because pcount are rounded in descriptor file
         spatial_pcount = round(self.d_generator.cam.get_photons(spatial_rad),
-                               1)
+                               3)
         im_spatial = parser.images['spatial'][spatial_texp][spatial_pcount]
         # the length of this dict should be greater than 2
         self.assertGreater(len(im_spatial), 2)

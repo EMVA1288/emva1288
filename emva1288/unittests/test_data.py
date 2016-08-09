@@ -3,6 +3,7 @@ from emva1288.camera.dataset_generator import DatasetGenerator
 from emva1288.process.parser import ParseEmvaDescriptorFile
 from emva1288.process.loader import LoadImageData
 from emva1288.process.data import Data1288
+from emva1288.unittests.test_routines import del_obj
 
 
 class TestData(unittest.TestCase):
@@ -31,10 +32,6 @@ class TestData(unittest.TestCase):
         data = Data1288(loader.data)
         return dataset, parser, loader, data
 
-    def _end(self, *args):
-        for obj in args:
-            del obj
-
     def test_data(self):
         """Test that data1288 retrieves information."""
         ds, p, l, d = self._init()
@@ -58,7 +55,7 @@ class TestData(unittest.TestCase):
         self.assertEqual(data['spatial']['texp'], texp)
         # spatial photons
         radiance = self.dataset.points['spatial'][texp][0]
-        photons = round(self.dataset.cam.get_photons(radiance), 1)
+        photons = round(self.dataset.cam.get_photons(radiance), 3)
         self.assertEqual(data['spatial']['u_p'], photons)
         # spatial data are images
         for typ in ('avg', 'avg_dark', 'pvar', 'pvar_dark', 'sum',
@@ -79,12 +76,12 @@ class TestData(unittest.TestCase):
                                                data['temporal']['u_p'])):
             time = times[i]
             radiance = self.dataset.points['temporal'][time][0]
-            photon = round(self.dataset.cam.get_photons(radiance, time), 1)
+            photon = round(self.dataset.cam.get_photons(radiance, time), 3)
             self.assertEqual(exp, times[i])
             self.assertEqual(photons, photon)
 
         # delete objects
-        self._end(self.dataset, self.parser, self.loader, self.data)
+        del_obj(self.dataset, self.parser, self.loader, self.data)
 
     def test_1exposure(self):
         """Test that when there is only one exposure time, the temporal data
@@ -103,7 +100,7 @@ class TestData(unittest.TestCase):
         self.assertEqual(len(temporal['u_ydark']), l)
         self.assertEqual(len(temporal['s2_ydark']), l)
 
-        self._end(self.dataset, self.parser, self.loader, self.data)
+        del_obj(self.dataset, self.parser, self.loader, self.data)
 
     def test_data_errors(self):
         # Test that given an incomplete data dictionary, it will raise errors
