@@ -111,18 +111,15 @@ class Camera(object):
                of the image. Every image is multiplied by it
         """
 
-        self._f_number = f_number
         self._pixel_area = pixel_area
         self._bit_depth = bit_depth
         self._img_max = 2 ** int(bit_depth) - 1
         self._width = width
         self._height = height
 
-        self._temperature = temperature
         self._temperature_ref = temperature_ref
         self._temperature_doubling = temperature_doubling
 
-        self._wavelength = wavelength
         self._qe = qe
         # When no specific qe is provided we simulate one
         if qe is None:
@@ -151,6 +148,9 @@ class Camera(object):
             self._dsnu = np.zeros((self.height, self.width))
         if prnu is None:
             self._prnu = np.ones((self.height, self.width))
+        self.environment = {'temperature': temperature,
+                            'wavelength': wavelength,
+                            'f_number': f_number}
 
     @property
     def bit_depth(self):
@@ -313,7 +313,7 @@ class Camera(object):
         Dark current (in DN/s).
         """
         u_i = 1. * self._dark_current_ref * 2 ** (
-            (self._temperature - self._temperature_ref) /
+            (self.environment['temperature'] - self._temperature_ref) /
             self._temperature_doubling)
         return u_i
 
@@ -355,10 +355,10 @@ class Camera(object):
         ue = (mean / self.K) - ud
         up = ue / self._qe
         radiance = routines.get_radiance(exposure,
-                                         self._wavelength,
+                                         self.environment['wavelength'],
                                          up,
                                          self.pixel_area,
-                                         self._f_number)
+                                         self.environment['f_number'])
         return radiance
 
     def get_photons(self, radiance, exposure=None):
@@ -382,7 +382,7 @@ class Camera(object):
         if exposure is None:
             exposure = self.exposure
         return routines.get_photons(exposure,
-                                    self._wavelength,
+                                    self.environment['wavelength'],
                                     radiance,
                                     self.pixel_area,
-                                    self._f_number)
+                                    self.environment['f_number'])
