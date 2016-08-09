@@ -312,7 +312,7 @@ class Camera(object):
         be distributed by a Poisson distribution where the mean
         equals the variance.
         """
-        return self._u_e(radiance, wavelength, f_number)
+        return self._u_e(radiance, wavelength=wavelength, f_number=f_number)
 
     def _u_d(self, temperature=None):
         """

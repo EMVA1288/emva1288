@@ -144,7 +144,7 @@ class TestResults(unittest.TestCase):
                                msg="Dark current is not well retrieved from"
                                    " mean dark signal.")
         self.assertAlmostEqual(self._dark_current_ref, self.results.u_I_var,
-                               delta=5.0,
+                               delta=5.5,
                                msg="Dark current is not well retrieved from"
                                    " dark signal variance.")
 
