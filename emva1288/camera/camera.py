@@ -241,16 +241,39 @@ class Camera(object):
         """The array of all blackoffsets (in DN)."""
         return self.__blackoffsets
 
-    def grab(self, radiance):
+    def grab(self, radiance, temperature=None, wavelength=None, f_number=None):
         """
         Create an image based on the mean and standard deviation from the
         EMVA1288 parameters.
 
         The image is generated using a normal distribution for each pixel.
+
+        Parameters
+        ----------
+        radiance : float
+                   The sensor's illumination in W/cm^2/sr. This is the only
+                   mandatory argument because it is frequently changed during
+                   an test.
+        temperature : float, optional
+                      The camera's temperature in degrees Celsius.
+                      If None, the environment's
+                      temperature will be taken.
+        wavelength : float, optional
+                     The illumination wavelength in nanometers.
+                     If None, the environment's wavelength will be taken.
+        f_number : float, optional
+                   The optical setup f_number.
+                   If None, the environment's f_number will be taken.
         """
         clipping_point = int(self.img_max)
-        u_y = self._u_y(radiance)
-        s2_y = np.sqrt(self._s2_y(radiance))
+        u_y = self._u_y(radiance,
+                        temperature=temperature,
+                        wavelength=wavelength,
+                        f_number=f_number)
+        s2_y = np.sqrt(self._s2_y(radiance,
+                                  temperature=temperature,
+                                  wavelength=wavelength,
+                                  f_number=f_number))
         img = np.random.normal(loc=u_y, scale=s2_y,
                                size=(self.height, self.width))
 
@@ -263,21 +286,25 @@ class Camera(object):
         np.clip(img, 0, clipping_point, img)
         return img.astype(np.uint64)
 
-    def _u_y(self, radiance):
+    def _u_y(self, radiance, temperature=None, wavelength=None, f_number=None):
         """
         Mean digital value (in DN) of the image.
         """
-        uy = self.K * (self._u_d() + self._u_e(radiance))
+        uy = self.K * (self._u_d(temperature=temperature) +
+                       self._u_e(radiance,
+                                 wavelength=wavelength,
+                                 f_number=f_number))
         return uy
 
-    def _u_e(self, radiance):
+    def _u_e(self, radiance, wavelength=None, f_number=None):
         """
         Mean number of electrons per pixel during exposure time.
         """
-        u_e = self._qe * self.get_photons(radiance)
+        u_e = self._qe * self.get_photons(radiance, wavelength=wavelength,
+                                          f_number=f_number)
         return u_e
 
-    def _s2_e(self, radiance):
+    def _s2_e(self, radiance, wavelength=None, f_number=None):
         """
         Variance of the number of electrons.
 
@@ -285,13 +312,15 @@ class Camera(object):
         be distributed by a Poisson distribution where the mean
         equals the variance.
         """
-        return self._u_e(radiance)
+        return self._u_e(radiance, wavelength, f_number)
 
-    def _u_d(self):
+    def _u_d(self, temperature=None):
         """
         Mean number of electrons without light.
         """
-        u_d = (self._u_i() * self.exposure / (10 ** 9)) + self._dark_signal_0
+        u_d = ((self._u_i(temperature=temperature) *
+                self.exposure / (10 ** 9)) +
+               self._dark_signal_0)
         return u_d
 
     def _s2_q(self):
@@ -300,28 +329,34 @@ class Camera(object):
         """
         return 1.0 / 12.0
 
-    def _s2_y(self, radiance):
+    def _s2_y(self, radiance, temperature=None, wavelength=None,
+              f_number=None):
         """
         Variance of the digital signal (= temporal noise).
         """
-        s2_y = ((self.K ** 2) * (self._s2_d() + self._s2_e(radiance)) +
+        s2_y = ((self.K ** 2) * (self._s2_d(temperature=temperature) +
+                self._s2_e(radiance,
+                           wavelength=wavelength,
+                           f_number=f_number)) +
                 self._s2_q())
         return s2_y
 
-    def _u_i(self):
+    def _u_i(self, temperature=None):
         """
         Dark current (in DN/s).
         """
+        if temperature is None:
+            temperature = self.environment['temperature']
         u_i = 1. * self._dark_current_ref * 2 ** (
-            (self.environment['temperature'] - self._temperature_ref) /
-            self._temperature_doubling)
+            (temperature - self._temperature_ref) / self._temperature_doubling)
         return u_i
 
-    def _s2_d(self):
+    def _s2_d(self, temperature=None):
         """
         Variance of the dark signal =  Dark temporal noise.
         """
-        s2_d = self._sigma2_dark_0 + (self._u_i() * self.exposure / (10 ** 9))
+        s2_d = self._sigma2_dark_0 + (self._u_i(temperature=temperature) *
+                                      self.exposure / (10 ** 9))
         return s2_d
 
     def get_radiance_for(self, mean=None, exposure=None):
@@ -361,7 +396,8 @@ class Camera(object):
                                          self.environment['f_number'])
         return radiance
 
-    def get_photons(self, radiance, exposure=None):
+    def get_photons(self, radiance, exposure=None,
+                    wavelength=None, f_number=None):
         """Computes the number of photons received by one pixel.
 
         Uses the :func:`~emva1288.camera.routines.get_photons` function
@@ -381,8 +417,12 @@ class Camera(object):
         """
         if exposure is None:
             exposure = self.exposure
+        if f_number is None:
+            f_number = self.environment['f_number']
+        if wavelength is None:
+            wavelength = self.environment['wavelength']
         return routines.get_photons(exposure,
-                                    self.environment['wavelength'],
+                                    wavelength,
                                     radiance,
                                     self.pixel_area,
-                                    self.environment['f_number'])
+                                    f_number)
