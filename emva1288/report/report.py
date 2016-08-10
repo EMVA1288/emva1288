@@ -217,7 +217,7 @@ class Report1288(object):
             op['name'] = op['id']
         if not results:
             results = self._results(data)
-        op['results'] = results.results
+        op['results'] = results.results_by_section
         results.id = n
         op['plots'] = self._plots(results, op['id'])
         self.ops.append(op)

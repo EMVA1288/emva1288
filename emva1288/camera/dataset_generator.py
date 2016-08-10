@@ -103,8 +103,12 @@ class DatasetGenerator:
         self.cam = Cam(**kwargs)
         # set the camera parameters for the test
         self.cam.exposure = self.cam.exposure_min
-        self.cam.blackoffset = _get_emva_blackoffset(self.cam)
-        self.cam.K = _get_emva_gain(self.cam)
+
+        # If no blackoffset/gain are specified find them according to standard
+        if 'blackoffset' not in kwargs:
+            self.cam.blackoffset = _get_emva_blackoffset(self.cam)
+        if 'K' not in kwargs:
+            self.cam.K = _get_emva_gain(self.cam)
 
         # create test points
         points = PointsGenerator(self.cam,
