@@ -1,12 +1,25 @@
 from emva1288 import process
 from emva1288 import report
+from emva1288.camera.dataset_generator import DatasetGenerator
 import os
 
-# Load one test to add it as operation point
-dir_ = '/home/work/1288/datasets/'
-fname = 'EMVA1288_ReferenceSet_003_Simulation_12Bit/EMVA1288_Data.txt'
+# # Load one test to add it as operation point
+# dir_ = '/home/work/1288/datasets/'
+# fname = 'EMVA1288_ReferenceSet_003_Simulation_12Bit/EMVA1288_Data.txt'
+# fname = os.path.join(dir_, fname)
 
-parser = process.ParseEmvaDescriptorFile(os.path.join(dir_, fname))
+dataset_generator = DatasetGenerator(width=640,
+                                     height=480,
+                                     K=0.1,
+                                     blackoffset=29.4,
+                                     bit_depth=12,
+                                     steps=50,
+                                     exposure_fixed=1000000,
+                                     dark_current_ref=30)
+
+fname = dataset_generator.descriptor_path
+
+parser = process.ParseEmvaDescriptorFile(fname)
 imgs = process.LoadImageData(parser.images)
 dat = process.Data1288(imgs.data)
 

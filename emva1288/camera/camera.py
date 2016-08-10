@@ -30,7 +30,7 @@ class Camera(object):
 
                  blackoffset=0,
                  blackoffset_min=0,
-                 blackoffset_max=16,
+                 blackoffset_max=None,
                  blackoffset_steps=255,
 
                  dark_current_ref=30,
@@ -137,6 +137,9 @@ class Camera(object):
         self._K = None
         self.K = K
 
+        # A good gestimate for maximum blackoffset is 1/16th of the full range
+        if not blackoffset_max:
+            blackoffset_max = self.img_max // 16
         self.__blackoffsets = np.linspace(blackoffset_min, blackoffset_max,
                                           num=blackoffset_steps)
         self._blackoffset = None
