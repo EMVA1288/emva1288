@@ -164,13 +164,43 @@ report.
 
 API Reference : :class:`~emva1288.report.report.Report1288`
 
-There is two functions that can be used to add custom informations to the report.
+Here is an example of how the report generator works::
+
+  from emva1288.report import Report1288
+
+  outdir = "path/to/output/directory"
+  marketing = {dictionary containing marketing infos}
+  basic = {dictionary containing basic infos}
+  setup = {dictionary containing setup infos}
+  cover_page = "path/to/the/cover/page.tex"
+  op = {Dictionary containing the operation point infos to
+        publish in the report}
+  data = {dictionary containing the op data}
+
+  # create report object
+  report = Report1288(outdir, marketing=marketing, basic=basic,
+                      setup=setup, cover_page=cover_page)
+
+  # add operation points
+  report.add(op, data)
+
+  # create report tex files
+  report.latex()
+
+  # next, compile the files somehow.
+
+There is four functions that can be used to add custom informations to the report.
+
 - First, there is the :func:`~emva1288.report.report.info_marketing` function.
-This is a function that returns a named tuple to fill with the marketing data
-needed for the report.
+  This is a function that returns a dictionary to fill with the marketing data
+  needed for the report.
 - Second, there is the :func:`~emva1288.report.report.info_op` function.
-This function returns a named tuple serving as a place holder for all the data
-needed for an operation point in the report
+  This function returns a dictionary serving as a place holder for all the data
+  needed for an operation point in the report
+- Third, the :func:`~emva1288.report.report.info_setup` creates a dictionary
+  containing the experimental setup informations.
+- And fourth, the :func:`~emva1288.report.report.info_basic` does the same but
+  for basic informations common to all operation points.
 
 Usage
 =====
