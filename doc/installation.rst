@@ -12,7 +12,7 @@ Once the python environment is installed just run ::
 If you want to contribute to this project, clone it and install it::
 
   >> git clone https://github.com/EMVA1288/emva1288.git (or from a fork)
-  >> python setup.py install develop
+  >> python setup.py develop
 
 If you make code modifications, you can run the unittests to make sure
 nothing important is broken::
@@ -20,4 +20,3 @@ nothing important is broken::
   >> python tests.py
 
 This will run the test suite and print the code coverage in the console.
-
