@@ -395,12 +395,12 @@ def xml_to_dict(xml):
                     v = v.split()
                     d[section][methodname]['data'][data] = np.asfarray(v)
             else:
-                # sometimes the decimal point is written with , instead of .
-                v = value['value'].replace(',', '.')
-                # special cases, None, etc...
-                if v == 'None':
+                v = value['value']
+                if v in ('None', None, 'none'):
                     v = None
                 else:
+                    # sometimes the decimal point is written with , instead of.
+                    v = v.replace(',', '.')
                     v = float(v)
                 d[section][methodname]['value'] = v
     return d
