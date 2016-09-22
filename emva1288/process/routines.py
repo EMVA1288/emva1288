@@ -431,7 +431,8 @@ def compare_xml(x1, x2):
     c2 = list(f2.keys())
 
     # loop throught the combined categories
-    for category in set(c1) | set(c2):
+    categories = set(c1) | set(c2)
+    for category in sorted(categories):
         print('')
         print('*' * 70)
         print(category)
@@ -447,13 +448,14 @@ def compare_xml(x1, x2):
         m1 = f1[category].keys()
         m2 = f2[category].keys()
         # loop throught the combined methodnames
-        for methodname in set(m1) | set(m2):
+        methodnames = set(m1) | set(m2)
+        for methodname in sorted(methodnames):
             print('{0:<35}'.format(methodname), end=" ")
 
             # check if methodname in dict
             if methodname not in m1:
                 v1 = None
-                a2 = None
+                a1 = None
             # get the value and the data
             else:
                 v1 = f1[category][methodname].get('value', None)
@@ -498,6 +500,10 @@ def compare_xml(x1, x2):
 
                         if not r:
                             break
+            else:
+                t1 = str(v1)
+                t2 = str(v2)
+                r = False
 
             print('{0:<20}{1:<20}'.format(t1, t2), end=" ")
             if r:
