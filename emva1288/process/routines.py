@@ -373,12 +373,14 @@ def xml_to_dict(xml):
         '''
         dout = {}
         for child in r:
+            # The resulting keys are forced to lowercase to compoensate
+            # for some windows versions that use CamelCase
             if list(child):
                 # if the element has children call the function again with
                 # children as r
-                dout[child.tag] = element_to_dict(child)
+                dout[child.tag.lower()] = element_to_dict(child)
             else:
-                dout[child.tag] = child.text
+                dout[child.tag.lower()] = child.text
         return dout
 
     root = tree.getroot()
