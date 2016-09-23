@@ -418,10 +418,11 @@ def round_significant(v, sig=SIGNIFICANT_DIGITS):
 round_array = np.vectorize(round_significant)
 
 
-def compare_xml(x1, x2):
+def compare_xml(x1, x2, filename=None):
     # load the xml into dicts
     f1 = xml_to_dict(x1)
     f2 = xml_to_dict(x2)
+	s = ''
 
     # if something is wrong abort
     if f1 is None or f2 is None:
