@@ -560,8 +560,10 @@ class Results1288(object):
         ##################################################################
         # Following the emva1288 standart for the computation of the fit #
         ##################################################################
+
         X_ = X[imin: imax]
         Y_ = Y[imin: imax]
+
         xy = np.sum(X_ / Y_)
         xy2 = np.sum(X_ / (Y_ ** 2))
         x2y2 = np.sum((X_ / Y_) ** 2)
@@ -570,6 +572,9 @@ class Results1288(object):
 
         b = ((xy * xy2) - (x2y2 * _y)) / ((xy2 ** 2) - (x2y2 * _y2))
         a = (xy - (b * xy2)) / x2y2
+
+        # The equivalent numpy polyfit is
+        # a, b = np.polynomial.polynomial.polyfit(X_, Y_, 1, w=1 / Y_)
 
         dev = 100. * (Y - (a * X + b)) / (a * X + b)
 
