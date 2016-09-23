@@ -48,3 +48,4 @@ doc/_build
 # Coverage info
 .coverage
 cover
+.ipynb_checkpoints
