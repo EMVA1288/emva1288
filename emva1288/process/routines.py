@@ -426,7 +426,7 @@ def compare_xml(x1, x2, filename=None):
 
     # if something is wrong abort
     if f1 is None or f2 is None:
-        return
+        return s
 
     c1 = list(f1.keys())
     c2 = list(f2.keys())
@@ -435,15 +435,21 @@ def compare_xml(x1, x2, filename=None):
     categories = set(c1) | set(c2)
     for category in sorted(categories):
         print('')
+        
         print('*' * 70)
+        s += '*' * 70 + '\n'
         print(category)
+        s += category + '\n'
         print('*' * 70)
+        s +=  '*' * 70 + '\n'
         # check if missing category in one of the dicts
         if category not in c1 or category not in c2:
             t1 = category in c1
             t2 = category in c2
             print('{0:<35}'.format('PRESENT'), end=" ")
+            s += '{0:<35}'.format('PRESENT') 
             print('{0:<20}{1:<20}FAIL'.format(str(t1), str(t2)))
+            s += '{0:<20}{1:<20}FAIL'.format(str(t1), str(t2)) + '\n'
             continue
 
         m1 = f1[category].keys()
@@ -452,6 +458,7 @@ def compare_xml(x1, x2, filename=None):
         methodnames = set(m1) | set(m2)
         for methodname in sorted(methodnames):
             print('{0:<35}'.format(methodname), end=" ")
+            s += '{0:<35}'.format(methodname)
 
             # check if methodname in dict
             if methodname not in m1:
@@ -507,7 +514,18 @@ def compare_xml(x1, x2, filename=None):
                 r = False
 
             print('{0:<20}{1:<20}'.format(t1, t2), end=" ")
+            s += '{0:<20}{1:<20}'.format(t1, t2)
             if r:
                 print('OK')
+                s += 'OK' + '\n'
             else:
                 print('FAIL')
+                s += 'FAIL' + '\n'
+
+        s += '\n'
+
+    if filename is None:
+        return s
+    with open(filename, 'w') as f:
+        f.write(s)
+        return s
