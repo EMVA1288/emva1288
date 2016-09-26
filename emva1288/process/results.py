@@ -616,22 +616,18 @@ class Results1288(object):
         return self.linearity()['linearity_error_max']
 
     @property
-    def u_I_var(self):
+    def u_I_var_DN(self):
         """Dark Current from variance.
 
-        The dark current from variance is computed as the square root
-        of the slope of the dark signal
-        variance in function of the exposure times divided by the overall
-        system gain. It uses
-        the :func:`~emva1288.process.routines.LinearB` function to
-        make the fit. Returns NaN if u_I_var is imaginary (if the fit
-        slope is negative).
+        The dark current from variance is the square root of the slope of the
+        dark signal variance in function of the exposure time.
+        Returns NaN if u_I_var is imaginary (if the fit slope is negative).
 
         .. emva1288::
             :Section: dark_current
             :Short: Dark Current from variance
-            :Symbol: $\mu_{I.var}$
-            :Unit: $e^-/s$
+            :Symbol: $\mu_{I.var.DN}$
+            :Unit: DN/s$
             :LatexName: UIVar
         """
 
@@ -641,24 +637,40 @@ class Results1288(object):
         if fit[0] < 0:
             return np.nan
         # Multiply by 10^9 because exposure times are in nanoseconds
-        return fit[0] * (10 ** 9) / (self.K ** 2)
+        return fit[0] * (10 ** 9)
 
     @property
-    def u_I_mean(self):
+    def u_I_var(self):
+        """Dark Current from variance.
+
+        The dark current from variance is the square root of the slope of the
+        dark signal variance in function of the exposure times divided
+        by the overall system gain.
+        Returns NaN if u_I_var is imaginary (if the fit slope is negative).
+
+        .. emva1288::
+            :Section: dark_current
+            :Short: Dark Current from variance
+            :Symbol: $\mu_{I.var}$
+            :Unit: $e^-/s$
+            :LatexName: UIVar
+        """
+
+        return self.u_I_var_DN / (self.K ** 2)
+
+    @property
+    def u_I_mean_DN(self):
         """Dark Current from mean.
 
-        The dark current from mean is computed as the slope
-        of the dark signal mean in function of the exposure times divided
-        by the overall system gain. Returns NaN if the number of different
-        exposure times is less than 3.
-        It uses the :func:`~emva1288.process.routines.LinearB` to compute
-        the linear fit.
+        The dark current from mean is the slope of the dark signal mean in
+        function of the exposure time.
+        Returns NaN if the number of different exposure times is less than 3.
 
         .. emva1288::
             :Section: dark_current
             :Short: Dark Current from mean
-            :Symbol: $\mu_{I.mean}$
-            :Unit: e/s
+            :Symbol: $\mu_{I.mean.DN}$
+            :Unit: DN/s
         """
 
         if len(np.unique(self.temporal['texp'])) <= 2:
@@ -667,7 +679,23 @@ class Results1288(object):
         fit, _error = routines.LinearB(self.temporal['texp'],
                                        self.temporal['u_ydark'])
         # Multiply by 10 ^ 9 because exposure time in nanoseconds
-        return fit[0] * (10 ** 9) / self.K
+        return fit[0] * (10 ** 9)
+
+    @property
+    def u_I_mean(self):
+        """Dark Current from mean.
+
+        The dark current from mean is the slope of the dark signal mean in
+        function of the exposure times divided by the overall system gain.
+        Returns NaN if the number of different exposure times is less than 3.
+
+        .. emva1288::
+            :Section: dark_current
+            :Short: Dark Current from mean
+            :Symbol: $\mu_{I.mean}$
+            :Unit: $e^-/s$
+        """
+        return self.u_I_mean_DN / self.K
 
     @property
     def sigma_2_y_stack(self):
