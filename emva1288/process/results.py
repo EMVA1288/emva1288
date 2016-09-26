@@ -627,9 +627,11 @@ class Results1288(object):
             :Section: dark_current
             :Short: Dark Current from variance
             :Symbol: $\mu_{I.var.DN}$
-            :Unit: DN/s$
+            :Unit: $DN/s$
             :LatexName: UIVar
         """
+        if len(np.unique(self.temporal['texp'])) <= 2:
+            return np.nan
 
         fit, _error = routines.LinearB(self.temporal['texp'],
                                        self.temporal['s2_ydark'])
@@ -655,8 +657,11 @@ class Results1288(object):
             :Unit: $e^-/s$
             :LatexName: UIVar
         """
+        ui = self.u_I_var_DN
+        if ui is np.nan:
+            return np.nan
 
-        return self.u_I_var_DN / (self.K ** 2)
+        return ui / (self.K ** 2)
 
     @property
     def u_I_mean_DN(self):
@@ -670,7 +675,7 @@ class Results1288(object):
             :Section: dark_current
             :Short: Dark Current from mean
             :Symbol: $\mu_{I.mean.DN}$
-            :Unit: DN/s
+            :Unit: $DN/s$
         """
 
         if len(np.unique(self.temporal['texp'])) <= 2:
@@ -695,7 +700,10 @@ class Results1288(object):
             :Symbol: $\mu_{I.mean}$
             :Unit: $e^-/s$
         """
-        return self.u_I_mean_DN / self.K
+        ui = self.u_I_mean_DN
+        if ui is np.nan:
+            return np.nan
+        return ui / self.K
 
     @property
     def sigma_2_y_stack(self):
