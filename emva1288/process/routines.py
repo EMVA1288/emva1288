@@ -435,19 +435,18 @@ def compare_xml(x1, x2, filename=None):
     categories = set(c1) | set(c2)
     for category in sorted(categories):
         print('')
-        
         print('*' * 70)
         s += '*' * 70 + '\n'
         print(category)
         s += category + '\n'
         print('*' * 70)
-        s +=  '*' * 70 + '\n'
+        s += '*' * 70 + '\n'
         # check if missing category in one of the dicts
         if category not in c1 or category not in c2:
             t1 = category in c1
             t2 = category in c2
             print('{0:<35}'.format('PRESENT'), end=" ")
-            s += '{0:<35}'.format('PRESENT') 
+            s += '{0:<35}'.format('PRESENT')
             print('{0:<20}{1:<20}FAIL'.format(str(t1), str(t2)))
             s += '{0:<20}{1:<20}FAIL'.format(str(t1), str(t2)) + '\n'
             continue
