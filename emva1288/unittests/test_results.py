@@ -39,10 +39,8 @@ class TestResults(unittest.TestCase):
     _exposure_fixed = 10000000
     _temperature = 20
     _temperature_ref = 20
-    _K = 0.1
+    _K = 0.5
     _exposure_min = 50000
-    _dark_signal_0 = 1
-    _sigma2_dark_0 = 1
     _dsnu = np.zeros((_height, _width))
     _dsnu[0, :] += 5
     _prnu = np.ones((_height, _width))
@@ -59,8 +57,6 @@ class TestResults(unittest.TestCase):
                                 exposure_max=self._exposure_max,
                                 exposure_min=self._exposure_min,
                                 K=self._K,
-                                dark_signal_0=self._dark_signal_0,
-                                sigma2_dark_0=self._sigma2_dark_0,
                                 dark_current_ref=self._dark_current_ref,
                                 temperature=self._temperature,
                                 temperature_ref=self._temperature_ref,
@@ -125,7 +121,7 @@ class TestResults(unittest.TestCase):
 
         # Test that overall system gain
         # is retrieved with a +/- 0.01 incertainty
-        self.assertAlmostEqual(self.dataset.cam.K, self.results.K, delta=0.01,
+        self.assertAlmostEqual(self.dataset.cam.K, self.results.K, delta=0.1,
                                msg="The difference between expected"
                                    "system gain"
                                    "and the retrieved one"
@@ -144,7 +140,7 @@ class TestResults(unittest.TestCase):
                                msg="Dark current is not well retrieved from"
                                    " mean dark signal.")
         self.assertAlmostEqual(self._dark_current_ref, self.results.u_I_var,
-                               delta=5.5,
+                               delta=10.0,
                                msg="Dark current is not well retrieved from"
                                    " dark signal variance.")
 
@@ -233,8 +229,6 @@ class TestResults(unittest.TestCase):
                                 radiance_min=self._radiance_min,
                                 exposure_max=self._exposure_max,
                                 exposure_min=self._exposure_min,
-                                dark_signal_0=self._dark_signal_0,
-                                sigma2_dark_0=self._sigma2_dark_0,
                                 temperature=self._temperature,
                                 temperature_ref=self._temperature_ref,
                                 K=self._K,
@@ -250,7 +244,7 @@ class TestResults(unittest.TestCase):
         # Test that s_ydark is not a fit because only 1 texp
         self.assertAlmostEqual(self.results.sigma_y_dark,
                                np.sqrt(data['temporal']['s2_ydark'][0]),
-                               delta=0.01)
+                               delta=0.1)
 
         del_obj(self.dataset, self.parser, self.loader, self.data,
                 self.results)
@@ -265,8 +259,6 @@ class TestResults(unittest.TestCase):
                                 dark_current_ref=self._dark_current_ref,
                                 exposure_max=self._exposure_max,
                                 exposure_min=self._exposure_min,
-                                dark_signal_0=self._dark_signal_0,
-                                sigma2_dark_0=self._sigma2_dark_0,
                                 temperature=self._temperature,
                                 temperature_ref=self._temperature_ref,
                                 K=self._K,
