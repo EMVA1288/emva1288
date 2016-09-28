@@ -434,20 +434,14 @@ def compare_xml(x1, x2, filename=None):
     # loop throught the combined categories
     categories = set(c1) | set(c2)
     for category in sorted(categories):
-        print('')
-        print('*' * 70)
         s += '*' * 70 + '\n'
-        print(category)
         s += category + '\n'
-        print('*' * 70)
         s += '*' * 70 + '\n'
         # check if missing category in one of the dicts
         if category not in c1 or category not in c2:
             t1 = category in c1
             t2 = category in c2
-            print('{0:<35}'.format('PRESENT'), end=" ")
             s += '{0:<35}'.format('PRESENT')
-            print('{0:<20}{1:<20}FAIL'.format(str(t1), str(t2)))
             s += '{0:<20}{1:<20}FAIL'.format(str(t1), str(t2)) + '\n'
             continue
 
@@ -456,7 +450,6 @@ def compare_xml(x1, x2, filename=None):
         # loop throught the combined methodnames
         methodnames = set(m1) | set(m2)
         for methodname in sorted(methodnames):
-            print('{0:<35}'.format(methodname), end=" ")
             s += '{0:<35}'.format(methodname)
 
             # check if methodname in dict
@@ -512,13 +505,10 @@ def compare_xml(x1, x2, filename=None):
                 t2 = str(v2)
                 r = False
 
-            print('{0:<20}{1:<20}'.format(t1, t2), end=" ")
             s += '{0:<20}{1:<20}'.format(t1, t2)
             if r:
-                print('OK')
                 s += 'OK' + '\n'
             else:
-                print('FAIL')
                 s += 'FAIL' + '\n'
 
         s += '\n'
