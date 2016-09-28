@@ -825,35 +825,44 @@ EVMA1288plots = [PlotPTC,
 
 
 class Plotting1288(object):
-    def __init__(self, test):
+    """EMVA1288 plots
+
+    Creates and shows all plots necessary to prepare a camera or sensor
+    descriptive report compliant with EMVA Standard 1288 version 3.1.
+    """
+
+    def __init__(self, *tests):
         '''
-        Creates and shows all plots necessary to prepare a camera or sensor
-        descriptive report compliant with EMVA Standard 1288 version 3.1.
+        Parameters
+        ----------
+        tests: list
+            List of tests to Plot
         '''
 
-        if not getattr(test, 'id', False):
-            test.id = id(test)
-        self.test = test
+        self.tests = []
+        for test in tests:
+            if not getattr(test, 'id', False):
+                test.id = id(test)
+        self.tests.append(test)
 
-    def plots_to_plot(self, *plots):
-        p = []
-        if not plots:
-            plots = range(len(EVMA1288plots))
-        for i in plots:
-            if i not in range(len(EVMA1288plots)):
-                print('Error ', i, 'is not valid index')
-                print('Plot has to be integer in ', range(len(EVMA1288plots)))
-                continue
-            p.append(i)
-        return p
+    def plot(self, *plots):
+        """Plot EMVA1288 plots
 
-    def plot(self, *ids):
+        Parameters
+        ----------
+        plots: list
+            List of plots to plot
+
+        """
         import matplotlib.pyplot as plt
-        plots = self.plots_to_plot(*ids)
-        for i in plots:
+        if not plots:
+            plots = EVMA1288plots
+
+        for i, plot_cls in enumerate(plots):
             figure = plt.figure(i)
-            plot = EVMA1288plots[i](figure)
-            plot.plot(self.test)
+            plot = plot_cls(figure)
+            for test in self.tests:
+                plot.plot(test)
             plot.rearrange()
             figure.canvas.set_window_title(plot.name)
         plt.show()

@@ -20,11 +20,11 @@ class Emva1288(object):
         self._results = Results1288(dat.data)
 
     def results(self):
-        return self._results.print_results()
+        self._results.print_results()
 
-    def plot(self):
+    def plot(self, *plots):
         plot = Plotting1288(self._results)
-        plot.plot()
+        plot.plot(*plots)
 
     def xml(self, filename=None):
         return self._results.xml(filename)
