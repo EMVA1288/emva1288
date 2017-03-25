@@ -9,7 +9,7 @@ def get_emva_blackoffset(cam):
     bini = cam.blackoffset
     # Find black offset with a maximum of 0.5% of values at Zero
     bo = cam.blackoffsets[0]
-    pixels = cam.img_x * cam.img_y
+    pixels = cam.width * cam.height
     for i in cam.blackoffsets:
         cam.blackoffset = i
         img = cam.grab(0)
@@ -58,12 +58,12 @@ data = {'temporal': {},
 # Intialize the camera, here we can specify different image size
 # or any other parameter that Camera allows
 c = Camera(bit_depth=10,
-           img_x=100,
-           img_y=50)
+           width=100,
+           height=50)
 
 # Fill the information
-data['width'] = c.img_x
-data['height'] = c.img_y
+data['width'] = c.width
+data['height'] = c.height
 
 # Maximum exposure for test
 exposure_max = 9000000
