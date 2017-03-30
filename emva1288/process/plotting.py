@@ -395,6 +395,12 @@ class PlotHorizontalSpectrogramPRNU(Emva1288Plot):
                    color='b',
                    gid='%d:marker' % test.id)
 
+        ax.axhline(np.sqrt(test.sigma_2_y_stack),
+                   label='$\sigma^2_{y.stack}$',
+                   linestyle='-.',
+                   color='g',
+                   gid='%d:marker' % test.id)
+
         self.set_legend(ax)
 
 
