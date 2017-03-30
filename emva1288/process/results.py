@@ -859,6 +859,11 @@ class Results1288(object):
                 (np.mean(self.spatial['avg']) -
                  np.mean(self.spatial['avg_dark'])))
 
+    def PRNU1288_DN(self):
+        return np.sqrt((self.s_2_y - self.s_2_y_dark) /
+                       (np.mean(self.spatial['avg']) -
+                        np.mean(self.spatial['avg_dark'])))
+
     @property
     def histogram_PRNU(self):
         """PRNU histogram.

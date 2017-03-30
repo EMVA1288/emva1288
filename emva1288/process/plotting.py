@@ -384,22 +384,15 @@ class PlotHorizontalSpectrogramPRNU(Emva1288Plot):
 
         spectrogram = routines.FFT1288(data) / data_mean
 
-        ax.plot(routines.GetFrecs(spectrogram[:(np.shape(spectrogram)[0] //
-                                                2)]),
-                (np.sqrt(spectrogram[:(np.shape(spectrogram)[0] // 2)])),
+        ax.plot(routines.GetFrecs(spectrogram),
+                (np.sqrt(spectrogram)),
                 label='Data',
                 gid='%d:data' % test.id)
 
         ax.axhline(test.PRNU1288,
                    label='$PRNU_{1288}$',
-                   linestyle='--',
-                   color='r',
-                   gid='%d:marker' % test.id)
-
-        ax.axhline(np.sqrt(test.sigma_2_y_stack),
-                   label='$\sigma^2_{y.stack}$',
                    linestyle='-.',
-                   color='g',
+                   color='b',
                    gid='%d:marker' % test.id)
 
         self.set_legend(ax)
@@ -417,9 +410,8 @@ class PlotHorizontalSpectrogramDSNU(Emva1288Plot):
         ax = self.ax
 
         spectrogram = routines.FFT1288(test.spatial['avg_dark'])
-        ax.plot(routines.GetFrecs(spectrogram[:(np.shape(spectrogram)[0] //
-                                                2)]),
-                np.sqrt(spectrogram[:(np.shape(spectrogram)[0] // 2)]),
+        ax.plot(routines.GetFrecs(spectrogram),
+                np.sqrt(spectrogram),
                 label='Data',
                 gid='%d:data' % test.id)
 
@@ -452,9 +444,8 @@ class PlotVerticalSpectrogramPRNU(Emva1288Plot):
         data_mean = np.mean(data)
         spectrogram = routines.FFT1288(data, rotate=True) / data_mean
 
-        ax.plot((routines.GetFrecs(spectrogram[:(np.shape(spectrogram)[0] //
-                                                 2)])),
-                (np.sqrt(spectrogram[:(np.shape(spectrogram)[0] // 2)])),
+        ax.plot((routines.GetFrecs(spectrogram)),
+                (np.sqrt(spectrogram)),
                 label='Data',
                 gid='%d:data' % test.id)
 
@@ -486,9 +477,8 @@ class PlotVerticalSpectrogramDSNU(Emva1288Plot):
 
         spectrogram = routines.FFT1288(test.spatial['avg_dark'],
                                        rotate=True)
-        ax.plot(routines.GetFrecs(spectrogram[:(np.shape(spectrogram)[0] //
-                                                2)]),
-                np.sqrt(spectrogram[:(np.shape(spectrogram)[0] // 2)]),
+        ax.plot(routines.GetFrecs(spectrogram),
+                np.sqrt(spectrogram),
                 label='Data',
                 gid='%d:data' % test.id)
 
