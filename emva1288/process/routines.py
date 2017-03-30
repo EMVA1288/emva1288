@@ -142,7 +142,8 @@ def FFT1288(m, rotate=False):
     # extract the mean of each column of the fft
     r = np.mean(fabs, axis=0)
 
-    return r
+    # Return only half of the spectrogram (it is symemtrical)
+    return r[: cols // 2]
 
 
 def GetFrecs(fft):
