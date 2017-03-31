@@ -384,9 +384,8 @@ class PlotHorizontalSpectrogramPRNU(Emva1288Plot):
 
         spectrogram = routines.FFT1288(data) / data_mean
 
-        ax.plot(routines.GetFrecs(spectrogram[:(np.shape(spectrogram)[0] //
-                                                2)]),
-                (np.sqrt(spectrogram[:(np.shape(spectrogram)[0] // 2)])),
+        ax.plot(routines.GetFrecs(spectrogram),
+                (np.sqrt(spectrogram)),
                 label='Data',
                 gid='%d:data' % test.id)
 
@@ -396,7 +395,7 @@ class PlotHorizontalSpectrogramPRNU(Emva1288Plot):
                    color='r',
                    gid='%d:marker' % test.id)
 
-        ax.axhline(np.sqrt(test.sigma_2_y_stack),
+        ax.axhline(100 * np.sqrt(test.sigma_2_y_stack) / data_mean,
                    label='$\sigma^2_{y.stack}$',
                    linestyle='-.',
                    color='g',
@@ -417,9 +416,8 @@ class PlotHorizontalSpectrogramDSNU(Emva1288Plot):
         ax = self.ax
 
         spectrogram = routines.FFT1288(test.spatial['avg_dark'])
-        ax.plot(routines.GetFrecs(spectrogram[:(np.shape(spectrogram)[0] //
-                                                2)]),
-                np.sqrt(spectrogram[:(np.shape(spectrogram)[0] // 2)]),
+        ax.plot(routines.GetFrecs(spectrogram),
+                np.sqrt(spectrogram),
                 label='Data',
                 gid='%d:data' % test.id)
 
@@ -452,9 +450,8 @@ class PlotVerticalSpectrogramPRNU(Emva1288Plot):
         data_mean = np.mean(data)
         spectrogram = routines.FFT1288(data, rotate=True) / data_mean
 
-        ax.plot((routines.GetFrecs(spectrogram[:(np.shape(spectrogram)[0] //
-                                                 2)])),
-                (np.sqrt(spectrogram[:(np.shape(spectrogram)[0] // 2)])),
+        ax.plot((routines.GetFrecs(spectrogram)),
+                (np.sqrt(spectrogram)),
                 label='Data',
                 gid='%d:data' % test.id)
 
@@ -464,7 +461,7 @@ class PlotVerticalSpectrogramPRNU(Emva1288Plot):
                    color='r',
                    gid='%d:marker' % test.id)
 
-        ax.axhline(np.sqrt(test.sigma_2_y_stack) / data_mean,
+        ax.axhline(100 * np.sqrt(test.sigma_2_y_stack) / data_mean,
                    label='$\sigma^2_{y.stack}$',
                    linestyle='-.',
                    color='g',
@@ -486,9 +483,8 @@ class PlotVerticalSpectrogramDSNU(Emva1288Plot):
 
         spectrogram = routines.FFT1288(test.spatial['avg_dark'],
                                        rotate=True)
-        ax.plot(routines.GetFrecs(spectrogram[:(np.shape(spectrogram)[0] //
-                                                2)]),
-                np.sqrt(spectrogram[:(np.shape(spectrogram)[0] // 2)]),
+        ax.plot(routines.GetFrecs(spectrogram),
+                np.sqrt(spectrogram),
                 label='Data',
                 gid='%d:data' % test.id)
 
@@ -561,7 +557,7 @@ class PlotAccumulatedLogHistogramDSNU(Emva1288Plot):
 
     name = 'Accumulated log histogram DSNU'
     xlabel = 'Minimal deviation from the mean [DN]'
-    ylabel = 'Percentage of pixels\ndeviating from the mean at least of : '
+    ylabel = 'Percentage of pixels/bin'
     yscale = 'log'
 
     def plot(self, test):
@@ -581,7 +577,7 @@ class PlotAccumulatedLogHistogramPRNU(Emva1288Plot):
 
     name = 'Accumulated log histogram PRNU'
     xlabel = 'Minimal deviation from the mean [%]'
-    ylabel = 'Percentage of pixels\ndeviating from the mean at least of : '
+    ylabel = 'Percentage of pixels/bin'
     yscale = 'log'
 
     def plot(self, test):
@@ -700,7 +696,10 @@ class ProfileBase(Emva1288Plot):
         bright_plots = []
         labels = []
 
-        for typ in ('mid', 'min', 'max', 'mean'):
+        for typ, color in (('mid', 'green'),
+                           ('min', 'blue'),
+                           ('max', 'orange'),
+                           ('mean', 'black')):
             # label has first letter capital
             label = typ.capitalize()
             labels.append(label)
@@ -709,6 +708,7 @@ class ProfileBase(Emva1288Plot):
             l = ax.plot(profiles['bright'][typ][x],
                         profiles['bright'][typ][y],
                         label=label,
+                        color=color,
                         gid='%d:marker' % test.id)[0]
             bright_plots.append(l)
 
@@ -716,6 +716,7 @@ class ProfileBase(Emva1288Plot):
             ax2.plot(profiles['dark'][typ][x],
                      profiles['dark'][typ][y],
                      label=label,
+                     color=color,
                      gid='%d:data' % test.id)
 
         # Place legend
