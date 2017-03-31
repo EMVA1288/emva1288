@@ -929,8 +929,10 @@ class Results1288(object):
         h = routines.Histogram1288(y, self._histogram_Qmax)
         # Rescale the bins, this is due to upscaling the average image to have
         # only integers
-        h['bins'] /= (self.spatial['L_dark'] * 25.)
-
+        scale = self.spatial['L_dark'] * 25.
+        h['bins'] /= scale
+        # The image is not centered around zero, so we shift the bins
+        h['bins'] -= (y.mean() / scale)
         return h
 
     @property
