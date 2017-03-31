@@ -391,11 +391,11 @@ class PlotHorizontalSpectrogramPRNU(Emva1288Plot):
 
         ax.axhline(test.PRNU1288,
                    label='$PRNU_{1288}$',
-                   linestyle='-.',
-                   color='b',
+                   linestyle='--',
+                   color='r',
                    gid='%d:marker' % test.id)
 
-        ax.axhline(np.sqrt(test.sigma_2_y_stack),
+        ax.axhline(100 * np.sqrt(test.sigma_2_y_stack) / data_mean,
                    label='$\sigma^2_{y.stack}$',
                    linestyle='-.',
                    color='g',
@@ -461,7 +461,7 @@ class PlotVerticalSpectrogramPRNU(Emva1288Plot):
                    color='r',
                    gid='%d:marker' % test.id)
 
-        ax.axhline(np.sqrt(test.sigma_2_y_stack) / data_mean,
+        ax.axhline(100 * np.sqrt(test.sigma_2_y_stack) / data_mean,
                    label='$\sigma^2_{y.stack}$',
                    linestyle='-.',
                    color='g',

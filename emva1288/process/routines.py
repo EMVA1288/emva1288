@@ -13,6 +13,7 @@ from scipy.optimize import leastsq
 from lxml import etree
 from PIL import Image
 from collections import OrderedDict
+# import cv2
 
 
 SIGNIFICANT_DIGITS = 7
@@ -21,8 +22,8 @@ SIGNIFICANT_DIGITS = 7
 def load_image(fname):
     img = Image.open(fname)
     img = np.asarray(img.split()[0])
-#     img = cv2.imread(fname, cv2.CV_LOAD_IMAGE_UNCHANGED)
-#     img = cv2.split(img)[0]
+    # img = cv2.imread(fname, cv2.CV_LOAD_IMAGE_UNCHANGED)
+    # img = cv2.split(img)[0]
     return img
 
 
