@@ -907,6 +907,8 @@ class Results1288(object):
 
         # Perform the cumulative summation
         h['values'] = np.cumsum(h['values'][::-1])[::-1]
+        # we want it as percentage of pixels
+        h['values'] = 100 * h['values'] / y.size
 
         return h
 
@@ -959,6 +961,9 @@ class Results1288(object):
         # Perform the cumulative summation (the ::-1 means backwards)
         # because the cumsum function is performed contrary to what we need
         h['values'] = np.cumsum(h['values'][::-1])[::-1]
+
+        # we want it as percentage of pixels
+        h['values'] = 100 * h['values'] / y.size
 
         return h
 
