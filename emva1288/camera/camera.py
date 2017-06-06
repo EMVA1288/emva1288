@@ -416,12 +416,12 @@ class Camera(object):
                   0=> [ G R ]  1=> [ G B ]  2=> [ B G ]  3=> [ R G ]
                       [ B G ],     [ R G ],     [ G R ],     [ G B ]
         T_g, T_b, T_r : ???
-                        The transmittance of the color for the photons.
+                        The transmition of the color for the photons.
 
         Returns
         -------
         array :
-                A array with transmittance for each color of the bayer filter.
+                A array with transmition for each color of the bayer filter.
         """
         if pattern == 0:
             pattern_rep = [[T_g, T_r], [T_b, T_v]]
