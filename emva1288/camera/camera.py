@@ -285,6 +285,12 @@ class Camera(object):
             u_y = self._u_e(radiance, wavelength=wavelength, f_number=f_number)
             img_e += np.random.poisson(u_y, size=self._shape)
 
+        # Bayer Filter simulation image
+        pattern = 0  # put it by default latter
+        T_g, T_r, T_b = [1, 0.15, 0.02]  # in %, create default values latter
+        u_t = self._u_bayer(pattern, T_g, T_b, T_r)
+        img_e *= u_t
+
         # Electronics induced electrons image
         img_e = img_e + np.random.normal(loc=self._dark_signal_0,
                                          scale=np.sqrt(self._sigma2_dark_0),
@@ -400,3 +406,38 @@ class Camera(object):
                                     radiance,
                                     self.pixel_area,
                                     f_number)
+
+    def _u_bayer(self, pattern, T_g, T_b, T_r):
+        """Create a bayer filter.
+
+        Parameters
+        ----------
+        pattern : int
+                  0=> [ G R ]  1=> [ G B ]  2=> [ B G ]  3=> [ R G ]
+                      [ B G ],     [ R G ],     [ G R ],     [ G B ]
+        T_g, T_b, T_r : ???
+                        The transmittance of the color for the photons.
+
+        Returns
+        -------
+        array :
+                A array with transmittance for each color of the bayer filter.
+        """
+        if pattern == 0:
+            pattern_rep = [[T_g, T_r], [T_b, T_v]]
+        if pattern == 1:
+            pattern_rep = [[T_g, T_b], [T_r, T_v]]
+        if pattern == 2:
+            pattern_rep = [[T_b, T_g], [T_v, T_r]]
+        if pattern == 3:
+            pattern_rep = [[T_r, T_g], [T_g, T_b]]
+        # to make
+        # else:
+        #     error message
+        h = self.height
+        w = self.width
+        # We add 1 repeatition to be sure than we have more than the size
+        size = ((h/pattern_rep.shape[0])+1, (w/pattern_rep.shape[1])+1)
+        # Verify if -> size/2 for less repeat in title (2->dim pattern_rep).
+        b_filter = np.tile(pattern_rep, size)[:h, :w]
+        return b_filter
