@@ -436,8 +436,7 @@ class Camera(object):
         #     error message
         h = self.height
         w = self.width
-        # We add 1 repeatition to be sure than we have more than the size
-        size = ((h/pattern_rep.shape[0])+1, (w/pattern_rep.shape[1])+1)
-        # Verify if -> size/2 for less repeat in title (2->dim pattern_rep).
+        size = (np.ceil(h/pattern_rep.shape[0]),
+                np.ceil(w/pattern_rep.shape[1]))
         b_filter = np.tile(pattern_rep, size)[:h, :w]
         return b_filter
