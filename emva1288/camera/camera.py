@@ -450,17 +450,18 @@ class Camera(object):
         array :
                 A array with transmition for each color of the bayer filter.
         """
-        try:
-            if pattern == 0:
-                pattern_rep = np.array([[T_g, T_r], [T_b, T_g]])
-            if pattern == 1:
-                pattern_rep = np.array([[T_g, T_b], [T_r, T_g]])
-            if pattern == 2:
-                pattern_rep = np.array([[T_b, T_g], [T_g, T_r]])
-            if pattern == 3:
-                pattern_rep = np.array([[T_r, T_g], [T_g, T_b]])
-        except ValueError:  # to test !!
-            print("This is not a bayer filter option!", pattern)
+        if pattern == 0:
+            pattern_rep = np.array([[T_g, T_r], [T_b, T_g]])
+        if pattern == 1:
+            pattern_rep = np.array([[T_g, T_b], [T_r, T_g]])
+        if pattern == 2:
+            pattern_rep = np.array([[T_b, T_g], [T_g, T_r]])
+        if pattern == 3:
+            pattern_rep = np.array([[T_r, T_g], [T_g, T_b]])
+        else:
+            pattern_rep = np.array([[T_g, T_r], [T_b, T_g]])
+            print("This is not a bayer filter option:", pattern,
+                  "\nSo by default the sysme use the filter 0.")
         h = self.height
         w = self.width
         size = (int(np.ceil(h/pattern_rep.shape[1])),
