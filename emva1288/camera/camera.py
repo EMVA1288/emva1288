@@ -44,6 +44,7 @@ class Camera(object):
                  transmition_blue=0.02,
 
                  bayer_filter_type=0,
+                 bayer=False,
 
                  dsnu=None,
                  prnu=None
@@ -118,6 +119,9 @@ class Camera(object):
         bayer_filter_type : int, optional
                   0=> [ G R ]  1=> [ G B ]  2=> [ B G ]  3=> [ R G ]
                       [ B G ],     [ R G ],     [ G R ],     [ G B ]
+        bayer : bool, optional
+                The bayer filter presence.
+                If True, the filter is appliqued.
         dsnu : np.array, optional
                DSNU image in DN, array with the same shape of the image
                that is added to every image
@@ -168,6 +172,7 @@ class Camera(object):
                              'blue': transmition_blue}
 
         self._pattern = bayer_filter_type,
+        self.bayer = bayer,
 
         self._dsnu = dsnu
         self._prnu = prnu
@@ -269,8 +274,7 @@ class Camera(object):
         """The array of all blackoffsets (in DN)."""
         return self.__blackoffsets
 
-    def grab(self, radiance, temperature=None, wavelength=None, f_number=None,
-             bayer=True):
+    def grab(self, radiance, temperature=None, wavelength=None, f_number=None):
         """
         Create an image based on the mean and standard deviation from the
         EMVA1288 parameters.
@@ -293,9 +297,6 @@ class Camera(object):
         f_number : float, optional
                    The optical setup f_number.
                    If None, the environment's f_number will be taken.
-        bayer : bool, optional
-                The bayer filter presence.
-                If True, the filter is appliqued.
         """
         clipping_point = int(self.img_max)
 
@@ -309,7 +310,7 @@ class Camera(object):
             img_e += np.random.poisson(u_y, size=self._shape)
 
         # Bayer Filter simulation image
-        if bayer is True:
+        if self.bayer[0] is True:
             pattern = self._pattern[0]
             T_g, T_r, T_b = [self._transmition['green'],
                              self._transmition['red'],
