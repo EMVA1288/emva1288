@@ -270,7 +270,7 @@ class Camera(object):
         return self.__blackoffsets
 
     def grab(self, radiance, temperature=None, wavelength=None, f_number=None,
-             bayer=False):
+             bayer=True):
         """
         Create an image based on the mean and standard deviation from the
         EMVA1288 parameters.
