@@ -128,3 +128,53 @@ def get_radiance(exposure, wavelength, photons, pixel_area, f_number):
     j = photons * h * c / (a * t * w)
     r = j * (1 + ((2 * f_number) ** 2)) / np.pi
     return r
+
+
+def get_bayer_filter(t00, t01, t10, t11, width, height):
+    """From different values of transmition and the size, get a bayer filter.
+
+    Parameters
+    ----------
+    width : int
+            The number of columns in the the image.
+    height : int
+            The number of rows in the image.
+    t00 : float
+               The transmition, in pourcentage, of the first pixel.
+    t01 : float
+               The transmition, in pourcentage, of the second pixel.
+    t10 : float
+               The transmition, in pourcentage, of the third pixel.
+    t11 : float
+               The transmition, in pourcentage, of the fourth pixel.
+    +--------+--------+--------+--------+
+    |              pattern              |
+    +========+========+========+========+
+    |    this case    |     example     |
+    +--------+--------+--------+--------+
+    |   t00     t01   |   G1       R    |
+    |   t10     t11   |   B        G2   |
+    +========+========+========+========+
+    |         Suggested values          |
+    +--------+--------+--------+--------+
+    |   t00  |  t01   |  t10   |  t11   |
+    +--------+--------+--------+--------+
+    |    1   |  0.15  |  0.02  |   1    |
+    +--------+--------+--------+--------+
+    Where G1 and G2 are transmition values for a green filter, R for a
+    red filter and B for a blue filter. The suggested values are values
+    for a standard bayer filter like the example. The values need to be
+    between 0 and 1.
+    **Warning** - the number suggested are approximate and only true for this
+    wavelength, if the wavelength change, change the Transmition.
+
+    Returns
+    -------
+    array :
+        The array with the bayer filter of the size gived.
+    """
+    pattern_rep = np.array([[t00, t01], [t10, t11]])
+    size = (int(np.ceil(height/pattern_rep.shape[1])),
+            int(np.ceil(width/pattern_rep.shape[0])))
+    b_filter = np.tile(pattern_rep, size)[:height, :width]
+    return b_filter
