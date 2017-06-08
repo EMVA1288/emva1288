@@ -145,10 +145,7 @@ def get_bayer_filter(t00, t01, t10, t11, width, height):
 
     Where *G1* and *G2* are transmition values for a green filter, *R* for a
     red filter and *B* for a blue filter. The suggested values are values
-    for a standard bayer filter like the example. The values need to be
-    between 0 and 1.\n
-    **Warning** - the number suggested are approximate and only true for this
-    wavelength, if the wavelength change, change the Transmition.
+    for a standard bayer filter like the example.
 
     Parameters
     ----------

@@ -22,7 +22,11 @@ class CameraTestCase(unittest.TestCase):
 
 
 class CameraTestBayer(unittest.TestCase):
-    def setUp(self):
-        self.cam = cam.Camera()
+    def bayer_layer(self):
+        self.height = cam.Camera().height
+        self.width = cam.Camera().width
+        b_layer = routines.get_bayer_filter(1, 0.15, 0.02, 1,
+                                            self.height, self.width)
+        self.cam = cam.Cam(radiance_factor=bayer_layer)
     # in production
     pass
