@@ -293,7 +293,7 @@ class Camera(object):
         # If there is light, add the image of light induced electrons
         if radiance > 0:
             u_y = self._u_e(radiance, wavelength=wavelength, f_number=f_number)
-            img_rad = u_y*self._radiance_factor
+            img_rad = u_y * self._radiance_factor
             img_e += np.random.poisson(img_rad, size=self._shape)
 
         # Electronics induced electrons image
