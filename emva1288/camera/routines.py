@@ -133,12 +133,25 @@ def get_radiance(exposure, wavelength, photons, pixel_area, f_number):
 def get_bayer_filter(t00, t01, t10, t11, width, height):
     """From different values of transmition and the size, get a bayer filter.
 
+    +-----------+-----------+-----------+-----------+-----------+-----------+
+    |              Pattern                                                  |
+    +===========+===========+===========+===========+===========+===========+
+    |    This case          |     Example           | Suggested values      |
+    +-----------+-----------+-----------+-----------+-----------+-----------+
+    |   t00     |  t01      |   G1      |   R       |    1      |  0.15     |
+    +-----------+-----------+-----------+-----------+-----------+-----------+
+    |   t10     |  t11      |   B       |   G2      |  0.02     |   1       |
+    +-----------+-----------+-----------+-----------+-----------+-----------+
+
+    Where *G1* and *G2* are transmition values for a green filter, *R* for a
+    red filter and *B* for a blue filter. The suggested values are values
+    for a standard bayer filter like the example. The values need to be
+    between 0 and 1.\n
+    **Warning** - the number suggested are approximate and only true for this
+    wavelength, if the wavelength change, change the Transmition.
+
     Parameters
     ----------
-    width : int
-            The number of columns in the the image.
-    height : int
-            The number of rows in the image.
     t00 : float
                The transmition, in pourcentage, of the first pixel.
     t01 : float
@@ -147,26 +160,10 @@ def get_bayer_filter(t00, t01, t10, t11, width, height):
                The transmition, in pourcentage, of the third pixel.
     t11 : float
                The transmition, in pourcentage, of the fourth pixel.
-    +--------+--------+--------+--------+
-    |              pattern              |
-    +========+========+========+========+
-    |    this case    |     example     |
-    +--------+--------+--------+--------+
-    |   t00     t01   |   G1       R    |
-    |   t10     t11   |   B        G2   |
-    +========+========+========+========+
-    |         Suggested values          |
-    +--------+--------+--------+--------+
-    |   t00  |  t01   |  t10   |  t11   |
-    +--------+--------+--------+--------+
-    |    1   |  0.15  |  0.02  |   1    |
-    +--------+--------+--------+--------+
-    Where G1 and G2 are transmition values for a green filter, R for a
-    red filter and B for a blue filter. The suggested values are values
-    for a standard bayer filter like the example. The values need to be
-    between 0 and 1.
-    **Warning** - the number suggested are approximate and only true for this
-    wavelength, if the wavelength change, change the Transmition.
+    width : int
+            The number of columns in the the image.
+    height : int
+            The number of rows in the image.
 
     Returns
     -------

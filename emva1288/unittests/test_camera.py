@@ -1,6 +1,7 @@
 import unittest
 import emva1288.camera as cam
 import numpy as np
+from emva1288.camera import routines
 
 
 class CameraTestCase(unittest.TestCase):
@@ -18,3 +19,10 @@ class CameraTestCase(unittest.TestCase):
         img1 = self.cam.grab(0)
         img2 = self.cam.grab(self.cam.get_radiance_for(mean=250))
         self.assertLess(img1.mean(), img2.mean())
+
+
+class CameraTestBayer(unittest.TestCase):
+    def setUp(self):
+        self.cam = cam.Camera()
+    # in production
+    pass
