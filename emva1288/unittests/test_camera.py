@@ -25,7 +25,7 @@ class CameraTestBayer(unittest.TestCase):
     def test_get_bayer(self):
         # Init the parameters
         h = 7
-        w = 7
+        w = 5
         transmition_pixel_1 = 1
         transmition_pixel_2 = 2
         transmition_pixel_3 = 3
@@ -37,7 +37,7 @@ class CameraTestBayer(unittest.TestCase):
                                             transmition_pixel_4, w, h)
 
         # Supposed Results
-        lines = [1, 2, 1, 2, 1, 2, 1]
+        lines = [1, 2, 1, 2, 1]
         columns = [1, 3, 1, 3, 1, 3, 1]
         # Test to see if the layer come right
         self.assertEqual(lines, b_layer[0].tolist())
