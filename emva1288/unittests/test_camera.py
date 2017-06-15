@@ -30,12 +30,10 @@ class CameraTestBayer(unittest.TestCase):
         transmition_pixel_2 = 2
         transmition_pixel_3 = 3
         transmition_pixel_4 = 4
-
         b_layer = routines.get_bayer_filter(transmition_pixel_1,
                                             transmition_pixel_2,
                                             transmition_pixel_3,
                                             transmition_pixel_4, w, h)
-
         # Supposed Results
         lines = [1, 2, 1, 2, 1]
         columns = [1, 3, 1, 3, 1, 3, 1]
@@ -50,15 +48,12 @@ class CameraTestBayer(unittest.TestCase):
         transmition_red = 0.15
         transmition_blue = 0.02
         transmition_green = 1.
-
         b_layer = routines.get_bayer_filter(transmition_green,
                                             transmition_red,
                                             transmition_blue,
                                             transmition_green, w, h)
-
         # Test if the b_layer have the same shape than what we give it
         self.assertEqual((h, w), b_layer.shape)
-
         # Set the camera for testing the layer
         cam = Camera(width=w, height=h, radiance_factor=b_layer)
         target = cam.img_max / 2
@@ -79,7 +74,7 @@ class CameraTestBayer(unittest.TestCase):
             mask=red_filter).mean(),
             target*transmition_red, delta=5.0,
             msg="red not in range")
-        # Test if the mean of the green it's 2% of the target +/- 5%
+        # Test if the mean of the blue it's 2% of the target +/- 5%
         self.assertAlmostEqual(np.ma.masked_array(
             img,
             mask=blue_filter).mean(),
@@ -89,4 +84,43 @@ class CameraTestBayer(unittest.TestCase):
 
 class CameraTestPrnuDsnu(unittest.TestCase):
     def test_prnu(self):
-        pass
+        # Init the parameters
+        h = 480
+        w = 640
+        prnu_array = np.array([[1, 0.5], [0.25, 0.75]])
+        prnu = routines.get_prnu_dsnu(prnu_array, w, h)
+        # Test if the prnu have the same shape than what we give it
+        self.assertEqual((h, w), prnu.shape)
+        # Set the camera for testing the prnu
+        cam = Camera(width=w, height=h, prnu=prnu)
+        target = cam.img_max / 2
+        radiance = cam.get_radiance_for(mean=target)
+        img = cam.grab(radiance)
+        dot_one = routines.get_prnu_dsnu(np.array([[0, 1], [1, 1]]), w, h)
+        dot_75 = routines.get_prnu_dsnu(np.array([[1, 1], [1, 0]]), w, h)
+        dot_50 = routines.get_prnu_dsnu(np.array([[1, 0], [1, 1]]), w, h)
+        dot_25 = routines.get_prnu_dsnu(np.array([[1, 1], [0, 1]]), w, h)
+        # Test if the mean it's 100% of the target +/- 5%
+        self.assertAlmostEqual(np.ma.masked_array(
+            img,
+            mask=dot_one).mean(),
+            target, delta=5.0,
+            msg="1 it's not in range")
+        # Test if the mean it's 75% of the target +/- 5%
+        self.assertAlmostEqual(np.ma.masked_array(
+            img,
+            mask=dot_75).mean(),
+            target*0.75, delta=5.0,
+            msg="0.75 it's not in range")
+        # Test if the mean it's 50% of the target +/- 5%
+        self.assertAlmostEqual(np.ma.masked_array(
+            img,
+            mask=dot_50).mean(),
+            target*0.5, delta=5.0,
+            msg="0.50 it's not in range")
+        # Test if the mean it's 25% of the target +/- 5%
+        self.assertAlmostEqual(np.ma.masked_array(
+            img,
+            mask=dot_25).mean(),
+            target*0.25, delta=5.0,
+            msg="0.25 it's not in range")
