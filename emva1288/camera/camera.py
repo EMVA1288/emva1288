@@ -293,11 +293,15 @@ class Camera(object):
         # If there is light, add the image of light induced electrons
         if radiance > 0:
             u_y = self._u_e(radiance, wavelength=wavelength, f_number=f_number)
+            u_y_prnu = u_y * self._prnu  # photon response varation
             img_rad = u_y * self._radiance_factor
             img_e += np.random.poisson(img_rad, size=self._shape)
 
+        # Dark Signal NonUniform application
+        dark_signal_dsnu = self._dark_signal_0 + self._dsnu
+
         # Electronics induced electrons image
-        img_e = img_e + np.random.normal(loc=self._dark_signal_0,
+        img_e = img_e + np.random.normal(loc=dark_signal_dsnu,
                                          scale=np.sqrt(self._sigma2_dark_0),
                                          size=self._shape)
 
@@ -308,10 +312,6 @@ class Camera(object):
         # quantization noise image
         img_q = np.random.uniform(-0.5, 0.5, self._shape)
         img += img_q
-
-        # not the best but hope it works as approach for prnu dsnu
-        img *= self._prnu
-        img += self._dsnu
 
         img += self.blackoffset
 
