@@ -294,7 +294,7 @@ class Camera(object):
         if radiance > 0:
             u_y = self._u_e(radiance, wavelength=wavelength, f_number=f_number)
             u_y_prnu = u_y * self._prnu  # photon response varation
-            img_rad = u_y * self._radiance_factor
+            img_rad = u_y_prnu * self._radiance_factor
             img_e += np.random.poisson(img_rad, size=self._shape)
 
         # Dark Signal NonUniform application

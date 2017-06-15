@@ -85,3 +85,8 @@ class CameraTestBayer(unittest.TestCase):
             mask=blue_filter).mean(),
             target*transmition_blue, delta=5.0,
             msg="blue not in range")
+
+
+class CameraTestPrnuDsnu(unittest.TestCase):
+    def test_prnu(self):
+        pass

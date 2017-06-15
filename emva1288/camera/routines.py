@@ -175,7 +175,8 @@ def get_bayer_filter(t00, t01, t10, t11, width, height):
 
 
 def get_prnu_dsnu(prnu_dsnu, width, height):
-    """Doccumentation.
+    """From an array of PRNU or DSNU, get the same pattern with the good size.
+
     Parameters
     ----------
     prnu_dsnu : array
