@@ -87,8 +87,10 @@ class CameraTestPrnuDsnu(unittest.TestCase):
         # Init the parameters
         h = 480
         w = 640
-        prnu_array = np.array([[1, 0.5], [0.25, 0.75]])
-        prnu = routines.get_prnu_dsnu(prnu_array, w, h)
+        value8 = 3
+        prnu_array = np.array([1, 1, 1, 1, 1, 1, 1, value8])
+        w_r = int(np.floor(w / prnu_array.shape[0]) + 1)
+        prnu = np.tile(prnu_array, (h, w_r))[:h, :w]
         # Test if the prnu have the same shape than what we give it
         self.assertEqual((h, w), prnu.shape)
         # Set the camera for testing the prnu
@@ -96,31 +98,60 @@ class CameraTestPrnuDsnu(unittest.TestCase):
         target = cam.img_max / 2
         radiance = cam.get_radiance_for(mean=target)
         img = cam.grab(radiance)
-        dot_one = routines.get_prnu_dsnu(np.array([[0, 1], [1, 1]]), w, h)
-        dot_75 = routines.get_prnu_dsnu(np.array([[1, 1], [1, 0]]), w, h)
-        dot_50 = routines.get_prnu_dsnu(np.array([[1, 0], [1, 1]]), w, h)
-        dot_25 = routines.get_prnu_dsnu(np.array([[1, 1], [0, 1]]), w, h)
+        prnu_array_test_1 = np.array([0, 0, 0, 0, 0, 0, 0, 1])
+        prnu_test_1 = np.tile(prnu_array_test_1, (h, w_r))[:h, :w]
+        prnu_array_test_8 = np.array([1, 1, 1, 1, 1, 1, 1, 0])
+        prnu_test_8 = np.tile(prnu_array_test_8, (h, w_r))[:h, :w]
         # Test if the mean it's 100% of the target +/- 5%
         self.assertAlmostEqual(np.ma.masked_array(
             img,
-            mask=dot_one).mean(),
+            mask=prnu_test_1).mean(),
             target, delta=5.0,
             msg="1 it's not in range")
-        # Test if the mean it's 75% of the target +/- 5%
+        # Test if the mean of the 8th value it's 3x of the target +/- 5%
+        top_target = target * value8
+        if top_target >= 255:
+            top_target = 255.
         self.assertAlmostEqual(np.ma.masked_array(
             img,
-            mask=dot_75).mean(),
-            target*0.75, delta=5.0,
-            msg="0.75 it's not in range")
-        # Test if the mean it's 50% of the target +/- 5%
+            mask=prnu_test_8).mean(),
+            top_target, delta=5.0,
+            msg="8 value it's not in range")
+
+    def test_dsnu(self):
+        # Init the parameters
+        h = 480
+        w = 640
+        rep = 100
+        value8 = 5
+        dsnu_array = np.array([0, 0, 0, 0, 0, 0, 0, value8])
+        w_r = int(np.floor(w / dsnu_array.shape[0]) + 1)
+        dsnu = np.tile(dsnu_array, (h, w_r))[:h, :w]
+        # Test if the dsnu have the same shape than what we give it
+        self.assertEqual((h, w), dsnu.shape)
+        # Set the camera for testing the dsnu
+        cam = Camera(width=w, height=h, dsnu=dsnu)
+        target = cam.dark_signal_0 / 10  # offset
+        mean_img = []
+        for i in range(1, rep):
+            mean_img.append(cam.grab(0))
+            tmp_img = np.mean(mean_img, axis=0)
+            mean_img = [tmp_img]
+        img = mean_img
+        dsnu_array_test_1 = np.array([0, 0, 0, 0, 0, 0, 0, 1])
+        dsnu_test_1 = np.tile(dsnu_array_test_1, (h, w_r))[:h, :w]
+        dsnu_array_test_8 = np.array([1, 1, 1, 1, 1, 1, 1, 0])
+        dsnu_test_8 = np.tile(dsnu_array_test_8, (h, w_r))[:h, :w]
+        # Test if the mean it's 100% of the target +/- 0.5
         self.assertAlmostEqual(np.ma.masked_array(
             img,
-            mask=dot_50).mean(),
-            target*0.5, delta=5.0,
-            msg="0.50 it's not in range")
-        # Test if the mean it's 25% of the target +/- 5%
+            mask=dsnu_test_1).mean(),
+            target, delta=0.50,
+            msg="1 it's not in range")
+        # Test if the mean of the 8th value +/- 0.5
+        top_target = target + value8 / 10
         self.assertAlmostEqual(np.ma.masked_array(
             img,
-            mask=dot_25).mean(),
-            target*0.25, delta=5.0,
-            msg="0.25 it's not in range")
+            mask=dsnu_test_8).mean(),
+            top_target, delta=0.50,
+            msg="8 value it's not in range")

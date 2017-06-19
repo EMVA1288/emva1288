@@ -172,27 +172,3 @@ def get_bayer_filter(t00, t01, t10, t11, width, height):
             int(np.floor(width / pattern_rep.shape[0])) + 1)
     b_filter = np.tile(pattern_rep, size)[:height, :width]
     return b_filter
-
-
-def get_prnu_dsnu(prnu_dsnu, width, height):
-    """From an array of PRNU or DSNU, get the same pattern with the good size.
-
-    Parameters
-    ----------
-    prnu_dsnu : array
-                The photon response nonuniform on the array form.
-    width : int
-            The number of columns in the the image.
-    height : int
-            The number of rows in the image.
-
-    Returns
-    -------
-    array :
-        The prnu or dsnu with the size gived.
-    """
-    # need to take care of the execption
-    size = (int(np.floor(height / prnu_dsnu.shape[1])) + 1,
-            int(np.floor(width / prnu_dsnu.shape[0])) + 1)
-    prnu_dsnu_size = np.tile(prnu_dsnu, size)[:height, :width]
-    return prnu_dsnu_size

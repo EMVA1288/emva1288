@@ -216,6 +216,11 @@ class Camera(object):
         return self._exposure_max
 
     @property
+    def dark_signal_0(self):
+        """The camera's darck signal (e-)."""
+        return self._dark_signal_0
+
+    @property
     def K(self):
         """The overall system gain (in DN/e^-).
 
@@ -293,8 +298,7 @@ class Camera(object):
         # If there is light, add the image of light induced electrons
         if radiance > 0:
             u_y = self._u_e(radiance, wavelength=wavelength, f_number=f_number)
-            u_y_prnu = u_y * self._prnu  # photon response varation
-            img_rad = u_y_prnu * self._radiance_factor
+            img_rad = u_y * self._radiance_factor
             img_e += np.random.poisson(img_rad, size=self._shape)
 
         # Dark Signal NonUniform application
@@ -321,10 +325,12 @@ class Camera(object):
 
     def _u_e(self, radiance, wavelength=None, f_number=None):
         """
-        Mean number of electrons per pixel during exposure time.
+        Mean number of electrons per pixel during exposure time with
+        the photon response variation (prnu).
         """
-        u_e = self._qe * self.get_photons(radiance, wavelength=wavelength,
-                                          f_number=f_number)
+        u_e = self._qe * self._prnu * self.get_photons(radiance,
+                                                       wavelength=wavelength,
+                                                       f_number=f_number)
         return u_e
 
     def _u_therm(self, temperature=None):
