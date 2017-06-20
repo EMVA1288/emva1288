@@ -122,7 +122,7 @@ class CameraTestPrnuDsnu(unittest.TestCase):
         # Init the parameters
         h = 480
         w = 640
-        rep = 100
+        rep = 200
         value8 = 5
         dsnu_array = np.array([0, 0, 0, 0, 0, 0, 0, value8])
         w_r = int(np.floor(w / dsnu_array.shape[0]) + 1)
@@ -142,16 +142,16 @@ class CameraTestPrnuDsnu(unittest.TestCase):
         dsnu_test_1 = np.tile(dsnu_array_test_1, (h, w_r))[:h, :w]
         dsnu_array_test_8 = np.array([1, 1, 1, 1, 1, 1, 1, 0])
         dsnu_test_8 = np.tile(dsnu_array_test_8, (h, w_r))[:h, :w]
-        # Test if the mean it's 100% of the target +/- 0.5
+        # Test if the mean it's 100% of the target +/- 1
         self.assertAlmostEqual(np.ma.masked_array(
             img,
             mask=dsnu_test_1).mean(),
-            target, delta=0.50,
+            target, delta=1.0,
             msg="1 it's not in range")
-        # Test if the mean of the 8th value +/- 0.5
+        # Test if the mean of the 8th value +/- 1
         top_target = target + value8 / 10
         self.assertAlmostEqual(np.ma.masked_array(
             img,
             mask=dsnu_test_8).mean(),
-            top_target, delta=0.50,
+            top_target, delta=1.0,
             msg="8 value it's not in range")

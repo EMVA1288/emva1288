@@ -220,6 +220,11 @@ class Camera(object):
         """The camera's darck signal (e-)."""
         return self._dark_signal_0
 
+    # @property
+    # def radiance_factor(self):
+    #     """The camera's radiance factor (%)."""
+    #     return self._radiance_factor
+
     @property
     def K(self):
         """The overall system gain (in DN/e^-).
