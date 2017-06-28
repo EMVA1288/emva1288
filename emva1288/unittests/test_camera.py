@@ -110,11 +110,7 @@ class CameraTestPrnuDsnu(unittest.TestCase):
         if top_target >= cam.img_max:
             top_target = cam.img_max
         radiance = cam.get_radiance_for(mean=target)
-        # mean on the cam.grab for a better comparison
-        img = 0
-        for i in range(rep):
-            img += cam.grab(radiance)
-        img_m = img / rep
+        img = cam.grab(radiance)
         # create the mask
         prnu_mask = np.zeros((8))
         prnu_mask[-1] = 1
@@ -124,14 +120,14 @@ class CameraTestPrnuDsnu(unittest.TestCase):
         prnu_non_mask_resize = self.get_tile(prnu_non_mask, h, w)
         # Test if the mean it's 100% of the target +/- variance
         self.assertAlmostEqual(np.ma.masked_array(
-            img_m,
+            img,
             mask=prnu_mask_resize).mean(),
             target, delta=var,
             msg="values are not in range")
         # Test if the mean of the 8th value it's value8
         # multiplied be the target +/- variance
         self.assertAlmostEqual(np.ma.masked_array(
-            img_m,
+            img,
             mask=prnu_non_mask_resize).mean(),
             top_target, delta=var,
             msg="8th value it's not in range")
@@ -150,11 +146,7 @@ class CameraTestPrnuDsnu(unittest.TestCase):
         var = np.sqrt(cam._sigma2_dark_0)
         target = cam.K * (cam._dark_signal_0 + cam._u_therm())
         top_target = cam.K * (cam._dark_signal_0 + cam._u_therm() + value8)
-        # mean on the cam.grab for a better comparison
-        img = 0
-        for i in range(rep):
-            img += cam.grab(0)
-        img_m = img / rep
+        img = cam.grab(0)
         # create the mask
         dsnu_mask = np.zeros((8))
         dsnu_mask[-1] = 1
@@ -164,14 +156,14 @@ class CameraTestPrnuDsnu(unittest.TestCase):
         dsnu_non_mask_resize = self.get_tile(dsnu_non_mask, h, w)
         # Test if the mean it's 100% of the target +/- variance
         self.assertAlmostEqual(np.ma.masked_array(
-            img_m,
+            img,
             mask=dsnu_mask_resize).mean(),
             target, delta=var,
             msg="values are not in range")
         # Test if the mean of the 8th value it's value8
         # multiplied be the target +/- variance
         self.assertAlmostEqual(np.ma.masked_array(
-            img_m,
+            img,
             mask=dsnu_non_mask_resize).mean(),
             top_target, delta=var,
             msg="8th value it's not in range")
