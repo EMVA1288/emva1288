@@ -168,7 +168,11 @@ def get_bayer_filter(t00, t01, t10, t11, width, height):
         The array with the bayer filter of the size gived.
     """
     pattern_rep = np.array([[t00, t01], [t10, t11]])
-    size = (int(np.floor(height / pattern_rep.shape[1])) + 1,
-            int(np.floor(width / pattern_rep.shape[0])) + 1)
+    size = (height, width)
+    # If the situation need a lot more than juste one call of the
+    # get_bayer_filter function, we recommand to use the following syntax
+    # to improve the execution time.
+    # size = (int(np.floor(height / pattern_rep.shape[1])) + 1,
+    #         int(np.floor(width / pattern_rep.shape[0])) + 1)
     b_filter = np.tile(pattern_rep, size)[:height, :width]
     return b_filter

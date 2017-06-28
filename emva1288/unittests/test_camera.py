@@ -24,8 +24,8 @@ class CameraTestCase(unittest.TestCase):
 class CameraTestBayer(unittest.TestCase):
     def test_get_bayer(self):
         # Init the parameters
-        h = 7
-        w = 5
+        h, w = [7, 5]
+
         transmition_pixel_1 = 1
         transmition_pixel_2 = 2
         transmition_pixel_3 = 3
@@ -43,8 +43,7 @@ class CameraTestBayer(unittest.TestCase):
 
     def test_bayer_layer(self):
         # Init the parameters
-        h = 480
-        w = 640
+        h, w = [480, 640]
         transmition_red = 0.15
         transmition_blue = 0.02
         transmition_green = 1.
@@ -62,19 +61,19 @@ class CameraTestBayer(unittest.TestCase):
         green_filter = routines.get_bayer_filter(0, 1, 1, 0, w, h)
         blue_filter = routines.get_bayer_filter(1, 1, 0, 1, w, h)
         red_filter = routines.get_bayer_filter(1, 0, 1, 1, w, h)
-        # Test if the mean of the green it's 100% of the target +/- 5%
+        # Test if the mean of the green it's 100% of the target +/- 5
         self.assertAlmostEqual(np.ma.masked_array(
             img,
             mask=green_filter).mean(),
             target, delta=5.0,
             msg="green not in range")
-        # Test if the mean of the red it's 15% of the target +/- 5%
+        # Test if the mean of the red it's 15% of the target +/- 5
         self.assertAlmostEqual(np.ma.masked_array(
             img,
             mask=red_filter).mean(),
             target*transmition_red, delta=5.0,
             msg="red not in range")
-        # Test if the mean of the blue it's 2% of the target +/- 5%
+        # Test if the mean of the blue it's 2% of the target +/- 5
         self.assertAlmostEqual(np.ma.masked_array(
             img,
             mask=blue_filter).mean(),
@@ -83,75 +82,96 @@ class CameraTestBayer(unittest.TestCase):
 
 
 class CameraTestPrnuDsnu(unittest.TestCase):
+    # This function replace: np.tile(array, (h, w))[:h, :w]
+    # and manage to save execution time
+    def get_tile(self, arr, height, width):
+        # To reduce the execution time, we will reduce the width of the array
+        # to the shape expected "+1" to be sure than the number is not to
+        # short.
+        w_r = int(np.floor(width / arr.shape[0]) + 1)
+        # create a array with the dimension given and the array given
+        tile = np.tile(arr, (height, w_r))[:height, :width]
+        return tile
+
     def test_prnu(self):
         # Init the parameters
-        h = 480
-        w = 640
+        h, w = [480, 640]
+        rep = 200
         value8 = 3
-        prnu_array = np.array([1, 1, 1, 1, 1, 1, 1, value8])
-        w_r = int(np.floor(w / prnu_array.shape[0]) + 1)
-        prnu = np.tile(prnu_array, (h, w_r))[:h, :w]
-        # Test if the prnu have the same shape than what we give it
-        self.assertEqual((h, w), prnu.shape)
+        # create the pattern of the prnu
+        prnu_array = np.ones((8))
+        prnu_array[-1] = value8
+        prnu = self.get_tile(prnu_array, h, w)
         # Set the camera for testing the prnu
         cam = Camera(width=w, height=h, prnu=prnu)
+        var = np.sqrt(cam._sigma2_dark_0)
         target = cam.img_max / 2
-        radiance = cam.get_radiance_for(mean=target)
-        img = cam.grab(radiance)
-        prnu_array_test_1 = np.array([0, 0, 0, 0, 0, 0, 0, 1])
-        prnu_test_1 = np.tile(prnu_array_test_1, (h, w_r))[:h, :w]
-        prnu_array_test_8 = np.array([1, 1, 1, 1, 1, 1, 1, 0])
-        prnu_test_8 = np.tile(prnu_array_test_8, (h, w_r))[:h, :w]
-        # Test if the mean it's 100% of the target +/- 5%
-        self.assertAlmostEqual(np.ma.masked_array(
-            img,
-            mask=prnu_test_1).mean(),
-            target, delta=5.0,
-            msg="1 it's not in range")
-        # Test if the mean of the 8th value it's 3x of the target +/- 5%
         top_target = target * value8
-        if top_target >= 255:
-            top_target = 255.
+        if top_target >= cam.img_max:
+            top_target = cam.img_max
+        radiance = cam.get_radiance_for(mean=target)
+        # mean on the cam.grab for a better comparison
+        img = 0
+        for i in range(rep):
+            img += cam.grab(radiance)
+        img_m = img / rep
+        # create the mask
+        prnu_mask = np.zeros((8))
+        prnu_mask[-1] = 1
+        prnu_mask_resize = self.get_tile(prnu_mask, h, w)
+        prnu_non_mask = np.ones((8))
+        prnu_non_mask[-1] = 0
+        prnu_non_mask_resize = self.get_tile(prnu_non_mask, h, w)
+        # Test if the mean it's 100% of the target +/- variance
         self.assertAlmostEqual(np.ma.masked_array(
-            img,
-            mask=prnu_test_8).mean(),
-            top_target, delta=5.0,
-            msg="8 value it's not in range")
+            img_m,
+            mask=prnu_mask_resize).mean(),
+            target, delta=var,
+            msg="values are not in range")
+        # Test if the mean of the 8th value it's value8
+        # multiplied be the target +/- variance
+        self.assertAlmostEqual(np.ma.masked_array(
+            img_m,
+            mask=prnu_non_mask_resize).mean(),
+            top_target, delta=var,
+            msg="8th value it's not in range")
 
     def test_dsnu(self):
         # Init the parameters
-        h = 480
-        w = 640
-        rep = 200
+        h, w = [480, 640]
         value8 = 5
-        dsnu_array = np.array([0, 0, 0, 0, 0, 0, 0, value8])
-        w_r = int(np.floor(w / dsnu_array.shape[0]) + 1)
-        dsnu = np.tile(dsnu_array, (h, w_r))[:h, :w]
-        # Test if the dsnu have the same shape than what we give it
-        self.assertEqual((h, w), dsnu.shape)
+        rep = 200
+        # create the pattern of the dsnu
+        dsnu_array = np.ones((8))
+        dsnu_array[-1] = value8
+        dsnu = self.get_tile(dsnu_array, h, w)
         # Set the camera for testing the dsnu
         cam = Camera(width=w, height=h, dsnu=dsnu)
-        target = cam.dark_signal_0 / 10  # offset
-        mean_img = []
-        for i in range(1, rep):
-            mean_img.append(cam.grab(0))
-            tmp_img = np.mean(mean_img, axis=0)
-            mean_img = [tmp_img]
-        img = mean_img
-        dsnu_array_test_1 = np.array([0, 0, 0, 0, 0, 0, 0, 1])
-        dsnu_test_1 = np.tile(dsnu_array_test_1, (h, w_r))[:h, :w]
-        dsnu_array_test_8 = np.array([1, 1, 1, 1, 1, 1, 1, 0])
-        dsnu_test_8 = np.tile(dsnu_array_test_8, (h, w_r))[:h, :w]
-        # Test if the mean it's 100% of the target +/- 1
+        var = np.sqrt(cam._sigma2_dark_0)
+        target = cam.K * (cam._dark_signal_0 + cam._u_therm())
+        top_target = cam.K * (cam._dark_signal_0 + cam._u_therm() + value8)
+        # mean on the cam.grab for a better comparison
+        img = 0
+        for i in range(rep):
+            img += cam.grab(0)
+        img_m = img / rep
+        # create the mask
+        dsnu_mask = np.zeros((8))
+        dsnu_mask[-1] = 1
+        dsnu_mask_resize = self.get_tile(dsnu_mask, h, w)
+        dsnu_non_mask = np.ones((8))
+        dsnu_non_mask[-1] = 0
+        dsnu_non_mask_resize = self.get_tile(dsnu_non_mask, h, w)
+        # Test if the mean it's 100% of the target +/- variance
         self.assertAlmostEqual(np.ma.masked_array(
-            img,
-            mask=dsnu_test_1).mean(),
-            target, delta=1.0,
-            msg="1 it's not in range")
-        # Test if the mean of the 8th value +/- 1
-        top_target = target + value8 / 10
+            img_m,
+            mask=dsnu_mask_resize).mean(),
+            target, delta=var,
+            msg="values are not in range")
+        # Test if the mean of the 8th value it's value8
+        # multiplied be the target +/- variance
         self.assertAlmostEqual(np.ma.masked_array(
-            img,
-            mask=dsnu_test_8).mean(),
-            top_target, delta=1.0,
-            msg="8 value it's not in range")
+            img_m,
+            mask=dsnu_non_mask_resize).mean(),
+            top_target, delta=var,
+            msg="8th value it's not in range")
