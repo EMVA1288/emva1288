@@ -82,17 +82,6 @@ class CameraTestBayer(unittest.TestCase):
 
 
 class CameraTestPrnuDsnu(unittest.TestCase):
-    # This function replace: np.tile(array, (h, w))[:h, :w]
-    # and manage to save execution time
-    def get_tile(self, arr, height, width):
-        # To reduce the execution time, we will reduce the width of the array
-        # to the shape expected "+1" to be sure than the number is not to
-        # short.
-        w_r = int(np.floor(width / arr.shape[0]) + 1)
-        # create a array with the dimension given and the array given
-        tile = np.tile(arr, (height, w_r))[:height, :width]
-        return tile
-
     def test_prnu(self):
         # Init the parameters
         h, w = [480, 640]
@@ -101,7 +90,7 @@ class CameraTestPrnuDsnu(unittest.TestCase):
         # create the pattern of the prnu
         prnu_array = np.ones((8))
         prnu_array[-1] = value8
-        prnu = self.get_tile(prnu_array, h, w)
+        prnu = routines.get_tile(prnu_array, h, w)
         # Set the camera for testing the prnu
         cam = Camera(width=w, height=h, prnu=prnu)
         var = np.sqrt(cam._sigma2_dark_0)
@@ -120,10 +109,10 @@ class CameraTestPrnuDsnu(unittest.TestCase):
         # create the mask
         prnu_mask = np.zeros((8))
         prnu_mask[-1] = 1
-        prnu_mask_resize = self.get_tile(prnu_mask, h, w)
+        prnu_mask_resize = routines.get_tile(prnu_mask, h, w)
         prnu_non_mask = np.ones((8))
         prnu_non_mask[-1] = 0
-        prnu_non_mask_resize = self.get_tile(prnu_non_mask, h, w)
+        prnu_non_mask_resize = routines.get_tile(prnu_non_mask, h, w)
         # Test if the mean it's 100% of the target +/- variance
         self.assertAlmostEqual(np.ma.masked_array(
             img,
@@ -146,7 +135,7 @@ class CameraTestPrnuDsnu(unittest.TestCase):
         # create the pattern of the dsnu
         dsnu_array = np.ones((8))
         dsnu_array[-1] = value8
-        dsnu = self.get_tile(dsnu_array, h, w)
+        dsnu = routines.get_tile(dsnu_array, h, w)
         # Set the camera for testing the dsnu
         cam = Camera(width=w, height=h, dsnu=dsnu)
         var = np.sqrt(cam._sigma2_dark_0)
@@ -165,10 +154,10 @@ class CameraTestPrnuDsnu(unittest.TestCase):
         # create the mask
         dsnu_mask = np.zeros((8))
         dsnu_mask[-1] = 1
-        dsnu_mask_resize = self.get_tile(dsnu_mask, h, w)
+        dsnu_mask_resize = routines.get_tile(dsnu_mask, h, w)
         dsnu_non_mask = np.ones((8))
         dsnu_non_mask[-1] = 0
-        dsnu_non_mask_resize = self.get_tile(dsnu_non_mask, h, w)
+        dsnu_non_mask_resize = routines.get_tile(dsnu_non_mask, h, w)
         # Test if the mean it's 100% of the target +/- variance
         self.assertAlmostEqual(np.ma.masked_array(
             img,
