@@ -163,18 +163,26 @@ def get_tile(arr, height, width):
         h_r = height
         # only the width change
         w_r = int(np.floor(width / arr.shape[0]) + 1)
+
     # if the array given is a 2D array.
     if len(arr.shape) == 2:
         # number of repetition needed
         h_r = int(np.floor(height / arr.shape[0]) + 1)
         w_r = int(np.floor(width / arr.shape[1]) + 1)
+
     # the case if the array given is an multidimentinal array.
     # else:
         # TODO: make a error message for to many dimention.
 
     # create a array with the dimension given and the array given
     tile = np.tile(arr, (h_r, w_r))[:height, :width]
-    return tile
+
+    # if we want an 1D array so with a shape of (width,) and not (1, width)
+    if height == 1:
+        # tile = array([[0,0,0,...]]) so we only want the first line.
+        return tile[0]
+    else:
+        return tile
 
 
 def get_bayer_filter(t00, t01, t10, t11, width, height):

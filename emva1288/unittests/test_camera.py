@@ -171,3 +171,29 @@ class CameraTestPrnuDsnu(unittest.TestCase):
             mask=dsnu_non_mask_resize).mean(),
             top_target, delta=var,
             msg="8th value it's not in range")
+
+
+class CameraTestRoutines(unittest.TestCase):
+    def test_get_tile(self):
+        # TEST 1D
+        # Init the parameters
+        h, w = [1, 24]
+        dim1 = np.zeros((8))
+        # Supposed Results
+        res_array = routines.get_tile(dim1, h, w)
+        res_dim1 = np.zeros((24))
+        # Test to see if the layer come right
+        # shape[0] will give us the number in (width,)
+        self.assertEqual(w, res_array.shape[0])
+        self.assertEqual(res_dim1.tolist(), res_array.tolist())
+
+        # TEST 2D
+        # Init the parameters
+        h, w = [5, 7]
+        dim2 = np.zeros((3))
+        # Supposed Results
+        res_array = routines.get_tile(dim2, h, w)
+        res_dim2 = np.zeros((5, 7))
+        # Test to see if the layer come right
+        self.assertEqual((h, w), res_array.shape)
+        self.assertEqual(res_dim2.tolist(), res_array.tolist())
