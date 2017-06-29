@@ -106,9 +106,15 @@ class CameraTestPrnuDsnu(unittest.TestCase):
         cam = Camera(width=w, height=h, prnu=prnu)
         var = np.sqrt(cam._sigma2_dark_0)
         target = cam.img_max / 2
-        top_target = target * value8
-        if top_target >= cam.img_max:
-            top_target = cam.img_max
+        # The target (top_target) is the multiplication of the target
+        # (what we expect without prnu) and the value8(prnu). We can do it
+        # because if we look at the _u_e function in emva1288.camera.camera
+        # the prnu affect the QE with a multiplication. So if we just
+        # multiplied the target by the prnu it's the same thing.
+        # But this value can go over the maximal value for one pixel, this
+        # is why we use the min() function to take the maximal value than the
+        # camera can take.
+        top_target = min(target * value8, cam.img_max)
         radiance = cam.get_radiance_for(mean=target)
         img = cam.grab(radiance)
         # create the mask
@@ -144,7 +150,16 @@ class CameraTestPrnuDsnu(unittest.TestCase):
         # Set the camera for testing the dsnu
         cam = Camera(width=w, height=h, dsnu=dsnu)
         var = np.sqrt(cam._sigma2_dark_0)
+        # The target is the number of electrons who are not affected
+        # by the dsnu. To resume, we suppose to observe is a combinaison of
+        # electrons from the dark signal and the temperature. The total need
+        # to be multiplied by the gain of the system (K).
+        # for more eplination see the grab function in emva1288.camera.camera
         target = cam.K * (cam._dark_signal_0 + cam._u_therm())
+        # Here the target (top_target) is the part who is affected by
+        # the dsnu. Physicaly, the same phenomen append but this time the
+        # dark signal is NonUniform so thw value who represent the dsnu is
+        # added to the dark signal befor the multiplication of the gain.
         top_target = cam.K * (cam._dark_signal_0 + cam._u_therm() + value8)
         img = cam.grab(0)
         # create the mask
