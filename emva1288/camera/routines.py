@@ -131,8 +131,8 @@ def get_radiance(exposure, wavelength, photons, pixel_area, f_number):
 
 
 def get_tile(arr, height, width):
-    """From an array with a pattern, save execution time in np.tile function by
-       reducing useless repetition.
+    """From an array with a pattern, repeat the array to fill an 2D array
+       with the dimention given.
 
     Parameters
     ----------

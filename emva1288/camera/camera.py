@@ -304,7 +304,7 @@ class Camera(object):
         np.clip(img_e, 0, self._u_esat, img_e)
 
         img = self.K * img_e
-
+        print(img.mean())
         # quantization noise image
         img_q = np.random.uniform(-0.5, 0.5, self._shape)
         img += img_q
