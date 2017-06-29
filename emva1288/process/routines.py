@@ -117,7 +117,25 @@ def GetImgShape(img):
     return rows, cols
 
 
-def FFT1288(m, rotate=False):
+def FFT1288(m, rotate=False, n=1):
+    '''Compute the FFT emva1288 style
+
+    Compute an FFT per line and average the resulting ffts
+
+    Parameters
+    ----------
+    m : array
+        Input image
+    rotate : bool (optional)
+        Rotate the image before performing the FFT
+    n : int (optional)
+        If the image is the sum of several images use this value
+        to produce the fft of the average image
+
+    Returns
+    -------
+    array : One dimension FFT power spectrum
+    '''
     mm = np.asfarray(np.copy(m))
 
     if rotate is True:
@@ -142,6 +160,9 @@ def FFT1288(m, rotate=False):
 
     # extract the mean of each column of the fft
     r = np.mean(fabs, axis=0)
+
+    # if the image is the sum of n image, the fft of the average image is
+    r /= n ** 2
 
     # Return only half of the spectrogram (it is symemtrical)
     return r[: cols // 2]
