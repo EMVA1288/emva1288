@@ -296,7 +296,7 @@ class Camera(object):
             img_rad = u_y * self._radiance_factor
             img_e += np.random.poisson(img_rad, size=self._shape)
 
-        # Electronics induced electrons image and Dark Signal non uniform
+        # Electronics induced electrons image and Dark Signal non uniformity
         img_e = img_e + np.random.normal(loc=self._dark_signal_0,
                                          scale=np.sqrt(self._sigma2_dark_0),
                                          size=self._shape) + self._dsnu
@@ -319,7 +319,7 @@ class Camera(object):
         """
         Mean number of electrons per pixel during exposure time.
         """
-        # multiplied with the photon response non uniform variation (prnu).
+        # multiplied with the photon response non uniformity variation (prnu).
         u_e = self._qe * self._prnu * self.get_photons(radiance,
                                                        wavelength=wavelength,
                                                        f_number=f_number)

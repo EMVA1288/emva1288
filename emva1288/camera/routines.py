@@ -132,15 +132,7 @@ def get_radiance(exposure, wavelength, photons, pixel_area, f_number):
 
 def get_tile(arr, height, width):
     """From an array with a pattern, save execution time in np.tile function by
-       reducing useless repetition.\n
-       To reduce the execution time, we will reduce the width an height of
-       arguments given in the np.tile function. So we take the width and height
-       wanted, dived by size of the array dimention. By careful, for an 2D
-       array, the shape[1] is the width and the shape[0] is the height, but
-       for an 1D array the height is 1 so the shape[0] is the width.
-       The size need to be a int, so we use np.floor to arroud the division
-       and add one to be sure than the size is not to short. To be sure to
-       return the array with the good shape we use [:height, :width].
+       reducing useless repetition.
 
     Parameters
     ----------
@@ -157,6 +149,16 @@ def get_tile(arr, height, width):
     array :
            The pattern given(arr) replecate in the size given.
     """
+
+    #  To reduce the execution time, we will reduce the width an height of
+    #  arguments given in the np.tile function. We take the width and height
+    #  wanted, dived by size of the array dimention. By careful, for an 2D
+    #  array, the shape[1] is the width and the shape[0] is the height, but
+    #  for an 1D array the height is 1 so the shape[0] is the width.
+    #  The size need to be a int, so we use np.floor to arroud the division
+    #  and add one to be sure than the size is not to short. To be sure to
+    #  return the array with the good shape we use [:height, :width].
+
     # if the array given is an 1D array.
     if len(arr.shape) == 1:
         # the height suppose to be 1
@@ -181,8 +183,7 @@ def get_tile(arr, height, width):
     if height == 1:
         # tile = array([[0,0,0,...]]) so we only want the first line.
         return tile[0]
-    else:
-        return tile
+    return tile
 
 
 def get_bayer_filter(t00, t01, t10, t11, width, height):
@@ -223,9 +224,5 @@ def get_bayer_filter(t00, t01, t10, t11, width, height):
         The array with the bayer filter of the size gived.
     """
     pattern_rep = np.array([[t00, t01], [t10, t11]])
-    size = (height, width)
-    # If the situation need a lot more than juste one call of the
-    # get_bayer_filter function, we recommand to use the get_tile function
-    # to improve the execution time.
-    b_filter = np.tile(pattern_rep, size)[:height, :width]
+    b_filter = get_tile(pattern_rep, height, width)
     return b_filter
