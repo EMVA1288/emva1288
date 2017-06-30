@@ -132,13 +132,12 @@ def get_radiance(exposure, wavelength, photons, pixel_area, f_number):
 
 def get_tile(arr, height, width):
     """From an array with a pattern, repeat the array to fill an 2D array
-       with the dimention given.
+       with the given dimention.
 
     Parameters
     ----------
     arr : array
-          The pattern wanted to be replecate in a bigger shape. Need to be an
-          2D array.
+          The pattern wanted to be replecate in a bigger shape.
     height : int
              The height of the array wanted in return.
     width : int

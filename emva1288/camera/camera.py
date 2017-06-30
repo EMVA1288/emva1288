@@ -293,7 +293,7 @@ class Camera(object):
         img_e = np.random.poisson(u_d, size=self._shape)
 
         ###############################
-        # Light induces electrons image
+        # Light induced electrons image
         u_e = self._u_e(radiance, wavelength=wavelength, f_number=f_number)
         # Noise centred on the number of electrons from the Light
         img_e += np.random.poisson(u_e, size=self._shape)
@@ -326,18 +326,18 @@ class Camera(object):
 
     def _u_e(self, radiance, wavelength=None, f_number=None):
         """
-        Light induces electrons image for the exposure time.
+        Light induced electrons image for the exposure time.
         """
         # Alteration of the Quantum Efficiency by the
         # photon response non uniformity variation (prnu).
-        electrons = self._qe * self._prnu
+        qe = self._qe * self._prnu
         # Mean number of electrons per pixel during exposure time.
         get_photons = self.get_photons(radiance, wavelength=wavelength,
                                        f_number=f_number)
         # Influence of the radiance fator on the number of photons
         photons = self._radiance_factor * get_photons
-        # Combinaison of the electrons and photons
-        u_e = electrons * photons
+        # Electrons generation
+        u_e = qe * photons
         return u_e
 
     def _u_therm(self, temperature=None):
