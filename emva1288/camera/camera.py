@@ -332,10 +332,10 @@ class Camera(object):
         # photon response non uniformity variation (prnu).
         qe = self._qe * self._prnu
         # Mean number of electrons per pixel during exposure time.
-        get_photons = self.get_photons(radiance, wavelength=wavelength,
-                                       f_number=f_number)
+        photons_exposure = self.get_photons(radiance, wavelength=wavelength,
+                                            f_number=f_number)
         # Influence of the radiance fator on the number of photons
-        photons = self._radiance_factor * get_photons
+        photons = self._radiance_factor * photons_exposure
         # Electrons generation
         u_e = qe * photons
         return u_e
