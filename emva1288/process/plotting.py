@@ -379,7 +379,8 @@ class PlotHorizontalSpectrogramPRNU(Emva1288Plot):
     def plot(self, test):
         ax = self.ax
 
-        data = test.spatial['avg'] - test.spatial['avg_dark']
+        data = (test.spatial['sum'] - test.spatial['sum_dark'])
+        data = data / test.spatial['L']
         data_mean = np.mean(data)
 
         spectrogram = routines.FFT1288(data) / data_mean
@@ -415,7 +416,8 @@ class PlotHorizontalSpectrogramDSNU(Emva1288Plot):
     def plot(self, test):
         ax = self.ax
 
-        spectrogram = routines.FFT1288(test.spatial['avg_dark'])
+        spectrogram = routines.FFT1288(test.spatial['sum_dark'],
+                                       n=test.spatial['L'])
         ax.plot(routines.GetFrecs(spectrogram),
                 np.sqrt(spectrogram),
                 label='Data',
@@ -446,7 +448,8 @@ class PlotVerticalSpectrogramPRNU(Emva1288Plot):
 
     def plot(self, test):
         ax = self.ax
-        data = test.spatial['avg'] - test.spatial['avg_dark']
+        data = test.spatial['sum'] - test.spatial['sum_dark']
+        data = data / test.spatial['L']
         data_mean = np.mean(data)
         spectrogram = routines.FFT1288(data, rotate=True) / data_mean
 
@@ -481,8 +484,9 @@ class PlotVerticalSpectrogramDSNU(Emva1288Plot):
     def plot(self, test):
         ax = self.ax
 
-        spectrogram = routines.FFT1288(test.spatial['avg_dark'],
-                                       rotate=True)
+        spectrogram = routines.FFT1288(test.spatial['sum_dark'],
+                                       rotate=True,
+                                       n=test.spatial['L'])
         ax.plot(routines.GetFrecs(spectrogram),
                 np.sqrt(spectrogram),
                 label='Data',
@@ -688,8 +692,9 @@ class ProfileBase(Emva1288Plot):
         ax = self.ax
         ax2 = self.ax2
 
-        bimg = test.spatial['avg'] - test.spatial['avg_dark']
-        dimg = test.spatial['avg_dark']
+        L = test.spatial['L']
+        bimg = (test.spatial['sum'] - test.spatial['sum_dark']) / L
+        dimg = test.spatial['sum_dark'] / L
         profiles = self.get_profiles(bimg, dimg)
 
         # to keep the lines number for legend
@@ -705,12 +710,12 @@ class ProfileBase(Emva1288Plot):
             labels.append(label)
 
             # bright plot
-            l = ax.plot(profiles['bright'][typ][x],
-                        profiles['bright'][typ][y],
-                        label=label,
-                        color=color,
-                        gid='%d:marker' % test.id)[0]
-            bright_plots.append(l)
+            line = ax.plot(profiles['bright'][typ][x],
+                           profiles['bright'][typ][y],
+                           label=label,
+                           color=color,
+                           gid='%d:marker' % test.id)[0]
+            bright_plots.append(line)
 
             # dark plot
             ax2.plot(profiles['dark'][typ][x],

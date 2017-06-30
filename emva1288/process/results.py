@@ -718,7 +718,7 @@ class Results1288(object):
             :Unit: DN2
         """
 
-        return np.mean(self.spatial['var'])
+        return self.spatial['var_mean']
 
     @property
     def sigma_2_y_stack_dark(self):
@@ -733,7 +733,7 @@ class Results1288(object):
             :Unit: DN2
         """
 
-        return np.mean(self.spatial['var_dark'])
+        return self.spatial['var_mean_dark']
 
     @property
     def s_2_y_measured(self):
@@ -749,7 +749,7 @@ class Results1288(object):
         """
         # ddof = 1 (delta degrees of freedom) accounts for the minus 1 in the
         # divisor for the calculation of variance
-        return np.var(self.spatial['avg'], ddof=1)
+        return self.spatial['avg_var']
 
     @property
     def s_2_y_measured_dark(self):
@@ -763,9 +763,7 @@ class Results1288(object):
             :Symbol: $s^2_{y.measured.dark}$
             :Unit: DN2
         """
-        # ddof = 1 (delta degrees of freedom) accounts for the minus 1 in the
-        # divisor for the calculation of variance
-        return np.var(self.spatial['avg_dark'], ddof=1)
+        return self.spatial['avg_var_dark']
 
     @property
     def s_2_y(self):
@@ -856,8 +854,7 @@ class Results1288(object):
         """
 
         return (np.sqrt(self.s_2_y - self.s_2_y_dark) * 100 /
-                (np.mean(self.spatial['avg']) -
-                 np.mean(self.spatial['avg_dark'])))
+                (self.spatial['avg_mean'] - self.spatial['avg_mean_dark']))
 
     @property
     def histogram_PRNU(self):
