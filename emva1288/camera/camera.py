@@ -124,6 +124,14 @@ class Camera(object):
         self._pixel_area = pixel_area
         self._bit_depth = bit_depth
         self._img_max = 2 ** int(bit_depth) - 1
+
+        if bit_depth <= 8:
+            self._img_type = np.uint8
+        elif bit_depth <= 16:
+            self._img_type = np.uint16
+        else:
+            self._img_type = np.uint64
+
         self._width = width
         self._height = height
         self._shape = (self.height, self.width)
@@ -317,7 +325,8 @@ class Camera(object):
 
         np.rint(img, img)
         np.clip(img, 0, clipping_point, img)
-        return img.astype(np.uint64)
+
+        return img.astype(self._img_type)
 
     def _u_e(self, radiance, wavelength=None, f_number=None):
         """
