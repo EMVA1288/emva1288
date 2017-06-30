@@ -294,33 +294,38 @@ class Camera(object):
         """
         clipping_point = int(self.img_max)
 
+        ###################################
         # Thermally induced electrons image
         u_d = self._u_therm(temperature=temperature)
+        # Noise centred on the number of electrons thermally generated
         img_e = np.random.poisson(u_d, size=self._shape)
 
-        # If there is light, add the image of light induced electrons
-        if radiance > 0:
-            u_y = self._u_e(radiance, wavelength=wavelength, f_number=f_number)
-            img_rad = u_y * self._radiance_factor
-            img_e += np.random.poisson(img_rad, size=self._shape)
+        ###############################
+        # Light induced electrons image
+        u_e = self._u_e(radiance, wavelength=wavelength, f_number=f_number)
+        # Noise centred on the number of electrons from the Light
+        img_e += np.random.poisson(u_e, size=self._shape)
 
-        # Electronics induced electrons image
-        img_e = img_e + np.random.normal(loc=self._dark_signal_0,
-                                         scale=np.sqrt(self._sigma2_dark_0),
-                                         size=self._shape)
+        ####################################################################
+        # Electronics induced electrons image and Dark Signal non uniformity
+        variance = np.sqrt(self._sigma2_dark_0)
+        dark_signal = self._dsnu + np.random.normal(loc=self._dark_signal_0,
+                                                    scale=variance,
+                                                    size=self._shape)
+        img_e = img_e + dark_signal
 
+        ###########################################
+        # Clip of the Full well electrons capacity
         np.clip(img_e, 0, self._u_esat, img_e)
 
+        # Analog to Digital gain
         img = self.K * img_e
 
-        # quantization noise image
+        # Quantization noise image
         img_q = np.random.uniform(-0.5, 0.5, self._shape)
         img += img_q
 
-        # not the best but hope it works as approach for prnu dsnu
-        img *= self._prnu
-        img += self._dsnu
-
+        # Offset on the dark_signal
         img += self.blackoffset
 
         np.rint(img, img)
@@ -330,10 +335,18 @@ class Camera(object):
 
     def _u_e(self, radiance, wavelength=None, f_number=None):
         """
-        Mean number of electrons per pixel during exposure time.
+        Light induced electrons image for the exposure time.
         """
-        u_e = self._qe * self.get_photons(radiance, wavelength=wavelength,
-                                          f_number=f_number)
+        # Alteration of the Quantum Efficiency by the
+        # photon response non uniformity variation (prnu).
+        qe = self._qe * self._prnu
+        # Mean number of electrons per pixel during exposure time.
+        photons_exposure = self.get_photons(radiance, wavelength=wavelength,
+                                            f_number=f_number)
+        # Influence of the radiance fator on the number of photons
+        photons = self._radiance_factor * photons_exposure
+        # Electrons generation
+        u_e = qe * photons
         return u_e
 
     def _u_therm(self, temperature=None):

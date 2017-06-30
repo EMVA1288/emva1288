@@ -130,6 +130,61 @@ def get_radiance(exposure, wavelength, photons, pixel_area, f_number):
     return r
 
 
+def get_tile(arr, height, width):
+    """From an array with a pattern, repeat the array to fill an 2D array
+       with the given dimention.
+
+    Parameters
+    ----------
+    arr : array
+          The pattern wanted to be replecate in a bigger shape.
+    height : int
+             The height of the array wanted in return.
+    width : int
+            The width of the array wanted in return.
+
+    Returns
+    -------
+    array :
+           The pattern given(arr) replecate in the size given.
+    """
+
+    #  To reduce the execution time, we will reduce the width an height of
+    #  arguments given in the np.tile function. We take the width and height
+    #  wanted, dived by size of the array dimention. By careful, for an 2D
+    #  array, the shape[1] is the width and the shape[0] is the height, but
+    #  for an 1D array the height is 1 so the shape[0] is the width.
+    #  The size need to be a int, so we use np.floor to arroud the division
+    #  and add one to be sure than the size is not to short. To be sure to
+    #  return the array with the good shape we use [:height, :width].
+
+    # if the array given is an 1D array.
+    if len(arr.shape) == 1:
+        # the height suppose to be 1
+        h_r = height
+        # only the width change
+        w_r = int(np.floor(width / arr.shape[0]) + 1)
+
+    # if the array given is a 2D array.
+    if len(arr.shape) == 2:
+        # number of repetition needed
+        h_r = int(np.floor(height / arr.shape[0]) + 1)
+        w_r = int(np.floor(width / arr.shape[1]) + 1)
+
+    # the case if the array given is an multidimentinal array.
+    # else:
+        # TODO: make a error message for to many dimention.
+
+    # create a array with the dimension given and the array given
+    tile = np.tile(arr, (h_r, w_r))[:height, :width]
+
+    # if we want an 1D array so with a shape of (width,) and not (1, width)
+    if height == 1:
+        # tile = array([[0,0,0,...]]) so we only want the first line.
+        return tile[0]
+    return tile
+
+
 def get_bayer_filter(t00, t01, t10, t11, width, height):
     """From different values of transmition and the size, get a bayer filter.
 
@@ -168,7 +223,5 @@ def get_bayer_filter(t00, t01, t10, t11, width, height):
         The array with the bayer filter of the size gived.
     """
     pattern_rep = np.array([[t00, t01], [t10, t11]])
-    size = (int(np.floor(height / pattern_rep.shape[1]))+1,
-            int(np.floor(width / pattern_rep.shape[0]))+1)
-    b_filter = np.tile(pattern_rep, size)[:height, :width]
+    b_filter = get_tile(pattern_rep, height, width)
     return b_filter
