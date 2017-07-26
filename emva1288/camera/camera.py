@@ -301,10 +301,18 @@ class Camera(object):
         img_e = np.random.poisson(u_d, size=self._shape)
 
         ###############################
-        # Light induced electrons image
-        u_e = self._u_e(radiance, wavelength=wavelength, f_number=f_number)
-        # Noise centred on the number of electrons from the Light
-        img_e += np.random.poisson(u_e, size=self._shape)
+        # Light induced photons image
+        u_p = self._u_p(radiance, wavelength=wavelength, f_number=f_number)
+        # Noise centred on the number of photons from the Light
+        l_p = np.random.poisson(u_p, size=self._shape)
+
+        # Alteration of the Quantum Efficiency by the
+        # photon response non uniformity variation (prnu).
+        qe = self._qe * self._prnu
+
+        # Electrons generation
+        u_e = qe * l_p
+        img_e = img_e + u_e
 
         ####################################################################
         # Electronics induced electrons image and Dark Signal non uniformity
@@ -333,21 +341,16 @@ class Camera(object):
 
         return img.astype(self._img_type)
 
-    def _u_e(self, radiance, wavelength=None, f_number=None):
+    def _u_p(self, radiance, wavelength=None, f_number=None):
         """
-        Light induced electrons image for the exposure time.
+        Light induced photons image for the exposure time.
         """
-        # Alteration of the Quantum Efficiency by the
-        # photon response non uniformity variation (prnu).
-        qe = self._qe * self._prnu
-        # Mean number of electrons per pixel during exposure time.
+        # Mean number of photons per pixel during exposure time.
         photons_exposure = self.get_photons(radiance, wavelength=wavelength,
                                             f_number=f_number)
         # Influence of the radiance fator on the number of photons
-        photons = self._radiance_factor * photons_exposure
-        # Electrons generation
-        u_e = qe * photons
-        return u_e
+        u_p = self._radiance_factor * photons_exposure
+        return u_p
 
     def _u_therm(self, temperature=None):
         """
