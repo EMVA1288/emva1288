@@ -58,8 +58,7 @@ class TestData(unittest.TestCase):
         photons = round(self.dataset.cam.get_photons(radiance), 3)
         self.assertEqual(data['spatial']['u_p'], photons)
         # spatial data are images
-        for typ in ('avg', 'avg_dark', 'pvar', 'pvar_dark', 'sum',
-                    'sum_dark', 'var', 'var_dark'):
+        for typ in ('sum_dark', 'sum'):
             self.assertTrue(typ in data['spatial'].keys())
             self.assertEqual(data['spatial'][typ].shape, (self._height,
                                                           self._width))
