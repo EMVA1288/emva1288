@@ -200,9 +200,8 @@ class TestResults(unittest.TestCase):
         self.assertAlmostEqual(self.results.PRNU1288,
                                np.sqrt(self.results.s_2_y -
                                        self.results.s_2_y_dark) * 100 /
-                               (np.mean(self.data.data['spatial']['avg']) -
-                                np.mean(self.data.data['spatial']['avg_'
-                                                                  'dark'])))
+                               (self.data.data['spatial']['avg_mean'] -
+                                self.data.data['spatial']['avg_mean_dark']))
 
         # Test that histograms contains relevant keys and are numpy arrays
         hists = ('histogram_PRNU', 'histogram_PRNU_accumulated',
@@ -293,8 +292,8 @@ class TestResults(unittest.TestCase):
         self.assertIs(r.u_I_var, np.nan)
 
         # Test that a negative s2y_dark will yield a Nan for DSNU1288
-        data['spatial'] = {'avg_dark': [0, 0, 0],
-                           'var_dark': [1, 1, 1],
+        data['spatial'] = {'avg_var_dark': 0.,
+                           'var_mean_dark': 1.,
                            'L_dark': 3}
         r = Results1288(data)
         self.assertIs(r.DSNU1288, np.nan)
