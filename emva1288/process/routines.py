@@ -175,12 +175,7 @@ def GetFrecs(fft):
     return x
 
 
-def Histogram1288(img, Qmax):
-    y = np.ravel(img)
-
-    ymin = np.min(y)
-    ymax = np.max(y)
-
+def N_bins(ymin, ymax, Qmax):
     # Because we are working with integers, minimum binwidth is 1
     W = 1
     q = ymax - ymin
@@ -197,6 +192,17 @@ def Histogram1288(img, Qmax):
     # numpy used bin limits
     # in our interpretation we use the lower limit of the bin
     B = [ymin + (i * W) for i in range(Q + 1)]
+    return B, Q
+
+
+def Histogram1288(img, Qmax):
+    y = np.ravel(img)
+
+    ymin = np.min(y)
+    ymax = np.max(y)
+
+    # Bins and number of bins
+    B, Q = N_bins(ymin, ymax, Qmax)
 
     # Normal distribution with the original sigma, and mean
     mu = np.mean(y)
@@ -204,6 +210,25 @@ def Histogram1288(img, Qmax):
     normal = ((1. * (ymax - ymin) / Q) *
               np.size(y) / (np.sqrt(2 * np.pi) * sigma) *
               np.exp(-0.5 * (1. / sigma * (B[:-1] - mu)) ** 2))
+
+    # If we have a second peak, make sur the first one have a good definition
+    # Check when the normal(model) touch the 0
+    N = np.where(normal == 0)[0]
+    # If the normal touch the 0, remake the definition of the histogram
+    # for a better definition
+    if len(N) > 1:
+        # the +1, it's for the redimention
+        f = N[0] + 1
+        # the -1, it's for the resizing
+        j = B[N[0]] - 1
+        # new resolution
+        B_2, _Q = N_bins(ymin, j, Qmax)
+        # replace the part we want whit the new resolution
+        B[:f] = B_2
+        # remake the normal with the new size
+        normal = ((1. * (ymax - ymin) / Q) *
+                  np.size(y) / (np.sqrt(2 * np.pi) * sigma) *
+                  np.exp(-0.5 * (1. / sigma * (B[:-1] - mu)) ** 2))
 
 
 #############################################
