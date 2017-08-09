@@ -52,7 +52,7 @@ class Camera(object):
                    The emva1288 f_number for the camera.
         pixel_area : float, optional
                      The area of one pixel (in um ^ 2)
-        bit_depth : int, optiona
+        bit_depth : int, optional
                     The number of bits allowed for one pixel value.
         width : int, optional
                 The number of columns in the the image.
@@ -114,11 +114,11 @@ class Camera(object):
                         :func:`~emva1288.camera.routines.get_bayer_filter`
                         function.
         dsnu : np.array, optional
-               DSNU image in DN, array with the same shape of the image
-               that is added to every image
+               DSNU image in e^-, array with the same shape of the image
+               that is added to every image.
         prnu : np.array, optional
                PRNU image in percentages (1 = 100%), array with the same shape
-               of the image. Every image is multiplied by it
+               of the image. Every image is multiplied by it.
         """
 
         self._pixel_area = pixel_area
@@ -267,6 +267,21 @@ class Camera(object):
     def blackoffsets(self):
         """The array of all blackoffsets (in DN)."""
         return self.__blackoffsets
+
+    @property
+    def DSNU(self):
+        """The Dark Signal non uniformity, DSNU (in e^-).
+
+        :Setter: The setter allow the option to set a new dsnu who have the
+                 same shape than the image. See how it's used
+                 :func:`~emva1288.camera.bad_images.bad_pixel`.
+        """
+        return self._dsnu
+
+    @DSNU.setter
+    def DSNU(self, value):
+        # TODO: Conditions to be sure than the dsnu gived has the good shape.
+        self._dsnu = value
 
     def grab(self, radiance, temperature=None, wavelength=None, f_number=None):
         """
