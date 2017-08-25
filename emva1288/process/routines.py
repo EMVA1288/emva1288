@@ -181,16 +181,35 @@ def Histogram1288(img, Qmax):
     ymin = np.min(y)
     ymax = np.max(y)
 
+    # Full distribution sigma, and mean
+    full_mean = np.mean(y)
+    full_sigma = np.std(y)
+    # with 5 sigma, 99.9999426697% values are in the Normal distribution
+    # Source: Wikipedia, Normal distribution, section on standart diviation
+    sigma5 = full_sigma * 5
+    # Core, main distribution
+    core = y[(y > full_mean - sigma5) & (y < full_mean + sigma5)]
+    # Normal distribution with the original sigma, and mean
+    mu = np.mean(core)
+    sigma = np.std(core)
+
+    # Core ymin and ymax
+    ymin_core = np.min(core)
+    ymax_core = np.max(core)
+
     # Because we are working with integers, minimum binwidth is 1
     W = 1
     q = ymax - ymin
-    Q = q + 1
+    # Same for the Core
+    q_core = ymax_core - ymin_core
+    Q_core = q_core + 1
 
     # When too many bins, create a new integer binwidth
-    if Q > Qmax:
+    if Q_core > Qmax:
         # We want the number of bins as close as possible to Qmax (256)
-        W = int(np.ceil(1. * q / (Qmax - 1)))
-        Q = int(np.floor(1. * q / W)) + 1
+        W = int(np.ceil(1. * q_core / (Qmax - 1)))
+
+    Q = int(np.floor(1. * q / W)) + 1
 
     # The bins
     # we need one more value for the numpy histogram computation
@@ -199,8 +218,6 @@ def Histogram1288(img, Qmax):
     B = [ymin + (i * W) for i in range(Q + 1)]
 
     # Normal distribution with the original sigma, and mean
-    mu = np.mean(y)
-    sigma = np.std(y)
     normal = ((1. * (ymax - ymin) / Q) *
               np.size(y) / (np.sqrt(2 * np.pi) * sigma) *
               np.exp(-0.5 * (1. / sigma * (B[:-1] - mu)) ** 2))
