@@ -13,6 +13,10 @@ from scipy.optimize import leastsq
 from lxml import etree
 from PIL import Image
 from collections import OrderedDict
+from emva1288.camera import routines
+import numpy.ma as ma
+from scipy.ndimage import convolve
+import warnings
 # import cv2
 
 
@@ -201,8 +205,11 @@ def Histogram1288(img, Qmax):
     # Normal distribution with the original sigma, and mean
     mu = np.mean(y)
     sigma = np.std(y)
+    # For masked arrays, the total number of pixel is the sum of the non-masked
+    # value
+    N = np.ma.count(y)
     normal = ((1. * (ymax - ymin) / Q) *
-              np.size(y) / (np.sqrt(2 * np.pi) * sigma) *
+              N / (np.sqrt(2 * np.pi) * sigma) *
               np.exp(-0.5 * (1. / sigma * (B[:-1] - mu)) ** 2))
 
 
@@ -541,3 +548,93 @@ def compare_xml(x1, x2, filename=None):
     with open(filename, 'w') as f:
         f.write(s)
         return s
+
+
+def high_pass_filter(img, dim):
+    """High pass filtering on image
+
+    Computes the highpass filtering as defined by the emva standart keeping the
+    result as an int image. The computation preserves the image as ints and
+    doesn't perform the final division, but returns the dividing factor
+
+    Parameters
+    ----------
+    img : np.array
+        the image to filter
+    dim : int
+        The size of the highpass filter
+
+    Returns
+    -------
+    d : dict
+        The data dictionary of the result. The keys are:
+        'img' : The filtered image
+        'multiplicator' : Factor from the convolution to be considered in the
+                          computation of the histogram
+    """
+    # By definition in the emva standart, the high pass filter is using
+    # the following operation :
+    #
+    # y' = y-R (*) y
+    #
+    # where (*) represents a convolution and R is a 5x5 matrix filled with 1/25
+    # In order to maintain int values for a higher precision, we make the
+    # following manipulation :
+    #
+    # y' = P (*) y - R (*) y, where P is a 5x5 matrix of zeros with P[2,2] = 1
+    #
+    # multiplying the right side of the equation by 25 and then dividing by 25
+    #
+    # y' =  ((25 * P - R') (*) y) /25, where R' is a 5x5 matrix of ones
+    #
+    # simplifying
+    #
+    # y' = (M (*) y)/25, where M is a 5x5 matrix of -1 with M[2,2] = 24
+    #
+    # We don't peform the division to keep the int precision, but we return the
+    # factor (25)
+
+    # If the image is from a color camera, the format of the data to compute is
+    # a masked array. Convolution cannot typically be performed on a masked
+    # array, but considering this particular operation we can work around this
+    # problem.
+    # Considering the kernel, the unmasked values are correctly computed using
+    # convolve(), while the others are wrong. But by re-applying the mask, we
+    # work around this problem.
+    # The multiplicator must be changed to the number of valid pixels
+    # being considered in the convolution.
+
+    # Initializing the kernel
+    kernel = np.ones((dim, dim))
+    if isinstance(img, ma.MaskedArray):
+        # Saving the mask
+        mask = ma.getmask(img)
+        # These next few lines are to determine the number of pixels being
+        # considered in the convolution
+        value = np.ones(img.shape)
+        # Applying the mask on a matrix of ones and filling the masked values
+        # with 0
+        value = ma.MaskedArray(value, mask)
+        value = value.filled(0)
+        # The convolution of the matrix with a 5x5 matrix of ones will return
+        # a matrix where the values where there was no mask correspong to the
+        # number of considred pixels
+        value = convolve(value, kernel)
+        value = ma.MaskedArray(value, mask)[2:-2, 2:-2]
+        # After applying the mask all the values should be equal. If not, the
+        # filter is not bayer and will not work properly with this code
+        if value.max() != value.min():
+            warnings.warn('Filter is not a bayer filter, histogramm'
+                          'computation might be wrong', UserWarning)
+        # Setting the kernel
+        kernel *= -1
+        kernel[2, 2] = value.max()-1
+        # Finally computing the filtering and slicing off the edges
+        img = convolve(img, kernel)
+        img = np.ma.array(img, mask=mask)[2:-2, 2:-2]
+    else:
+        # Set the kernel and compute, then slice off the edges
+        kernel *= -1
+        kernel[2, 2] = dim*dim-1
+        img = convolve(img, kernel)[2:-2, 2:-2]
+    return {'img': img, 'multiplicator': kernel[2, 2]}

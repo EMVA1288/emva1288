@@ -13,6 +13,7 @@ import logging
 import numpy as np
 from emva1288.process import routines
 from scipy.ndimage import convolve
+import numpy.ma as ma
 
 
 class Results1288(object):
@@ -63,9 +64,6 @@ class Results1288(object):
         self._index_sensitivity_min = 0
 
         self._histogram_Qmax = 256  # Maximum number of bins in histograms
-        # Convolution kernel for high pass filter in defect pixel
-        self._histogram_high_pass_box = (-1) * np.ones((5, 5), dtype=np.int64)
-        self._histogram_high_pass_box[2, 2] = 24
 
         # Sometimes we need to force the saturation point
         # in those cases pass the index in the initialization of Results1288
@@ -860,7 +858,9 @@ class Results1288(object):
     def histogram_PRNU(self):
         """PRNU histogram.
 
-        Uses the :func:`~emva1288.process.routines.Histogram1288` function
+        Uses the :func:`~emva1288.process.routines.high_pass_filter` function
+        to filter the image and then uses the
+        :func:`~emva1288.process.routines.Histogram1288` function
         to make the histogram.
 
         .. emva1288::
@@ -870,12 +870,13 @@ class Results1288(object):
 
         # For prnu, perform the convolution
         y = self.spatial['sum'] - self.spatial['sum_dark']
-        # Slicing at the end is to remove boundary effects.
-        y = convolve(y, self._histogram_high_pass_box)[2:-2, 2:-2]
+        # Applying the filter on the image
+        data = routines.high_pass_filter(y, 5)
+        y = data['img']
 
         h = routines.Histogram1288(y, self._histogram_Qmax)
         # Rescale the bins
-        h['bins'] /= (self.spatial['L'] * 25.)
+        h['bins'] /= (self.spatial['L'] * data['multiplicator'])
 
         return h
 
@@ -883,7 +884,9 @@ class Results1288(object):
     def histogram_PRNU_accumulated(self):
         """Accumulated PRNU histogram.
 
-        Uses the :func:`~emva1288.process.routines.Histogram1288` function
+        Uses the :func:`~emva1288.process.routines.high_pass_filter` function
+        to filter the image and then uses the
+        :func:`~emva1288.process.routines.Histogram1288` function
         to make the histogram.
 
         .. emva1288::
@@ -893,14 +896,14 @@ class Results1288(object):
 
         # For prnu, perform the convolution
         y = self.spatial['sum'] - self.spatial['sum_dark']
-        y = convolve(y, self._histogram_high_pass_box)[2:-2, 2:-2]
-
+        data = routines.high_pass_filter(y, 5)
+        y = data['img']
         # For the accumulated histogram substract the mean
         y = np.abs(y - int(np.mean(y)))
 
         h = routines.Histogram1288(y, self._histogram_Qmax)
         # Rescale the bins
-        h['bins'] /= (self.spatial['L'] * 25.)
+        h['bins'] /= (self.spatial['L'] * data['multiplicator'])
 
         # Perform the cumulative summation
         h['values'] = np.cumsum(h['values'][::-1])[::-1]
