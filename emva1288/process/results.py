@@ -14,6 +14,7 @@ import numpy as np
 from emva1288.process import routines
 from scipy.ndimage import convolve
 import numpy.ma as ma
+import warnings
 
 
 class Results1288(object):
@@ -871,9 +872,80 @@ class Results1288(object):
         # For prnu, perform the convolution
         y = self.spatial['sum'] - self.spatial['sum_dark']
         # Applying the filter on the image
-        data = routines.high_pass_filter(y, 5)
-        y = data['img']
+        # We will need the shape of the image for indexing purpuses
+        shape = np.array(y).shape
+        # Working with an array to find the outliers
+        ym = np.ravel(y)
+        # Finding the outliers
+        outliers = routines.outlier_filter(y)
+        # If there is more than 100 outliers, the algorithm stops searching
+        if len(outliers) > 100:
+            warnings.warn('Stopped searching for outliers after finding 100 \
+                          ', UserWarning)
+        # Keeping the values and the indexes in memory, along with a bool
+        dic = {key: [ym[key], False] for key in outliers}
+        # We start by removing all the outliers because they could affect their
+        # neighbors in the hig pass filtering
+        for i in range(len(ym)):
+            if i in outliers:
+                # The outliers are replaced by the mean of the image
+                ym[i] = np.mean(ym)
 
+        # To analyse the effect of the outliers, we place them individually in
+        # the image and use the high pass filter on the new image.
+        for i in range(len(outliers)):
+            # Replacing the value
+            ym[outliers[i]] = dic[outliers[i]][0]
+            # Filtering, we need to rechape ym to its original matrix shape
+            img = routines.high_pass_filter(np.reshape(ym, shape), 5)['img']
+            # out is the index of the outliers recomputed from the new image
+            out = routines.outlier_filter(img)
+            # if new outliers were induced, the original outlier affects its
+            # neighbors, so we tag its index with True
+            if len(out) > 1:
+                dic[outliers[i]][1] = True
+            # replacing the outlier by the mean for the rest of the loop
+            ym[outliers[i]] = np.mean(ym)
+        # We then loop throught the outliers list again
+        for i in range(len(outliers)):
+            # If the outlier did not generate new outliers, then we put it back
+            # in the image
+            if not dic[outliers[i]][1]:
+                ym[outliers[i]] = dic[outliers[i]][0]
+        # We filter the image
+        data = routines.high_pass_filter(np.reshape(ym, shape), 5)
+        # Use ravel to facilite indexing
+        y = np.ravel(data['img'])
+        # looping throught the outliers again
+        for i in range(len(outliers)):
+            idx = outliers[i]
+            # If the outlier did generate more outliers
+            if dic[outliers[i]][1]:
+                # We make sure the outlier is not out of bound of the filtered
+                # image
+                if (idx < shape[1]*2 or
+                    idx > shape[1]*(shape[0]-2) or
+                    idx % shape[1] < 3 or
+                        idx % shape[1] > shape[0] - 3):
+                    continue
+                # We apply the filter on a copy of the image, and extract the
+                # modified value of the outlier to insert it in the finale
+                # image
+                else:
+                    ym[idx] = dic[idx][0]
+                    # We need to reajust the index to the shape returned by
+                    # high_pass_filter
+                    newidx = int(idx -
+                                 2 * (shape[1]) -
+                                 (np.floor(idx/(shape[1]))-2)*4 -
+                                 2)
+                    newidx = int(newidx)
+                    # Applying the filter and inserting the value in y
+                    with warnings.catch_warnings():
+                        warnings.simplefilter('ignore')
+                        y[newidx] = np.ravel(routines.high_pass_filter(
+                            np.reshape(ym, shape), 5)['img'])[newidx]
+        # make the histogram with y
         h = routines.Histogram1288(y, self._histogram_Qmax)
         # Rescale the bins
         h['bins'] /= (self.spatial['L'] * data['multiplicator'])

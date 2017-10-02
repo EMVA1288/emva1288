@@ -17,6 +17,7 @@ from emva1288.camera import routines
 import numpy.ma as ma
 from scipy.ndimage import convolve
 import warnings
+import scipy.stats
 # import cv2
 
 
@@ -180,11 +181,31 @@ def GetFrecs(fft):
 
 
 def Histogram1288(img, Qmax):
-    y = np.ravel(img)
-
-    ymin = np.min(y)
-    ymax = np.max(y)
-
+    # Identifies the outliers
+    outliers = outlier_filter(img)
+    if isinstance(img, np.ma.MaskedArray):
+        y = ma.ravel(img)
+        outval = [y[out] for out in outliers]
+        y = y.compressed()
+        outliers = [np.where(y == val)[0][0] for val in outval]
+    else:
+        y = np.ravel(img)
+    realmin = np.min(y)
+    realmax = np.max(y)
+    # removes the outliers from the image
+    ymod = np.delete(y, outliers)
+    # Getting the mean and std
+    ymean = np.mean(ymod)
+    ysig = np.std(ymod)
+    # redefining ymin and ymax
+    ymin = np.min(ymod)
+    ymax = np.max(ymod)
+    # For a better display, we will create bin for every outlier. But if there
+    # are too many, we still reserve 200 bins for the data core
+    if len(outliers) < 28:
+        Qmax -= len(outliers)*2
+    else:
+        Qmax = 200
     # Because we are working with integers, minimum binwidth is 1
     W = 1
     q = ymax - ymin
@@ -195,16 +216,49 @@ def Histogram1288(img, Qmax):
         # We want the number of bins as close as possible to Qmax (256)
         W = int(np.ceil(1. * q / (Qmax - 1)))
         Q = int(np.floor(1. * q / W)) + 1
-
     # The bins
     # we need one more value for the numpy histogram computation
     # numpy used bin limits
     # in our interpretation we use the lower limit of the bin
     B = [ymin + (i * W) for i in range(Q + 1)]
-
+    B.insert(0, ymin-1)
+    # The next segment is to creates bins for outliers
+    # Sorting the values of the outliers
+    values = sorted([y[idx] for idx in outliers])
+    # In case we have to many outliers to give each of them a bin, we group
+    # them
+    group = 1
+    if len(values) != 0:
+        # For each bin we create an empty bin for display purpuses, so the
+        # number of available bins is devided by two
+        group = int(np.ceil(len(values) / 28))
+    # Iterating over the number of group
+    for i in range(int(len(values)/group)):
+        # Frontier of the group
+        if i % group == 0:
+            # Outliers smaller than the core distribution
+            if values[i*group] < ymin:
+                # Check if all the outliers in the group are lower than ymin
+                # also check that the index is not off limits
+                if ((i+1)*group - 1 < len(values) and
+                   values[(i+1)*group-1] < ymin):
+                    # Left limit of the bin
+                    B.insert(2*i, values[i+group-1]+1)
+                # Right limiit of the bin
+                B.insert(2*i, values[i])
+            # For outliers greater than the max of the core
+            elif values[i*group] > np.max(B):
+                # For the empty bin and the right limit of the bin
+                B.append(np.max(B)+1)
+                if (i+1)*group <= len(values):
+                    # left limit
+                    B.append(values[(i+1)*group-1])
+    # Additional bin at the end to control the behavior of the histogram
+    B.append(np.max(B)+1)
     # Normal distribution with the original sigma, and mean
-    mu = np.mean(y)
-    sigma = np.std(y)
+    B.sort()
+    mu = np.mean(ymod)
+    sigma = np.std(ymod)
     # For masked arrays, the total number of pixel is the sum of the non-masked
     # value
     N = np.ma.count(y)
@@ -227,8 +281,7 @@ def Histogram1288(img, Qmax):
 #         H[q] += 1
 #############################################
 
-    H, _b = np.histogram(y, B, range=(ymin, ymax))
-
+    H, _b = np.histogram(y, B, range=(realmin, realmax))
     return {'bins': np.asfarray(B[:-1]), 'values': H, 'model': normal}
 
 
@@ -551,7 +604,7 @@ def compare_xml(x1, x2, filename=None):
 
 
 def high_pass_filter(img, dim):
-    """High pass filtering on image
+    '''High pass filtering on image
 
     Computes the highpass filtering as defined by the emva standart keeping the
     result as an int image. The computation preserves the image as ints and
@@ -571,7 +624,7 @@ def high_pass_filter(img, dim):
         'img' : The filtered image
         'multiplicator' : Factor from the convolution to be considered in the
                           computation of the histogram
-    """
+    '''
     # By definition in the emva standart, the high pass filter is using
     # the following operation :
     #
@@ -630,6 +683,7 @@ def high_pass_filter(img, dim):
         kernel *= -1
         kernel[2, 2] = value.max()-1
         # Finally computing the filtering and slicing off the edges
+        img = img.filled(0)
         img = convolve(img, kernel)
         img = np.ma.array(img, mask=mask)[2:-2, 2:-2]
     else:
@@ -638,3 +692,61 @@ def high_pass_filter(img, dim):
         kernel[2, 2] = dim*dim-1
         img = convolve(img, kernel)[2:-2, 2:-2]
     return {'img': img, 'multiplicator': kernel[2, 2]}
+
+
+def outlier_filter(img):
+    '''Fimds the outliers the image data
+
+    Runs the shapiro test on the image to identify outliers in the data
+
+    Parameters
+    ----------
+    img : The image to analyse
+
+    Returns
+    -------
+    cut : A list of the indexes of the values in img that are outliers
+    '''
+    if isinstance(img, np.ma.MaskedArray):
+        y = img.ravel()
+    else:
+        y = np.ravel(img)
+    # initialize cut
+    cut = []
+    # initialize t_test
+    t_test = []
+    # copy of y, we need y intact for indexing the outliers. Sorting ymod
+    # will speed up the algorithm
+    if isinstance(y, np.ma.MaskedArray):
+        ymod = list(np.sort(y.compressed()))
+    else:
+        ymod = list(np.sort(y))
+    ln = len(ymod)
+    for i in range(ln):
+        # shapiro outputs a warning when n > 5000, but in our case its ok
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore')
+            info = scipy.stats.shapiro(ymod)
+        # We append the difference of the W statistic with one. The smaller
+        # this value is, the better a normal distribution fits our data
+        t_test.append(abs(info[0]-1))
+        mean = np.mean(ymod)
+        # Finding the data which is the farthest from the mean
+        xtr = {ymod[0]: abs(ymod[0]-mean),
+               ymod[-1]: abs(ymod[-1]-mean)}
+        # When we identify the farthest, we append its index in y to cut, and
+        # then delete it from ymod
+        if xtr[ymod[0]] < xtr[ymod[-1]]:
+            cut.append(np.where(y == ymod[-1])[0][0])
+            del ymod[-1]
+        else:
+            cut.append(np.where(y == ymod[0])[0][0])
+            del ymod[0]
+        # Break criteria. t_test is greater than on the previous iteration,
+        # then we found a minimun. If i reaches 100, we must stop for
+        # performance purpuses
+        if t_test[i] > t_test[i-1] or i > 100:
+            break
+    # Finding the index to the best values the cut from y for the best fit
+    idx = t_test.index(np.min(t_test))
+    return cut[0:idx]
