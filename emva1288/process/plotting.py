@@ -561,7 +561,7 @@ class PlotAccumulatedLogHistogramDSNU(Emva1288Plot):
 
     name = 'Accumulated log histogram DSNU'
     xlabel = 'Minimal deviation from the mean [DN]'
-    ylabel = 'Percentage of pixels/bin'
+    ylabel = 'Number of pixels'
     yscale = 'log'
 
     def plot(self, test):
@@ -581,7 +581,7 @@ class PlotAccumulatedLogHistogramPRNU(Emva1288Plot):
 
     name = 'Accumulated log histogram PRNU'
     xlabel = 'Minimal deviation from the mean [%]'
-    ylabel = 'Percentage of pixels/bin'
+    ylabel = 'Number of pixels'
     yscale = 'log'
 
     def plot(self, test):
