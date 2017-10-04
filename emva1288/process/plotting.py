@@ -511,7 +511,7 @@ class PlotLogarithmicHistogramDSNU(Emva1288Plot):
     '''Create Logarithmic histogram DSNU plot'''
 
     name = 'Logarithmic histogram DSNU'
-    xlabel = 'Deviation from the mean [DN]'
+    xlabel = 'Dark value [DN]'
     ylabel = 'Number of pixels'
     yscale = 'log'
 
@@ -537,7 +537,7 @@ class PlotLogarithmicHistogramPRNU(Emva1288Plot):
     '''Create Logarithmic histogram PRNU plot'''
 
     name = 'Logarithmic histogram PRNU'
-    xlabel = 'Deviation from the mean [%]'
+    xlabel = 'Deviation from the mean [DN]'
     ylabel = 'Number of pixels'
     yscale = 'log'
 
