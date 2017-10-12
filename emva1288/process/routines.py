@@ -117,14 +117,14 @@ def GetImgShape(img):
     return rows, cols
 
 
-def FFT1288(m, rotate=False, n=1):
+def FFT1288(img_, rotate=False, n=1):
     '''Compute the FFT emva1288 style
 
     Compute an FFT per line and average the resulting ffts
 
     Parameters
     ----------
-    m : array
+    img : array
         Input image
     rotate : bool (optional)
         Rotate the image before performing the FFT
@@ -136,25 +136,30 @@ def FFT1288(m, rotate=False, n=1):
     -------
     array : One dimension FFT power spectrum
     '''
-    mm = np.asfarray(np.copy(m))
+    img = np.ma.copy(img_)
+    if rotate:
+        img = img.transpose()
 
-    if rotate is True:
-        mm = mm.transpose()
+    _rows, cols = GetImgShape(img)
 
-    _rows, cols = GetImgShape(mm)
+    if isinstance(img, np.ma.masked_array):
+        img_line = []
+        # If img is masked, perform fft line by line
+        for line in img:
+            # fft must be performed on compressed line
+            line = line.compressed()
+            # Assuring the line is not empty
+            if line.size == 0:
+                continue
+            img_line.append(line)
+        # cols might be changed, it corresponds to len(arr)
+        cols = np.min([len(line)for line in img_line])
+        img = img_line[:][0:cols]
 
-    # This is just in case we are talking about really small or really
-    # big arrays
-    if (cols < 10) or (cols > 50000):
-        return []
-
-    # Substract the mean of the image
-    mm = mm - np.mean(mm)
-
-    # perform the fft in the x direction
-    fft = np.fft.fft(mm, axis=1)
-
-    fft = fft / np.sqrt(cols)
+    # simply perform fft on x axis
+    img = np.asfarray(img) - np.mean(img)
+    fft = np.fft.fft(img, axis=1)
+    fft /= np.sqrt(cols)
 
     fabs = np.real(fft * np.conjugate(fft))
 
