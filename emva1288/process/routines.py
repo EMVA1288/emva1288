@@ -13,6 +13,7 @@ from scipy.optimize import leastsq
 from lxml import etree
 from PIL import Image
 from collections import OrderedDict
+import numpy.ma as ma
 # import cv2
 
 
@@ -176,7 +177,12 @@ def GetFrecs(fft):
 
 
 def Histogram1288(img, Qmax):
-    y = np.ravel(img)
+    if len(img) == 2:
+        y1 = np.ravel(img[0])
+        y2 = np.ravel(img[1])
+        y = np.concatenate([y1, y2])
+    else:
+        y = np.ravel(img)
 
     ymin = np.min(y)
     ymax = np.max(y)
@@ -541,3 +547,100 @@ def compare_xml(x1, x2, filename=None):
     with open(filename, 'w') as f:
         f.write(s)
         return s
+
+
+def bayer_filter(img):
+    """ Filters out the masked values of bayer image
+
+    Parameters
+    -----------
+    np.MaskedArray : the image to filter
+
+    Returns
+    ----------
+    np.array : The compressed image, or a list of 2 compressed image
+    """
+    # Color cameras generally have four pixel for one in order to get the
+    # information about the color
+    # For example :
+    #  | green1| red  |green1| red    |
+    #  |------|-------|------|--------|
+    #  |blue | green 2|blue  | green 2|
+    # The bayer (color) filter will mask all but one of these pixels
+    # If the color is green, then it will take both greens
+
+    # saving the mask as 1 and 0s
+    filter_ = img.mask.astype(int)
+    h, w = filter_.shape
+    # The channel is the pixel color that is used (g-r-b-g)
+    channel = []
+    # The next line produce the mask for each color pixel
+    # upper left
+    ul = (np.array([[((i % 2)+1) % (-(j % 2)+2) for i in range(w)]
+                   for j in range(h)]) - np.ones((h, w)))*-1
+    # upper right
+    ur = (np.array([[(i % 2) % (-(j % 2)+2) for i in range(w)]
+                   for j in range(h)]) - np.ones((h, w)))*-1
+    # lower left
+    ll = (np.array([[((i % 2)+1) % ((j % 2)+1) for i in range(w)]
+                   for j in range(h)]) - np.ones((h, w)))*-1
+    # lower right
+    lr = (np.array([[(i % 2) % ((j % 2)+1) for i in range(w)]
+                   for j in range(h)]) - np.ones((h, w)))*-1
+    # Detecting which pixels  are masked
+    # (where abs(ul-lr) and abs(ur-ll) is the for the possibility of green)
+    for pattern in [ul, ur, ll, lr, abs(ul-lr), abs(ur-ll)]:
+        if np.all(pattern == filter_):
+            channel = pattern
+            break
+    # If None of these pattern are detected, return the image as such
+    if channel == []:
+        return img
+    # If its an addition of mask (green), seperate the mask in two
+    if np.all(channel == abs(ul-lr)) or np.all(channel == abs(ur-ll)):
+        if np.all(channel == ul+lr):
+            # ul
+            mask1 = (np.array([[((i % 2)+1) % (-(j % 2)+2) for i in range(w)]
+                              for j in range(h)]) - np.ones((h, w)))*-1
+            # lr
+            mask2 = lr = (np.array([[(i % 2) % ((j % 2)+1) for i in range(w)]
+                                   for j in range(h)]) - np.ones((h, w)))*-1
+        else:
+            # ur
+            mask1 = (np.array([[(i % 2) % (-(j % 2)+2) for i in range(w)]
+                              for j in range(h)]) - np.ones((h, w)))*-1
+            # ll
+            mask2 = (np.array([[((i % 2)+1) % ((j % 2)+1) for i in range(w)]
+                              for j in range(h)]) - np.ones((h, w)))*-1
+        # Return two images, both compressed
+        img1 = ma.array(img, mask=mask1)
+        img2 = ma.array(img, mask=mask2)
+        return [compress(img1), compress(img2)]
+    # If only on of the four pixel is not masked, then return the images
+    # compressed
+    return compress(img)
+
+
+def compress(img):
+    """ Compresses a regularly masked images
+
+    Parameters
+    -----------
+    np.MaskedArray: The image to compress
+
+    Returns
+    -----------
+    np.array: The compressed image
+    """
+    h, w = img.shape
+    img = img.filled(0)
+    res = []
+    result = []
+    for i in range(h):
+        for j in range(w):
+            if img[i][j] != 0:
+                res.append(img[i][j])
+        if res:
+            result.append(res)
+            res = []
+    return np.array(result)

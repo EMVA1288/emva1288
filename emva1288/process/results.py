@@ -13,6 +13,7 @@ import logging
 import numpy as np
 from emva1288.process import routines
 from scipy.ndimage import convolve
+import numpy.ma as ma
 
 
 class Results1288(object):
@@ -870,13 +871,19 @@ class Results1288(object):
 
         # For prnu, perform the convolution
         y = self.spatial['sum'] - self.spatial['sum_dark']
+        if isinstance(y, np.ma.MaskedArray):
+            y = routines.bayer_filter(y)
         # Slicing at the end is to remove boundary effects.
+        if isinstance(y[0][0], np.ndarray):
+            y1 = convolve(y[0], self._histogram_high_pass_box)[2:-2, 2:-2]
+            y2 = convolve(y[1], self._histogram_high_pass_box)[2:-2, 2:-2]
+            h = routines.Histogram1288([y1, y2], self._histogram_Qmax)
+            h['bins'] /= (self.spatial['L'] * 25.)
+            return h
         y = convolve(y, self._histogram_high_pass_box)[2:-2, 2:-2]
-
         h = routines.Histogram1288(y, self._histogram_Qmax)
         # Rescale the bins
         h['bins'] /= (self.spatial['L'] * 25.)
-
         return h
 
     @property
@@ -893,12 +900,21 @@ class Results1288(object):
 
         # For prnu, perform the convolution
         y = self.spatial['sum'] - self.spatial['sum_dark']
-        y = convolve(y, self._histogram_high_pass_box)[2:-2, 2:-2]
+        if isinstance(y, np.ma.MaskedArray):
+            ym = routines.bayer_filter(y)
+        if isinstance(y[0][0], np.ndarray):
+            y1 = convolve(ym[0], self._histogram_high_pass_box)[2:-2, 2:-2]
+            y1 = np.abs(y1 - int(np.mean(y1)))
+            y2 = convolve(ym[1], self._histogram_high_pass_box)[2:-2, 2:-2]
+            y2 = np.abs(y2 - int(np.mean(y2)))
+            h = routines.Histogram1288([y1, y2], self._histogram_Qmax)
+        else:
+            y = convolve(y, self._histogram_high_pass_box)[2:-2, 2:-2]
 
-        # For the accumulated histogram substract the mean
-        y = np.abs(y - int(np.mean(y)))
+            # For the accumulated histogram substract the mean
+            y = np.abs(y - int(np.mean(y)))
 
-        h = routines.Histogram1288(y, self._histogram_Qmax)
+            h = routines.Histogram1288(y, self._histogram_Qmax)
         # Rescale the bins
         h['bins'] /= (self.spatial['L'] * 25.)
 
@@ -924,8 +940,12 @@ class Results1288(object):
         # For dsnu, the image is just the dark image, upscaled to have
         # only integers
         y = self.spatial['sum_dark']
-
-        h = routines.Histogram1288(y, self._histogram_Qmax)
+        if isinstance(y, np.ma.MaskedArray):
+            ym = routines.bayer_filter(y)
+        if isinstance(y[0][0], np.ndarray):
+            h = routines.Histogram1288([ym[0], ym[1]], self._histogram_Qmax)
+        else:
+            h = routines.Histogram1288(y, self._histogram_Qmax)
         # Rescale the bins, this is due to upscaling the average image to have
         # only integers
         scale = self.spatial['L_dark'] * 25.
@@ -948,10 +968,18 @@ class Results1288(object):
 
         # Dark image upscaled to have only integers
         y = self.spatial['sum_dark']
-        # For the accumulated dsnu histogram, substract the mean from the image
-        y = np.abs(y - int(np.mean(y)))
+        if isinstance(y, np.ma.MaskedArray):
+            y = routines.bayer_filter(y)
+        if isinstance(y[0][0], np.ndarray):
+            y1 = np.abs(y[0] - int(np.mean(y[0])))
+            y2 = np.abs(y[1] - int(np.mean(y[1])))
+            h = routines.Histogram1288([y1, y2], self._histogram_Qmax)
+        else:
+            # For the accumulated dsnu histogram, substract the mean from the
+            # image
+            y = np.abs(y - int(np.mean(y)))
 
-        h = routines.Histogram1288(y, self._histogram_Qmax)
+            h = routines.Histogram1288(y, self._histogram_Qmax)
         # Rescale the bins
         h['bins'] /= (self.spatial['L_dark'] * 25.)
 
