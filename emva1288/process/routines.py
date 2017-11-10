@@ -624,7 +624,8 @@ def high_pass_filter(img, dim):
         # After applying the mask all the values should be equal. If not, the
         # filter is not bayer and will not work properly with this code
         if value.max() != value.min():
-            raise ValueError('Filter is not a bayer filter')
+            raise ValueError('Masked image does not haves a valid bayer'
+                             'filter')
         # Setting the kernel
         kernel *= -1
         kernel[2, 2] = value.max()-1
