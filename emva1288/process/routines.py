@@ -14,7 +14,6 @@ from lxml import etree
 from PIL import Image
 from collections import OrderedDict
 from emva1288.camera import routines
-import numpy.ma as ma
 from scipy.ndimage import convolve
 import warnings
 # import cv2
@@ -575,7 +574,7 @@ def high_pass_filter(img, dim):
         The data dictionary of the result. The keys are:
         'img' : The filtered image
         'multiplicator' : Factor from the convolution to be considered in the
-                          computation of the histogram
+        computation of the histogram
     """
     # By definition in the emva standart, the high pass filter is using
     # the following operation :
@@ -611,21 +610,21 @@ def high_pass_filter(img, dim):
 
     # Initializing the kernel
     kernel = np.ones((dim, dim))
-    if isinstance(img, ma.MaskedArray):
+    if isinstance(img, np.ma.MaskedArray):
         # Saving the mask
-        mask = ma.getmask(img)
+        mask = np.ma.getmask(img)
         # These next few lines are to determine the number of pixels being
         # considered in the convolution
         value = np.ones(img.shape)
         # Applying the mask on a matrix of ones and filling the masked values
         # with 0
-        value = ma.MaskedArray(value, mask)
+        value = np.ma.MaskedArray(value, mask)
         value = value.filled(0)
         # The convolution of the matrix with a 5x5 matrix of ones will return
         # a matrix where the values where there was no mask correspong to the
         # number of considred pixels
         value = convolve(value, kernel)
-        value = ma.MaskedArray(value, mask)[2:-2, 2:-2]
+        value = np.ma.MaskedArray(value, mask)[2:-2, 2:-2]
         # After applying the mask all the values should be equal. If not, the
         # filter is not bayer and will not work properly with this code
         if value.max() != value.min():
