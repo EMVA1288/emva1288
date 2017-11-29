@@ -13,7 +13,6 @@ import logging
 import numpy as np
 from emva1288.process import routines
 from scipy.ndimage import convolve
-import numpy.ma as ma
 
 
 class Results1288(object):
