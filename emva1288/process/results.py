@@ -616,7 +616,7 @@ class Results1288(object):
     def u_I_var_DN(self):
         """Dark Current from variance.
 
-        The dark current from variance (in DN) is the slope of the dark signal
+        The dark current from variance (in DN/s) is the slope of the dark signal
         variance as a function of the exposure time divided by the system gain.
         Returns NaN if the slope is negative.
 
@@ -642,8 +642,8 @@ class Results1288(object):
     def u_I_var(self):
         """Dark Current from variance.
 
-        The dark current from variance (in e-) is the dark current from
-        variance (in DN) divided by the system gain.
+        The dark current from variance (in e-/s) is the dark current from
+        variance (in DN/s) divided by the system gain.
         Returns NaN if the fit slope is negative.
 
         .. emva1288::
