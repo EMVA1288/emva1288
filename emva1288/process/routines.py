@@ -608,8 +608,12 @@ def high_pass_filter(img, dim):
     # The multiplicator must be changed to the number of valid pixels
     # being considered in the convolution.
 
+    # Check validity of kernel size
+    if not dim % 2:
+        raise ValueError('The size of the highpass filter must be odd')
     # Initializing the kernel
     kernel = np.ones((dim, dim))
+    sl = dim//2
     if isinstance(img, np.ma.MaskedArray):
         # Saving the mask
         mask = np.ma.getmask(img)
@@ -624,22 +628,23 @@ def high_pass_filter(img, dim):
         # a matrix where the values where there was no mask correspong to the
         # number of considred pixels
         value = convolve(value, kernel)
-        value = np.ma.MaskedArray(value, mask)[2:-2, 2:-2]
+        # Slice off values that are invalid after the convolution
+        value = np.ma.MaskedArray(value, mask)[sl:-sl, sl:-sl]
         # After applying the mask all the values should be equal. If not, the
         # filter is not bayer and will not work properly with this code
         if value.max() != value.min():
-            raise ValueError('Masked image does not haves a valid bayer'
+            raise ValueError('Masked image does not have a valid bayer'
                              'filter')
         # Setting the kernel
         kernel *= -1
-        kernel[2, 2] = value.max()-1
+        kernel[sl, sl] = value.max()-1
         # Finally computing the filtering and slicing off the edges
         img = img.filled(0)
         img = convolve(img, kernel)
-        img = np.ma.array(img, mask=mask)[2:-2, 2:-2]
+        img = np.ma.array(img, mask=mask)[sl:-sl, sl:-sl]
     else:
         # Set the kernel and compute, then slice off the edges
         kernel *= -1
-        kernel[2, 2] = dim*dim-1
-        img = convolve(img, kernel)[2:-2, 2:-2]
-    return {'img': img, 'multiplicator': kernel[2, 2]}
+        kernel[sl, sl] = dim**2-1
+        img = convolve(img, kernel)[sl:-sl, sl:-sl]
+    return {'img': img, 'multiplicator': kernel[sl, sl]}
