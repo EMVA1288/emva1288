@@ -929,7 +929,7 @@ class Results1288(object):
         h = routines.Histogram1288(y, self._histogram_Qmax)
         # Rescale the bins, this is due to upscaling the average image to have
         # only integers
-        scale = self.spatial['L_dark'] * 25.
+        scale = self.spatial['L_dark']
         h['bins'] /= scale
         # The image is not centered around zero, so we shift the bins
         h['bins'] -= (y.mean() / scale)
@@ -954,7 +954,7 @@ class Results1288(object):
 
         h = routines.Histogram1288(y, self._histogram_Qmax)
         # Rescale the bins
-        h['bins'] /= (self.spatial['L_dark'] * 25.)
+        h['bins'] /= (self.spatial['L_dark'])
 
         # Perform the cumulative summation (the ::-1 means backwards)
         # because the cumsum function is performed contrary to what we need
