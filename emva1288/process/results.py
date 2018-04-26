@@ -616,9 +616,9 @@ class Results1288(object):
     def u_I_var_DN(self):
         """Dark Current from variance.
 
-        The dark current from variance is the square root of the slope of the
-        dark signal variance in function of the exposure time.
-        Returns NaN if u_I_var is imaginary (if the fit slope is negative).
+        The dark current from variance (in DN/s) is the slope of the dark
+        signal variance as a function of the exposure time divided by the
+        system gain. Returns NaN if the slope is negative.
 
         .. emva1288::
             :Section: dark_current
@@ -636,16 +636,15 @@ class Results1288(object):
         if fit[0] < 0:
             return np.nan
         # Multiply by 10^9 because exposure times are in nanoseconds
-        return fit[0] * (10 ** 9)
+        return fit[0] / self.K * 1e9
 
     @property
     def u_I_var(self):
         """Dark Current from variance.
 
-        The dark current from variance is the square root of the slope of the
-        dark signal variance in function of the exposure times divided
-        by the overall system gain.
-        Returns NaN if u_I_var is imaginary (if the fit slope is negative).
+        The dark current from variance (in e-/s) is the dark current from
+        variance (in DN/s) divided by the system gain.
+        Returns NaN if the fit slope is negative.
 
         .. emva1288::
             :Section: dark_current
@@ -658,7 +657,7 @@ class Results1288(object):
         if ui is np.nan:
             return np.nan
 
-        return ui / (self.K ** 2)
+        return ui / self.K
 
     @property
     def u_I_mean_DN(self):
@@ -930,7 +929,7 @@ class Results1288(object):
         h = routines.Histogram1288(y, self._histogram_Qmax)
         # Rescale the bins, this is due to upscaling the average image to have
         # only integers
-        scale = self.spatial['L_dark'] * 25.
+        scale = self.spatial['L_dark']
         h['bins'] /= scale
         # The image is not centered around zero, so we shift the bins
         h['bins'] -= (y.mean() / scale)
@@ -955,7 +954,7 @@ class Results1288(object):
 
         h = routines.Histogram1288(y, self._histogram_Qmax)
         # Rescale the bins
-        h['bins'] /= (self.spatial['L_dark'] * 25.)
+        h['bins'] /= (self.spatial['L_dark'])
 
         # Perform the cumulative summation (the ::-1 means backwards)
         # because the cumsum function is performed contrary to what we need

@@ -647,4 +647,4 @@ def high_pass_filter(img, dim):
         kernel *= -1
         kernel[sl, sl] = dim**2-1
         img = convolve(img, kernel)[sl:-sl, sl:-sl]
-    return {'img': img, 'multiplicator': kernel[sl, sl]}
+    return {'img': img, 'multiplicator': kernel[sl, sl] + 1}
