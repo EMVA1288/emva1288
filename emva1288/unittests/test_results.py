@@ -6,14 +6,13 @@ from emva1288.process.results import Results1288
 from emva1288.camera.dataset_generator import DatasetGenerator
 from emva1288.unittests.test_routines import del_obj
 from emva1288.process.routines import high_pass_filter
-from emva1288.camera.routines import get_bayer_filter
+from emva1288.camera.routines import Qe
 import numpy as np
 
 
 def _init(pixel_area=0, **kwargs):
     # create dataset
     dataset = DatasetGenerator(**kwargs)
-
     # parse dataset
     parser = ParseEmvaDescriptorFile(dataset.descriptor_path)
     # load image data
@@ -33,7 +32,7 @@ class TestResults(unittest.TestCase):
     _width = 100
     _bit_depth = 8
     _L = 50
-    _qe = 0.5
+    _qe = Qe(width=_width, height=_height)
     _steps = 10
     _radiance_min = None
     _exposure_max = 5000000000
@@ -117,9 +116,10 @@ class TestResults(unittest.TestCase):
         ###############################################################
 
         # Test quantum efficiency is retrieved with a +/- 5% incertainty
-        self.assertAlmostEqual(self._qe * 100, self.results.QE, delta=5.0,
+        self.assertAlmostEqual(self._qe.qe.mean() * 100, self.results.QE,
+                               delta=10.0,
                                msg="The difference between the expected QE and"
-                                   "the retrieved one is greater than 5%!")
+                                   "the retrieved one is greater than 10%!")
 
         # Test that overall system gain
         # is retrieved with a +/- 0.01 incertainty
@@ -308,7 +308,7 @@ class TestRoutines(unittest.TestCase):
 
     def setUp(self):
         # instantiate a bayer filter and a wrong filter
-        bayer_filter = get_bayer_filter(0, 1, 1, 0, 1000, 1000)
+        bayer_filter = np.tile([[0, 1], [1, 0]], (500, 500))
         wrong_filter = np.tile([[1, 1, 1, 0], [1, 0, 0, 1]], (500, 250))
 
         # Source images. imgc is for color image (image with a bayer filter)

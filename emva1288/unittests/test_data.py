@@ -1,4 +1,5 @@
 import unittest
+import numpy as np
 from emva1288.camera.dataset_generator import DatasetGenerator
 from emva1288.process.parser import ParseEmvaDescriptorFile
 from emva1288.process.loader import LoadImageData
@@ -55,7 +56,8 @@ class TestData(unittest.TestCase):
         self.assertEqual(data['spatial']['texp'], texp)
         # spatial photons
         radiance = self.dataset.points['spatial'][texp][0]
-        photons = round(self.dataset.cam.get_photons(radiance), 3)
+        photons = np.round(np.sum(self.dataset.cam.get_photons(radiance),
+                                  axis=2).mean(), 3)
         self.assertEqual(data['spatial']['u_p'], photons)
         # spatial data are images
         for typ in ('sum_dark', 'sum'):
@@ -75,7 +77,8 @@ class TestData(unittest.TestCase):
                                                data['temporal']['u_p'])):
             time = times[i]
             radiance = self.dataset.points['temporal'][time][0]
-            photon = round(self.dataset.cam.get_photons(radiance, time), 3)
+            photon = np.round(np.sum(self.dataset.cam.get_photons(
+                                      radiance, time), axis=2).mean(), 3)
             self.assertEqual(exp, times[i])
             self.assertEqual(photons, photon)
 

@@ -22,62 +22,53 @@ class CameraTestCase(unittest.TestCase):
 
 
 class CameraTestBayer(unittest.TestCase):
-    def test_get_bayer(self):
-        # Init the parameters
-        h, w = [7, 5]
-
-        transmition_pixel_1 = 1
-        transmition_pixel_2 = 2
-        transmition_pixel_3 = 3
-        transmition_pixel_4 = 4
-        b_layer = routines.get_bayer_filter(transmition_pixel_1,
-                                            transmition_pixel_2,
-                                            transmition_pixel_3,
-                                            transmition_pixel_4, w, h)
-        # Supposed Results
-        lines = [1, 2, 1, 2, 1]
-        columns = [1, 3, 1, 3, 1, 3, 1]
-        # Test to see if the layer come right
-        self.assertEqual(lines, b_layer[0].tolist())
-        self.assertEqual(columns, b_layer[:, 0].tolist())
 
     def test_bayer_layer(self):
         # Init the parameters
         h, w = [480, 640]
-        transmition_red = 0.15
-        transmition_blue = 0.02
-        transmition_green = 1.
-        b_layer = routines.get_bayer_filter(transmition_green,
-                                            transmition_red,
-                                            transmition_blue,
-                                            transmition_green, w, h)
-        # Test if the b_layer have the same shape than what we give it
-        self.assertEqual((h, w), b_layer.shape)
+        wavelength = np.linspace(400, 800, 100)
+        transmission_red = 670
+        transmission_blue = 450
+        transmission_green = 550
+        b_layer = routines.get_bayer_filter(transmission_green,
+                                            transmission_red,
+                                            transmission_blue,
+                                            transmission_green,
+                                            w, h, wavelength)
+        qe = routines.Qe(filter=b_layer)
+        cam = Camera(width=w, height=h, qe=qe)
+        # Initiata a cam without a bayer filter
+        cam_d = Camera(width=w, height=h)
         # Set the camera for testing the layer
-        cam = Camera(width=w, height=h, radiance_factor=b_layer)
         target = cam.img_max / 2
-        radiance = cam.get_radiance_for(mean=target)
+        # Get the radiance to grab from the second cam. The output radiance
+        # is affected by qe, so the bayer_filter as well
+        radiance = cam_d.get_radiance_for(mean=target)
         img = cam.grab(radiance)
-        green_filter = routines.get_bayer_filter(0, 1, 1, 0, w, h)
-        blue_filter = routines.get_bayer_filter(1, 1, 0, 1, w, h)
-        red_filter = routines.get_bayer_filter(1, 0, 1, 1, w, h)
+        green_filter = np.tile([[0, 1], [1, 0]], (int(h/2), int(w/2)))
+        blue_filter = np.tile([[1, 0], [1, 1]], (int(h/2), int(w/2)))
+        red_filter = np.tile([[1, 1], [0, 1]], (int(h/2), int(w/2)))
+
+        gf = b_layer[0, 0, :].mean()
+        rf = b_layer[0, 1, :].mean()
+        bf = b_layer[1, 0, :].mean()
         # Test if the mean of the green it's 100% of the target +/- 5
         self.assertAlmostEqual(np.ma.masked_array(
             img,
             mask=green_filter).mean(),
-            target, delta=5.0,
+            target * gf, delta=10,
             msg="green not in range")
         # Test if the mean of the red it's 15% of the target +/- 5
         self.assertAlmostEqual(np.ma.masked_array(
             img,
             mask=red_filter).mean(),
-            target*transmition_red, delta=5.0,
+            target * rf, delta=10,
             msg="red not in range")
         # Test if the mean of the blue it's 2% of the target +/- 5
         self.assertAlmostEqual(np.ma.masked_array(
             img,
             mask=blue_filter).mean(),
-            target*transmition_blue, delta=5.0,
+            target * bf, delta=10,
             msg="blue not in range")
 
 
