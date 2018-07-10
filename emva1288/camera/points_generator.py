@@ -60,7 +60,6 @@ class PointsGenerator:
         self._radiance_max = radiance_max
         self._gain = gain or self._cam.K
         self._blackref = blackref or self._cam.blackoffset
-
         if self._exposure is None:
             # Get radiance for saturation at maximal exposure time
             # Only if it is for an exposure time variation test
@@ -72,7 +71,7 @@ class PointsGenerator:
             self._cam.exposure = self._exposure
             self._cam.K = self._gain
             self._cam.blackoffset = self._blackref
-            m = self._cam.grab(0.0).mean()
+            m = self._cam.grab(0).mean()
             target = (self._cam.img_max - m) / self._steps + m
             self._radiance_min = self._cam.get_radiance_for(mean=target)
             self._radiance_max = self._cam.get_radiance_for()
@@ -84,7 +83,8 @@ class PointsGenerator:
     def _get_points(self):
         spatial = OrderedDict()
         temporal = OrderedDict()
-
+        rad = np.zeros((self._cam._height, self._cam._width,
+                       len(self._cam.qe.w)))
         if self._exposure is None:
             # Exposure time variation
             # round to only have one decimal
@@ -92,8 +92,7 @@ class PointsGenerator:
                                              self._exposure_max,
                                              self._steps), 1)
             # only one radiance
-            radiances = [self._radiance, 0.0]
-
+            radiances = [self._radiance, rad]
             # Main loop to compute points
             for n, texp in enumerate(exposures):
                 if self._is_point_spatial(n):
@@ -103,13 +102,16 @@ class PointsGenerator:
         else:
             # Photons variations
             # only one exposure time
-            radiances = np.linspace(self._radiance_min,
-                                    self._radiance_max,
-                                    self._steps).tolist()
+            rad_i = np.ones((self._cam._height, self._cam._width,
+                            len(self._cam.qe.w)))
+            factors = np.linspace(self._radiance_min.mean(),
+                                  self._radiance_max.mean(),
+                                  self._steps)
+            radiances = [rad_i * factor for factor in factors]
             # round to only have one decimal
             self._exposure = round(self._exposure)
-            radiances.append(0.0)
-            spatial[self._exposure] = [radiances[self._steps // 2], 0.0]
+            radiances.append(rad)
+            spatial[self._exposure] = [radiances[self._steps // 2], rad]
             temporal[self._exposure] = radiances
 
         return {'spatial': spatial, 'temporal': temporal}

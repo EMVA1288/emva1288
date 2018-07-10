@@ -1,32 +1,6 @@
 import numpy as np
 
 
-def qe(wavelength):
-    """Simulate quantum efficiency for a specific wavelengths.
-
-    Parameters
-    ----------
-    wavelength : float
-                 The wavelength to compute the quantum efficency for.
-
-    Returns
-    -------
-    float :
-        The simulated quantum efficiency.
-    """
-    # For the time being we just simulate a simple gaussian
-    s = 0.5
-    u = 0.
-    min_ = 350
-    max_ = 800
-    w = -1 + (wavelength) / (max_ - min_)
-    qe = -.1 + np.exp((-(w - u) ** 2) /
-                      (2 * s ** 2)) / (np.sqrt(np.pi * 2 * s ** 2))
-    if qe < 0:
-        return 0
-    return qe
-
-
 def nearest_value(value, array):
     """Returns the nearest value in vals.
 
@@ -46,35 +20,14 @@ def nearest_value(value, array):
     return array[idx]
 
 
-def get_irradiance(radiance, f):
-    """Get The irradiance, in w/cm^2.
-
-    Parameters
-    ----------
-    radiance : float
-               The radiance (in W/sr/cm^2) to compute the irradiance from.
-    f : float
-        The f number of the setup.
-
-    Returns
-    -------
-    float :
-        The irradiance in W/cm^2
-    """
-    j = np.pi * radiance / (1 + ((2 * f) ** 2))
-    return j
-
-
-def get_photons(exposure, wavelength, radiance, pixel_area, f_number):
+def get_photons(exposure, radiance, pixel_area, wavelength, f_number):
     """Get the number of photons hitting one pixel.
 
     Parameters
     ----------
     exposure : float
                The pixel exposure time (in ns) to the light.
-    wavelength : float
-                 The light wavelength hitting the pixel (in nm).
-    radiance : float
+    radiance : float or array_like
                The radiance hitting the sensor (in W/sr/cm^2).
     pixel_area : float
                  The pixel area in um ^ 2
@@ -91,11 +44,17 @@ def get_photons(exposure, wavelength, radiance, pixel_area, f_number):
     w = wavelength * 1e-9
     t = exposure * 1e-9
     a = pixel_area * 1e-12
-    j = get_irradiance(radiance, f_number)
-    return j * a * t * w / (h * c)
+    # Actual mathematics:-
+    # irradiance = radiance * ((np.pi / (1 + ((2 * f_number) ** 2))) * w)
+    # photons = irradiance * a * t * w / (h * c)
+    # To optimize the calculation time first all the scalars are seperately
+    # calculated
+    # The matrix (w and radiance) multiplication order is the same.
+    scalar = ((a * t) * np.pi / ((h * c) * (1 + ((2 * f_number) ** 2))))
+    return radiance * (scalar * (w * w))
 
 
-def get_radiance(exposure, wavelength, photons, pixel_area, f_number):
+def get_radiance(exposure, photons, pixel_area, f_number, wavelength):
     """From the number of photons, get the radiance hitting a pixel.
 
     Parameters
@@ -123,11 +82,16 @@ def get_radiance(exposure, wavelength, photons, pixel_area, f_number):
     a = pixel_area * 1e-12
 
     #  p = j * a * t * w / (h * c)
-    # j = np.pi * radiance / (1 + ((2 * f) ** 2))
+    # j = np.pi * radiance / (1 + ((2 * f) ** 2)) * delta_w
 
-    j = photons * h * c / (a * t * w)
-    r = j * (1 + ((2 * f_number) ** 2)) / np.pi
-    return r
+    # Actual mathematics:-
+    # irradiance = photons * h * c / (a * t * w)
+    # radiance = irradiance * (1 + ((2 * f_number) ** 2)) / np.pi / w
+    # To optimize the calculation time first all the scalars are seperately
+    # calculated
+    # The matrix (w and photon) multiplication order is the same.
+    scalar = ((h * c) * (1 + ((2 * f_number) ** 2)) / (np.pi * a * t))
+    return photons * (scalar / (w * w))
 
 
 def get_tile(arr, height, width):
@@ -185,7 +149,7 @@ def get_tile(arr, height, width):
     return tile
 
 
-def get_bayer_filter(t00, t01, t10, t11, width, height):
+def get_bayer_filter(t00, t01, t10, t11, width, height, w):
     """From different values of transmition and the size, get a bayer filter.
 
     +-----------+-----------+-----------+-----------+-----------+-----------+
@@ -204,24 +168,102 @@ def get_bayer_filter(t00, t01, t10, t11, width, height):
 
     Parameters
     ----------
-    t00 : float
-               The transmition, in pourcentage, of the first pixel.
-    t01 : float
-               The transmition, in pourcentage, of the second pixel.
-    t10 : float
-               The transmition, in pourcentage, of the third pixel.
-    t11 : float
-               The transmition, in pourcentage, of the fourth pixel.
+    t00 : int
+               The wavelength of the first pixel.
+    t01 : int
+               The wavelength of the second pixel.
+    t10 : int
+               The wavelength of the third pixel.
+    t11 : int
+               The wavelength of the fourth pixel.
     width : int
             The number of columns in the the image.
     height : int
             The number of rows in the image.
+    w : array_like
+        Array of the wavelengths to be returned
 
     Returns
     -------
     array :
         The array with the bayer filter of the size gived.
     """
-    pattern_rep = np.array([[t00, t01], [t10, t11]])
-    b_filter = get_tile(pattern_rep, height, width)
+    t00 = poisson(w, int(t00))
+    t01 = poisson(w, int(t01))
+    t10 = poisson(w, int(t10))
+    t11 = poisson(w, int(t11))
+    pattern_rep = np.array([[t00/np.max(t00), t01/np.max(t01)],
+                            [t10/np.max(t10), t00/np.max(t11)]])
+    b_filter = array_tile(pattern_rep, height, width)
     return b_filter
+
+
+def array_tile(array, height, width):
+    h, w = ((array.shape[:2]) if array.ndim == 3 else (1, array.shape[-1])
+            if array.ndim == 2 else (1, 1))
+    return np.tile(array, (int(height/h), int(width/w), 1))
+
+
+def poisson(x, loc, mu=1000):
+    x = x.astype(int) + (mu - loc)
+    ln = [v * np.log(mu) - mu - np.sum([np.log(i) for i in range(1, v)])
+          for v in x]
+    return np.exp(ln)
+
+
+class Qe(object):
+
+    def __init__(self,
+                 qe=None,
+                 wavelength=np.linspace(400, 800, 100),
+                 width=640,
+                 height=480,
+                 filter=None):
+
+        self._width = width
+        self._height = height
+        self._qe = qe
+        self._w = wavelength
+
+        if self._qe is None:
+            self._qe = self.gen_qe()
+
+        if self._qe.shape != (self._height, self._width, len(self._w)):
+            raise ValueError('qe dimensions mismatch %s != %s' %
+                             self._qe.shape,
+                             (self._height, self._width, len(self._w)))
+
+        if filter is not None:
+            self._qe *= filter
+
+    @property
+    def w(self):
+        return self._w
+
+    @property
+    def qe(self):
+        return self._qe
+
+    def gen_qe(self):
+        """Simulate quantum efficiency for a specific wavelengths.
+
+        Returns
+        -------
+        float :
+            The simulated quantum efficiency.
+        """
+        # For the time being we just simulate a simple gaussian
+        s = 0.5
+        u = 0.0
+        min_ = 350
+        max_ = 800
+
+        def gauss(w):
+            w = -1 + (w) / (max_ - min_)
+            qe = -.1 + np.exp((-(w - u) ** 2) /
+                              (2 * s ** 2)) / (np.sqrt(np.pi * 2 * s ** 2))
+            return np.max([qe, 0])
+        qe_ = np.array([(gauss(w)) for w in self._w])
+        qe = np.zeros((self._height, self._width, len(self._w)))
+        qe[:, :] = qe_
+        return qe
