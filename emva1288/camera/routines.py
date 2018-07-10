@@ -20,25 +20,6 @@ def nearest_value(value, array):
     return array[idx]
 
 
-def get_irradiance(radiance, f, delta):
-    """Get The irradiance, in w/cm^2.
-
-    Parameters
-    ----------
-    radiance : float
-               The radiance (in W/sr/cm^2) to compute the irradiance from.
-    f : float
-        The f number of the setup.
-
-    Returns
-    -------
-    float :
-        The irradiance in W/cm^2
-    """
-    j = np.pi * radiance / (1 + ((2 * f) ** 2)) * delta
-    return j
-
-
 def get_photons(exposure, radiance, pixel_area, wavelength, f_number):
     """Get the number of photons hitting one pixel.
 
@@ -63,8 +44,14 @@ def get_photons(exposure, radiance, pixel_area, wavelength, f_number):
     w = wavelength * 1e-9
     t = exposure * 1e-9
     a = pixel_area * 1e-12
-    j = get_irradiance(radiance, f_number, w)
-    return j * a * t * w / (h * c)
+    # Actual mathematics:-
+    # irradiance = radiance * ((np.pi / (1 + ((2 * f_number) ** 2))) * w)
+    # photons = irradiance * a * t * w / (h * c)
+    # To optimize the calculation time first all the scalars are seperately
+    # calculated
+    # The matrix (w and radiance) multiplication order is the same.
+    scalar = ((a * t) * np.pi / ((h * c) * (1 + ((2 * f_number) ** 2))))
+    return radiance * (scalar * (w * w))
 
 
 def get_radiance(exposure, photons, pixel_area, f_number, wavelength):
@@ -97,9 +84,14 @@ def get_radiance(exposure, photons, pixel_area, f_number, wavelength):
     #  p = j * a * t * w / (h * c)
     # j = np.pi * radiance / (1 + ((2 * f) ** 2)) * delta_w
 
-    j = photons * h * c / (a * t * w)
-    r = j * (1 + ((2 * f_number) ** 2)) / np.pi / w
-    return r
+    # Actual mathematics:-
+    # irradiance = photons * h * c / (a * t * w)
+    # radiance = irradiance * (1 + ((2 * f_number) ** 2)) / np.pi / w
+    # To optimize the calculation time first all the scalars are seperately
+    # calculated
+    # The matrix (w and photon) multiplication order is the same.
+    scalar = ((h * c) * (1 + ((2 * f_number) ** 2)) / (np.pi * a * t))
+    return photons * (scalar / (w * w))
 
 
 def get_tile(arr, height, width):

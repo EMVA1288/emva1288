@@ -386,11 +386,10 @@ class Camera(object):
         if not exposure:
             exposure = self.exposure
         ud = self._u_therm()
-        ue = (mean / self.K) - ud
-        ue *= np.ones(len(self._qe.w))/len(self._qe.w)
+        ue = ((mean / self.K) - ud)/len(self._qe.w)
+        ue *= np.ones(len(self._qe.w))
         up = np.zeros((self.height, self.width, len(self._qe.w)))
-        up[:, :] = ue
-        up = up / self._qe.qe.mean()
+        up[:, :] = ue / self._qe.qe.mean()
         radiance = routines.get_radiance(exposure,
                                          up,
                                          self.pixel_area,
