@@ -193,7 +193,7 @@ def get_bayer_filter(t00, t01, t10, t11, width, height, w):
     t10 = poisson(w, int(t10))
     t11 = poisson(w, int(t11))
     pattern_rep = np.array([[t00/np.max(t00), t01/np.max(t01)],
-                            [t10/np.max(t10), t00/np.max(t11)]])
+                            [t10/np.max(t10), t11/np.max(t11)]])
     b_filter = array_tile(pattern_rep, height, width)
     return b_filter
 
