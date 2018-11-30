@@ -10,10 +10,13 @@ here = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(here, 'README.rst')) as f:
     long_description = f.read()
 
+extra_doc = ['nbsphinx', 'ipython', 'sphinx_rtd_theme']
+
+
 # On read the docs we don't install anything
 on_rtd = os.environ.get('READTHEDOCS') == 'True'
 if on_rtd:
-    install_requires = []
+    install_requires = extra_doc
 else:
     install_requires = ['matplotlib',
                         'numpy',
@@ -40,6 +43,7 @@ setup(name='emva1288',
                    'Programming Language :: Python :: 3',
                    'Programming Language :: Python :: 3.4'],
       install_requires=install_requires,
+      extras_require={'doc': extra_doc},
       package_data={'emva1288': ['report/files/*', 'report/templates/*',
                                  'examples/*']}
       )
