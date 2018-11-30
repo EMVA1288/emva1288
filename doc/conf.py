@@ -180,3 +180,5 @@ epub_exclude_files = ['search.html']
 
 
 # -- Extension configuration -------------------------------------------------
+todo_include_todos = True
+napoleon_include_init_with_doc = True
