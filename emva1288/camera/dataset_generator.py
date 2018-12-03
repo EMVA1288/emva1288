@@ -103,13 +103,11 @@ class DatasetGenerator:
         self.cam = Cam(**kwargs)
         # set the camera parameters for the test
         self.cam.exposure = self.cam.exposure_min
-
         # If no blackoffset/gain are specified find them according to standard
         if 'blackoffset' not in kwargs:
             self.cam.blackoffset = _get_emva_blackoffset(self.cam)
         if 'K' not in kwargs:
             self.cam.K = _get_emva_gain(self.cam)
-
         # create test points
         points = PointsGenerator(self.cam,
                                  radiance_min=radiance_min,
@@ -157,13 +155,13 @@ class DatasetGenerator:
 
     def _get_descriptor_line(self, exposure, radiance):
         """Create the line introducing a test point images in descriptor."""
-        if radiance == 0.0:
+        if np.mean(radiance) == 0.0:
             # dark image
             return "d %.1f" % exposure
         # bright image
         # round photons count to three decimals
-        return "b %.1f %.3f" % (exposure,
-                                round(self.cam.get_photons(radiance), 3))
+        return "b %.1f %.3f" % (exposure, np.round(np.sum(
+                self.cam.get_photons(radiance), axis=2).mean(), 3))
 
     def _get_image_names(self, number, L):
         """Create an image filename."""

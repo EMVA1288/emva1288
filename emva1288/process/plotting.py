@@ -379,14 +379,14 @@ class PlotHorizontalSpectrogramPRNU(Emva1288Plot):
     def plot(self, test):
         ax = self.ax
 
-        data = test.spatial['avg'] - test.spatial['avg_dark']
+        data = (test.spatial['sum'] - test.spatial['sum_dark'])
+        data = data / test.spatial['L']
         data_mean = np.mean(data)
 
         spectrogram = routines.FFT1288(data) / data_mean
 
-        ax.plot(routines.GetFrecs(spectrogram[:(np.shape(spectrogram)[0] //
-                                                2)]),
-                (np.sqrt(spectrogram[:(np.shape(spectrogram)[0] // 2)])),
+        ax.plot(routines.GetFrecs(spectrogram),
+                (np.sqrt(spectrogram)),
                 label='Data',
                 gid='%d:data' % test.id)
 
@@ -396,7 +396,7 @@ class PlotHorizontalSpectrogramPRNU(Emva1288Plot):
                    color='r',
                    gid='%d:marker' % test.id)
 
-        ax.axhline(np.sqrt(test.sigma_2_y_stack),
+        ax.axhline(100 * np.sqrt(test.sigma_2_y_stack) / data_mean,
                    label='$\sigma^2_{y.stack}$',
                    linestyle='-.',
                    color='g',
@@ -416,10 +416,10 @@ class PlotHorizontalSpectrogramDSNU(Emva1288Plot):
     def plot(self, test):
         ax = self.ax
 
-        spectrogram = routines.FFT1288(test.spatial['avg_dark'])
-        ax.plot(routines.GetFrecs(spectrogram[:(np.shape(spectrogram)[0] //
-                                                2)]),
-                np.sqrt(spectrogram[:(np.shape(spectrogram)[0] // 2)]),
+        spectrogram = routines.FFT1288(test.spatial['sum_dark'],
+                                       n=test.spatial['L'])
+        ax.plot(routines.GetFrecs(spectrogram),
+                np.sqrt(spectrogram),
                 label='Data',
                 gid='%d:data' % test.id)
 
@@ -448,13 +448,13 @@ class PlotVerticalSpectrogramPRNU(Emva1288Plot):
 
     def plot(self, test):
         ax = self.ax
-        data = test.spatial['avg'] - test.spatial['avg_dark']
+        data = test.spatial['sum'] - test.spatial['sum_dark']
+        data = data / test.spatial['L']
         data_mean = np.mean(data)
         spectrogram = routines.FFT1288(data, rotate=True) / data_mean
 
-        ax.plot((routines.GetFrecs(spectrogram[:(np.shape(spectrogram)[0] //
-                                                 2)])),
-                (np.sqrt(spectrogram[:(np.shape(spectrogram)[0] // 2)])),
+        ax.plot((routines.GetFrecs(spectrogram)),
+                (np.sqrt(spectrogram)),
                 label='Data',
                 gid='%d:data' % test.id)
 
@@ -464,7 +464,7 @@ class PlotVerticalSpectrogramPRNU(Emva1288Plot):
                    color='r',
                    gid='%d:marker' % test.id)
 
-        ax.axhline(np.sqrt(test.sigma_2_y_stack) / data_mean,
+        ax.axhline(100 * np.sqrt(test.sigma_2_y_stack) / data_mean,
                    label='$\sigma^2_{y.stack}$',
                    linestyle='-.',
                    color='g',
@@ -484,11 +484,11 @@ class PlotVerticalSpectrogramDSNU(Emva1288Plot):
     def plot(self, test):
         ax = self.ax
 
-        spectrogram = routines.FFT1288(test.spatial['avg_dark'],
-                                       rotate=True)
-        ax.plot(routines.GetFrecs(spectrogram[:(np.shape(spectrogram)[0] //
-                                                2)]),
-                np.sqrt(spectrogram[:(np.shape(spectrogram)[0] // 2)]),
+        spectrogram = routines.FFT1288(test.spatial['sum_dark'],
+                                       rotate=True,
+                                       n=test.spatial['L'])
+        ax.plot(routines.GetFrecs(spectrogram),
+                np.sqrt(spectrogram),
                 label='Data',
                 gid='%d:data' % test.id)
 
@@ -511,7 +511,7 @@ class PlotLogarithmicHistogramDSNU(Emva1288Plot):
     '''Create Logarithmic histogram DSNU plot'''
 
     name = 'Logarithmic histogram DSNU'
-    xlabel = 'Deviation from the mean [DN]'
+    xlabel = 'Dark value [DN]'
     ylabel = 'Number of pixels'
     yscale = 'log'
 
@@ -537,7 +537,7 @@ class PlotLogarithmicHistogramPRNU(Emva1288Plot):
     '''Create Logarithmic histogram PRNU plot'''
 
     name = 'Logarithmic histogram PRNU'
-    xlabel = 'Deviation from the mean [%]'
+    xlabel = 'Deviation from the mean [DN]'
     ylabel = 'Number of pixels'
     yscale = 'log'
 
@@ -561,7 +561,7 @@ class PlotAccumulatedLogHistogramDSNU(Emva1288Plot):
 
     name = 'Accumulated log histogram DSNU'
     xlabel = 'Minimal deviation from the mean [DN]'
-    ylabel = 'Percentage of pixels\ndeviating from the mean at least of : '
+    ylabel = 'Number of pixels'
     yscale = 'log'
 
     def plot(self, test):
@@ -581,7 +581,7 @@ class PlotAccumulatedLogHistogramPRNU(Emva1288Plot):
 
     name = 'Accumulated log histogram PRNU'
     xlabel = 'Minimal deviation from the mean [%]'
-    ylabel = 'Percentage of pixels\ndeviating from the mean at least of : '
+    ylabel = 'Number of pixels'
     yscale = 'log'
 
     def plot(self, test):
@@ -692,30 +692,36 @@ class ProfileBase(Emva1288Plot):
         ax = self.ax
         ax2 = self.ax2
 
-        bimg = test.spatial['avg'] - test.spatial['avg_dark']
-        dimg = test.spatial['avg_dark']
+        L = test.spatial['L']
+        bimg = (test.spatial['sum'] - test.spatial['sum_dark']) / L
+        dimg = test.spatial['sum_dark'] / L
         profiles = self.get_profiles(bimg, dimg)
 
         # to keep the lines number for legend
         bright_plots = []
         labels = []
 
-        for typ in ('mid', 'min', 'max', 'mean'):
+        for typ, color in (('mid', 'green'),
+                           ('min', 'blue'),
+                           ('max', 'orange'),
+                           ('mean', 'black')):
             # label has first letter capital
             label = typ.capitalize()
             labels.append(label)
 
             # bright plot
-            l = ax.plot(profiles['bright'][typ][x],
-                        profiles['bright'][typ][y],
-                        label=label,
-                        gid='%d:marker' % test.id)[0]
-            bright_plots.append(l)
+            line = ax.plot(profiles['bright'][typ][x],
+                           profiles['bright'][typ][y],
+                           label=label,
+                           color=color,
+                           gid='%d:marker' % test.id)[0]
+            bright_plots.append(line)
 
             # dark plot
             ax2.plot(profiles['dark'][typ][x],
                      profiles['dark'][typ][y],
                      label=label,
+                     color=color,
                      gid='%d:data' % test.id)
 
         # Place legend
@@ -825,35 +831,44 @@ EVMA1288plots = [PlotPTC,
 
 
 class Plotting1288(object):
-    def __init__(self, test):
+    """EMVA1288 plots
+
+    Creates and shows all plots necessary to prepare a camera or sensor
+    descriptive report compliant with EMVA Standard 1288 version 3.1.
+    """
+
+    def __init__(self, *tests):
         '''
-        Creates and shows all plots necessary to prepare a camera or sensor
-        descriptive report compliant with EMVA Standard 1288 version 3.1.
+        Parameters
+        ----------
+        tests: list
+            List of tests to Plot
         '''
 
-        if not getattr(test, 'id', False):
-            test.id = id(test)
-        self.test = test
+        self.tests = []
+        for test in tests:
+            if not getattr(test, 'id', False):
+                test.id = id(test)
+        self.tests.append(test)
 
-    def plots_to_plot(self, *plots):
-        p = []
-        if not plots:
-            plots = range(len(EVMA1288plots))
-        for i in plots:
-            if i not in range(len(EVMA1288plots)):
-                print('Error ', i, 'is not valid index')
-                print('Plot has to be integer in ', range(len(EVMA1288plots)))
-                continue
-            p.append(i)
-        return p
+    def plot(self, *plots):
+        """Plot EMVA1288 plots
 
-    def plot(self, *ids):
+        Parameters
+        ----------
+        plots: list
+            List of plots to plot
+
+        """
         import matplotlib.pyplot as plt
-        plots = self.plots_to_plot(*ids)
-        for i in plots:
+        if not plots:
+            plots = EVMA1288plots
+
+        for i, plot_cls in enumerate(plots):
             figure = plt.figure(i)
-            plot = EVMA1288plots[i](figure)
-            plot.plot(self.test)
+            plot = plot_cls(figure)
+            for test in self.tests:
+                plot.plot(test)
             plot.rearrange()
             figure.canvas.set_window_title(plot.name)
         plt.show()

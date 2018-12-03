@@ -22,3 +22,11 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+
+Documentation TODO
+==================
+These are the missing parts of the documentation
+
+.. todolist::
+

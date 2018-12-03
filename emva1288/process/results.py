@@ -63,9 +63,6 @@ class Results1288(object):
         self._index_sensitivity_min = 0
 
         self._histogram_Qmax = 256  # Maximum number of bins in histograms
-        # Convolution kernel for high pass filter in defect pixel
-        self._histogram_high_pass_box = (-1) * np.ones((5, 5), dtype=np.int64)
-        self._histogram_high_pass_box[2, 2] = 24
 
         # Sometimes we need to force the saturation point
         # in those cases pass the index in the initialization of Results1288
@@ -616,16 +613,38 @@ class Results1288(object):
         return self.linearity()['linearity_error_max']
 
     @property
+    def u_I_var_DN(self):
+        """Dark Current from variance.
+
+        The dark current from variance (in DN/s) is the slope of the dark
+        signal variance as a function of the exposure time divided by the
+        system gain. Returns NaN if the slope is negative.
+
+        .. emva1288::
+            :Section: dark_current
+            :Short: Dark Current from variance
+            :Symbol: $\mu_{I.var.DN}$
+            :Unit: $DN/s$
+            :LatexName: UIVar
+        """
+        if len(np.unique(self.temporal['texp'])) <= 2:
+            return np.nan
+
+        fit, _error = routines.LinearB(self.temporal['texp'],
+                                       self.temporal['s2_ydark'])
+
+        if fit[0] < 0:
+            return np.nan
+        # Multiply by 10^9 because exposure times are in nanoseconds
+        return fit[0] / self.K * 1e9
+
+    @property
     def u_I_var(self):
         """Dark Current from variance.
 
-        The dark current from variance is computed as the square root
-        of the slope of the dark signal
-        variance in function of the exposure times divided by the overall
-        system gain. It uses
-        the :func:`~emva1288.process.routines.LinearB` function to
-        make the fit. Returns NaN if u_I_var is imaginary (if the fit
-        slope is negative).
+        The dark current from variance (in e-/s) is the dark current from
+        variance (in DN/s) divided by the system gain.
+        Returns NaN if the fit slope is negative.
 
         .. emva1288::
             :Section: dark_current
@@ -634,31 +653,25 @@ class Results1288(object):
             :Unit: $e^-/s$
             :LatexName: UIVar
         """
-
-        fit, _error = routines.LinearB(self.temporal['texp'],
-                                       self.temporal['s2_ydark'])
-
-        if fit[0] < 0:
+        ui = self.u_I_var_DN
+        if ui is np.nan:
             return np.nan
-        # Multiply by 10^9 because exposure times are in nanoseconds
-        return fit[0] * (10 ** 9) / (self.K ** 2)
+
+        return ui / self.K
 
     @property
-    def u_I_mean(self):
+    def u_I_mean_DN(self):
         """Dark Current from mean.
 
-        The dark current from mean is computed as the slope
-        of the dark signal mean in function of the exposure times divided
-        by the overall system gain. Returns NaN if the number of different
-        exposure times is less than 3.
-        It uses the :func:`~emva1288.process.routines.LinearB` to compute
-        the linear fit.
+        The dark current from mean is the slope of the dark signal mean in
+        function of the exposure time.
+        Returns NaN if the number of different exposure times is less than 3.
 
         .. emva1288::
             :Section: dark_current
             :Short: Dark Current from mean
-            :Symbol: $\mu_{I.mean}$
-            :Unit: e/s
+            :Symbol: $\mu_{I.mean.DN}$
+            :Unit: $DN/s$
         """
 
         if len(np.unique(self.temporal['texp'])) <= 2:
@@ -667,7 +680,26 @@ class Results1288(object):
         fit, _error = routines.LinearB(self.temporal['texp'],
                                        self.temporal['u_ydark'])
         # Multiply by 10 ^ 9 because exposure time in nanoseconds
-        return fit[0] * (10 ** 9) / self.K
+        return fit[0] * (10 ** 9)
+
+    @property
+    def u_I_mean(self):
+        """Dark Current from mean.
+
+        The dark current from mean is the slope of the dark signal mean in
+        function of the exposure times divided by the overall system gain.
+        Returns NaN if the number of different exposure times is less than 3.
+
+        .. emva1288::
+            :Section: dark_current
+            :Short: Dark Current from mean
+            :Symbol: $\mu_{I.mean}$
+            :Unit: $e^-/s$
+        """
+        ui = self.u_I_mean_DN
+        if ui is np.nan:
+            return np.nan
+        return ui / self.K
 
     @property
     def sigma_2_y_stack(self):
@@ -682,7 +714,7 @@ class Results1288(object):
             :Unit: DN2
         """
 
-        return np.mean(self.spatial['var'])
+        return self.spatial['var_mean']
 
     @property
     def sigma_2_y_stack_dark(self):
@@ -697,7 +729,7 @@ class Results1288(object):
             :Unit: DN2
         """
 
-        return np.mean(self.spatial['var_dark'])
+        return self.spatial['var_mean_dark']
 
     @property
     def s_2_y_measured(self):
@@ -713,7 +745,7 @@ class Results1288(object):
         """
         # ddof = 1 (delta degrees of freedom) accounts for the minus 1 in the
         # divisor for the calculation of variance
-        return np.var(self.spatial['avg'], ddof=1)
+        return self.spatial['avg_var']
 
     @property
     def s_2_y_measured_dark(self):
@@ -727,9 +759,7 @@ class Results1288(object):
             :Symbol: $s^2_{y.measured.dark}$
             :Unit: DN2
         """
-        # ddof = 1 (delta degrees of freedom) accounts for the minus 1 in the
-        # divisor for the calculation of variance
-        return np.var(self.spatial['avg_dark'], ddof=1)
+        return self.spatial['avg_var_dark']
 
     @property
     def s_2_y(self):
@@ -820,14 +850,15 @@ class Results1288(object):
         """
 
         return (np.sqrt(self.s_2_y - self.s_2_y_dark) * 100 /
-                (np.mean(self.spatial['avg']) -
-                 np.mean(self.spatial['avg_dark'])))
+                (self.spatial['avg_mean'] - self.spatial['avg_mean_dark']))
 
     @property
     def histogram_PRNU(self):
         """PRNU histogram.
 
-        Uses the :func:`~emva1288.process.routines.Histogram1288` function
+        Uses the :func:`~emva1288.process.routines.high_pass_filter` function
+        to filter the image and then uses the
+        :func:`~emva1288.process.routines.Histogram1288` function
         to make the histogram.
 
         .. emva1288::
@@ -837,12 +868,13 @@ class Results1288(object):
 
         # For prnu, perform the convolution
         y = self.spatial['sum'] - self.spatial['sum_dark']
-        # Slicing at the end is to remove boundary effects.
-        y = convolve(y, self._histogram_high_pass_box)[2:-2, 2:-2]
+        # Applying the filter on the image
+        data = routines.high_pass_filter(y, 5)
+        y = data['img']
 
         h = routines.Histogram1288(y, self._histogram_Qmax)
         # Rescale the bins
-        h['bins'] /= (self.spatial['L'] * 25.)
+        h['bins'] /= (self.spatial['L'] * data['multiplicator'])
 
         return h
 
@@ -850,7 +882,9 @@ class Results1288(object):
     def histogram_PRNU_accumulated(self):
         """Accumulated PRNU histogram.
 
-        Uses the :func:`~emva1288.process.routines.Histogram1288` function
+        Uses the :func:`~emva1288.process.routines.high_pass_filter` function
+        to filter the image and then uses the
+        :func:`~emva1288.process.routines.Histogram1288` function
         to make the histogram.
 
         .. emva1288::
@@ -860,17 +894,19 @@ class Results1288(object):
 
         # For prnu, perform the convolution
         y = self.spatial['sum'] - self.spatial['sum_dark']
-        y = convolve(y, self._histogram_high_pass_box)[2:-2, 2:-2]
-
+        data = routines.high_pass_filter(y, 5)
+        y = data['img']
         # For the accumulated histogram substract the mean
         y = np.abs(y - int(np.mean(y)))
 
         h = routines.Histogram1288(y, self._histogram_Qmax)
         # Rescale the bins
-        h['bins'] /= (self.spatial['L'] * 25.)
+        h['bins'] /= (self.spatial['L'] * data['multiplicator'])
 
         # Perform the cumulative summation
         h['values'] = np.cumsum(h['values'][::-1])[::-1]
+        # we want it as percentage of pixels
+        h['values'] = 100 * h['values'] / y.size
 
         return h
 
@@ -893,8 +929,10 @@ class Results1288(object):
         h = routines.Histogram1288(y, self._histogram_Qmax)
         # Rescale the bins, this is due to upscaling the average image to have
         # only integers
-        h['bins'] /= (self.spatial['L_dark'] * 25.)
-
+        scale = self.spatial['L_dark']
+        h['bins'] /= scale
+        # The image is not centered around zero, so we shift the bins
+        h['bins'] -= (y.mean() / scale)
         return h
 
     @property
@@ -916,11 +954,14 @@ class Results1288(object):
 
         h = routines.Histogram1288(y, self._histogram_Qmax)
         # Rescale the bins
-        h['bins'] /= (self.spatial['L_dark'] * 25.)
+        h['bins'] /= (self.spatial['L_dark'])
 
         # Perform the cumulative summation (the ::-1 means backwards)
         # because the cumsum function is performed contrary to what we need
         h['values'] = np.cumsum(h['values'][::-1])[::-1]
+
+        # we want it as percentage of pixels
+        h['values'] = 100 * h['values'] / y.size
 
         return h
 

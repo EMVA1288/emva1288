@@ -274,11 +274,10 @@ class Data1288(object):
         dict : A data dictionary processed from the input. The keys (+ postfix)
         are:
                - *'sum'*: the sum image preserved from input,
-               - *'pvar'*: the pvar image preserved from input,
                - *'L'*: the number of image summed,
-               - *'avg'*: the average of the sum image as described above and
-               - *'var'*: the variance as described above computed
-                 from the pvar image.
+               - *'avg_var'*: variance of the the average image
+               - *'avg_mean'*: mean of the the average image
+               - *'var_mean'*: the variance of the variance image
         """
 
         # This cast is just in case the original images are unint
@@ -290,7 +289,10 @@ class Data1288(object):
         var_ = pvar_ / (1.0 * np.square(L) * (L - 1))
 
         return {'sum' + postfix: sum_,
-                'pvar' + postfix: pvar_,
+                'var_mean' + postfix: var_.mean(),
                 'L' + postfix: L,
-                'avg' + postfix: avg_,
-                'var' + postfix: var_}
+                # ddof = 1 (delta degrees of freedom) accounts for the minus 1
+                # in the divisor for the calculation of variance
+                'avg_var' + postfix: np.var(avg_, ddof=1),
+                'avg_mean' + postfix: avg_.mean()
+                }

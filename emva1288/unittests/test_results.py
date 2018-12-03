@@ -5,13 +5,14 @@ from emva1288.process.data import Data1288
 from emva1288.process.results import Results1288
 from emva1288.camera.dataset_generator import DatasetGenerator
 from emva1288.unittests.test_routines import del_obj
+from emva1288.process.routines import high_pass_filter
+from emva1288.camera.routines import Qe
 import numpy as np
 
 
 def _init(pixel_area=0, **kwargs):
     # create dataset
     dataset = DatasetGenerator(**kwargs)
-
     # parse dataset
     parser = ParseEmvaDescriptorFile(dataset.descriptor_path)
     # load image data
@@ -31,7 +32,7 @@ class TestResults(unittest.TestCase):
     _width = 100
     _bit_depth = 8
     _L = 50
-    _qe = 0.5
+    _qe = Qe(width=_width, height=_height)
     _steps = 10
     _radiance_min = None
     _exposure_max = 5000000000
@@ -39,10 +40,8 @@ class TestResults(unittest.TestCase):
     _exposure_fixed = 10000000
     _temperature = 20
     _temperature_ref = 20
-    _K = 0.1
+    _K = 0.5
     _exposure_min = 50000
-    _dark_signal_0 = 1
-    _sigma2_dark_0 = 1
     _dsnu = np.zeros((_height, _width))
     _dsnu[0, :] += 5
     _prnu = np.ones((_height, _width))
@@ -59,8 +58,6 @@ class TestResults(unittest.TestCase):
                                 exposure_max=self._exposure_max,
                                 exposure_min=self._exposure_min,
                                 K=self._K,
-                                dark_signal_0=self._dark_signal_0,
-                                sigma2_dark_0=self._sigma2_dark_0,
                                 dark_current_ref=self._dark_current_ref,
                                 temperature=self._temperature,
                                 temperature_ref=self._temperature_ref,
@@ -119,13 +116,14 @@ class TestResults(unittest.TestCase):
         ###############################################################
 
         # Test quantum efficiency is retrieved with a +/- 5% incertainty
-        self.assertAlmostEqual(self._qe * 100, self.results.QE, delta=5.0,
+        self.assertAlmostEqual(self._qe.qe.mean() * 100, self.results.QE,
+                               delta=10.0,
                                msg="The difference between the expected QE and"
-                                   "the retrieved one is greater than 5%!")
+                                   "the retrieved one is greater than 10%!")
 
         # Test that overall system gain
         # is retrieved with a +/- 0.01 incertainty
-        self.assertAlmostEqual(self.dataset.cam.K, self.results.K, delta=0.01,
+        self.assertAlmostEqual(self.dataset.cam.K, self.results.K, delta=0.1,
                                msg="The difference between expected"
                                    "system gain"
                                    "and the retrieved one"
@@ -144,7 +142,7 @@ class TestResults(unittest.TestCase):
                                msg="Dark current is not well retrieved from"
                                    " mean dark signal.")
         self.assertAlmostEqual(self._dark_current_ref, self.results.u_I_var,
-                               delta=5.5,
+                               delta=10.0,
                                msg="Dark current is not well retrieved from"
                                    " dark signal variance.")
 
@@ -204,9 +202,8 @@ class TestResults(unittest.TestCase):
         self.assertAlmostEqual(self.results.PRNU1288,
                                np.sqrt(self.results.s_2_y -
                                        self.results.s_2_y_dark) * 100 /
-                               (np.mean(self.data.data['spatial']['avg']) -
-                                np.mean(self.data.data['spatial']['avg_'
-                                                                  'dark'])))
+                               (self.data.data['spatial']['avg_mean'] -
+                                self.data.data['spatial']['avg_mean_dark']))
 
         # Test that histograms contains relevant keys and are numpy arrays
         hists = ('histogram_PRNU', 'histogram_PRNU_accumulated',
@@ -233,8 +230,6 @@ class TestResults(unittest.TestCase):
                                 radiance_min=self._radiance_min,
                                 exposure_max=self._exposure_max,
                                 exposure_min=self._exposure_min,
-                                dark_signal_0=self._dark_signal_0,
-                                sigma2_dark_0=self._sigma2_dark_0,
                                 temperature=self._temperature,
                                 temperature_ref=self._temperature_ref,
                                 K=self._K,
@@ -250,7 +245,7 @@ class TestResults(unittest.TestCase):
         # Test that s_ydark is not a fit because only 1 texp
         self.assertAlmostEqual(self.results.sigma_y_dark,
                                np.sqrt(data['temporal']['s2_ydark'][0]),
-                               delta=0.01)
+                               delta=0.1)
 
         del_obj(self.dataset, self.parser, self.loader, self.data,
                 self.results)
@@ -265,8 +260,6 @@ class TestResults(unittest.TestCase):
                                 dark_current_ref=self._dark_current_ref,
                                 exposure_max=self._exposure_max,
                                 exposure_min=self._exposure_min,
-                                dark_signal_0=self._dark_signal_0,
-                                sigma2_dark_0=self._sigma2_dark_0,
                                 temperature=self._temperature,
                                 temperature_ref=self._temperature_ref,
                                 K=self._K,
@@ -301,11 +294,67 @@ class TestResults(unittest.TestCase):
         self.assertIs(r.u_I_var, np.nan)
 
         # Test that a negative s2y_dark will yield a Nan for DSNU1288
-        data['spatial'] = {'avg_dark': [0, 0, 0],
-                           'var_dark': [1, 1, 1],
+        data['spatial'] = {'avg_var_dark': 0.,
+                           'var_mean_dark': 1.,
                            'L_dark': 3}
         r = Results1288(data)
         self.assertIs(r.DSNU1288, np.nan)
         self.assertIs(r.DSNU1288_DN(), np.nan)
 
         del r
+
+
+class TestRoutines(unittest.TestCase):
+
+    def setUp(self):
+        # instantiate a bayer filter and a wrong filter
+        bayer_filter = np.tile([[0, 1], [1, 0]], (500, 500))
+        wrong_filter = np.tile([[1, 1, 1, 0], [1, 0, 0, 1]], (500, 250))
+
+        # Source images. imgc is for color image (image with a bayer filter)
+        self.img = np.abs(np.random.random([1000, 1000]))
+        self.imgc = np.ma.array(self.img, mask=bayer_filter)
+
+        # Image wrong's purpose is to assert that a ValueError is raised
+        self.img_wrong = np.ma.array(self.img, mask=wrong_filter)
+
+        # Pass the highpass filter on the source images
+        res = high_pass_filter(self.img, 5)
+        self.img_filt = res['img']/res['multiplicator']
+        res = high_pass_filter(self.imgc, 5)
+        self.imgc_filt = res['img']/res['multiplicator']
+
+        # To assert that the highpass filter does its job, a low frequency
+        # signal will be introduced in the image
+        signal = 10 * np.sin(np.linspace(0, np.pi, 1000))
+        sig_img = [line + val for line, val in zip(self.img, signal)]
+        sig_imgc = np.ma.array(sig_img, mask=bayer_filter)
+
+        # filtering the images with a low frequency signal
+        res = high_pass_filter(sig_img, 5)
+        self.sig_img_filt = res['img']/res['multiplicator']
+        res = high_pass_filter(sig_imgc, 5)
+        self.sig_imgc_filt = res['img']/res['multiplicator']
+
+    def test_highpass_filter(self):
+        # Assert raises in case of bad kernel size or bad mask
+        with self.assertRaises(ValueError):
+            high_pass_filter(self.img_wrong, 5)
+        with self.assertRaises(ValueError):
+            high_pass_filter(self.imgc, 6)
+
+        # assert that the means of the filtered images are almost 0
+        self.assertAlmostEqual(0, np.mean(self.imgc_filt), 3)
+        self.assertAlmostEqual(0, np.mean(self.img_filt), 3)
+
+        # assert that the means of the filtered images are almost 0 even with
+        # a low frequency signal
+        self.assertAlmostEqual(0, np.mean(self.sig_img_filt), 3)
+        self.assertAlmostEqual(0, np.mean(self.sig_imgc_filt), 3)
+
+        # assert that the filtered images with and without a signal are almost
+        # equal
+        self.assertTrue(np.allclose(self.sig_img_filt, self.img_filt,
+                        rtol=0, atol=10e-4))
+        self.assertTrue(np.allclose(self.sig_imgc_filt, self.imgc_filt,
+                        rtol=0, atol=10e-4))

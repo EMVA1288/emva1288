@@ -1,4 +1,5 @@
 import unittest
+import numpy as np
 from emva1288.process.parser import ParseEmvaDescriptorFile
 from emva1288.camera.dataset_generator import DatasetGenerator
 
@@ -39,9 +40,8 @@ class TestParser(unittest.TestCase):
         times = self.d_generator.points['temporal'].keys()
         first_exp_time = list(times)[0]
         first_rad = self.d_generator.points['temporal'][first_exp_time][0]
-        first_pcount = round(self.d_generator.cam.get_photons(first_rad,
-                                                              first_exp_time),
-                             3)
+        first_pcount = np.round(np.sum(self.d_generator.cam.get_photons(
+                                first_rad, first_exp_time), axis=2).mean(), 3)
 
         # check data have correctly been parsed
         self.assertEqual(parser.version, self._version)
@@ -58,8 +58,8 @@ class TestParser(unittest.TestCase):
         spatial_texp = list(points.keys())[0]
         spatial_rad = list(points.values())[0][0]
         # round here because pcount are rounded in descriptor file
-        spatial_pcount = round(self.d_generator.cam.get_photons(spatial_rad),
-                               3)
+        spatial_pcount = np.round(np.sum(self.d_generator.cam.get_photons(
+                                  spatial_rad), axis=2).mean(), 3)
         im_spatial = parser.images['spatial'][spatial_texp][spatial_pcount]
         # the length of this dict should be greater than 2
         self.assertGreater(len(im_spatial), 2)

@@ -13,16 +13,19 @@ from scipy.optimize import leastsq
 from lxml import etree
 from PIL import Image
 from collections import OrderedDict
+from emva1288.camera import routines
+from scipy.ndimage import convolve
+import warnings
+# import cv2
 
 
 SIGNIFICANT_DIGITS = 7
 
-
 def load_image(fname):
     img = Image.open(fname)
     img = np.asarray(img.split()[0])
-#     img = cv2.imread(fname, cv2.CV_LOAD_IMAGE_UNCHANGED)
-#     img = cv2.split(img)[0]
+    # img = cv2.imread(fname, cv2.CV_LOAD_IMAGE_UNCHANGED)
+    # img = cv2.split(img)[0]
     return img
 
 
@@ -116,33 +119,60 @@ def GetImgShape(img):
     return rows, cols
 
 
-def FFT1288(m, rotate=False):
-    mm = np.asfarray(np.copy(m))
+def FFT1288(img_, rotate=False, n=1):
+    '''Compute the FFT emva1288 style
 
-    if rotate is True:
-        mm = mm.transpose()
+    Compute an FFT per line and average the resulting ffts
 
-    _rows, cols = GetImgShape(mm)
+    Parameters
+    ----------
+    img : array
+        Input image
+    rotate : bool (optional)
+        Rotate the image before performing the FFT
+    n : int (optional)
+        If the image is the sum of several images use this value
+        to produce the fft of the average image
 
-    # This is just in case we are talking about really small or really
-    # big arrays
-    if (cols < 10) or (cols > 50000):
-        return []
+    Returns
+    -------
+    array : One dimension FFT power spectrum
+    '''
+    img = np.ma.copy(img_)
+    if rotate:
+        img = img.transpose()
 
-    # Substract the mean of the image
-    mm = mm - np.mean(mm)
+    _rows, cols = GetImgShape(img)
 
-    # perform the fft in the x direction
-    fft = np.fft.fft(mm, axis=1)
+    if isinstance(img, np.ma.masked_array):
+        img_line = []
+        # If img is masked, perform fft line by line
+        for line in img:
+            # fft must be performed on compressed line
+            line = line.compressed()
+            # Assuring the line is not empty
+            if line.size == 0:
+                continue
+            img_line.append(line)
+        # cols might be changed, it corresponds to len(arr)
+        cols = np.min([len(line)for line in img_line])
+        img = img_line[:][0:cols]
 
-    fft = fft / np.sqrt(cols)
+    # simply perform fft on x axis
+    img = np.asfarray(img) - np.mean(img)
+    fft = np.fft.fft(img, axis=1)
+    fft /= np.sqrt(cols)
 
     fabs = np.real(fft * np.conjugate(fft))
 
     # extract the mean of each column of the fft
     r = np.mean(fabs, axis=0)
 
-    return r
+    # if the image is the sum of n image, the fft of the average image is
+    r /= n ** 2
+
+    # Return only half of the spectrogram (it is symemtrical)
+    return r[: cols // 2]
 
 
 def GetFrecs(fft):
@@ -178,8 +208,11 @@ def Histogram1288(img, Qmax):
     # Normal distribution with the original sigma, and mean
     mu = np.mean(y)
     sigma = np.std(y)
+    # For masked arrays, the total number of pixel is the sum of the non-masked
+    # value
+    N = np.ma.count(y)
     normal = ((1. * (ymax - ymin) / Q) *
-              np.size(y) / (np.sqrt(2 * np.pi) * sigma) *
+              N / (np.sqrt(2 * np.pi) * sigma) *
               np.exp(-0.5 * (1. / sigma * (B[:-1] - mu)) ** 2))
 
 
@@ -518,3 +551,99 @@ def compare_xml(x1, x2, filename=None):
     with open(filename, 'w') as f:
         f.write(s)
         return s
+
+
+def high_pass_filter(img, dim):
+    """High pass filtering on image
+
+    Computes the highpass filtering as defined by the emva standart keeping the
+    result as an int image. The computation preserves the image as ints and
+    doesn't perform the final division, but returns the dividing factor
+
+    Parameters
+    ----------
+    img : np.array
+        the image to filter
+    dim : int
+        The size of the highpass filter
+
+    Returns
+    -------
+    d : dict
+        The data dictionary of the result. The keys are:
+        'img' : The filtered image
+        'multiplicator' : Factor from the convolution to be considered in the
+        computation of the histogram
+    """
+    # By definition in the emva standart, the high pass filter is using
+    # the following operation :
+    #
+    # y' = y-R (*) y
+    #
+    # where (*) represents a convolution and R is a 5x5 matrix filled with 1/25
+    # In order to maintain int values for a higher precision, we make the
+    # following manipulation :
+    #
+    # y' = P (*) y - R (*) y, where P is a 5x5 matrix of zeros with P[2,2] = 1
+    #
+    # multiplying the right side of the equation by 25 and then dividing by 25
+    #
+    # y' =  ((25 * P - R') (*) y) /25, where R' is a 5x5 matrix of ones
+    #
+    # simplifying
+    #
+    # y' = (M (*) y)/25, where M is a 5x5 matrix of -1 with M[2,2] = 24
+    #
+    # We don't peform the division to keep the int precision, but we return the
+    # factor (25)
+
+    # If the image is from a color camera, the format of the data to compute is
+    # a masked array. Convolution cannot typically be performed on a masked
+    # array, but considering this particular operation we can work around this
+    # problem.
+    # Considering the kernel, the unmasked values are correctly computed using
+    # convolve(), while the others are wrong. But by re-applying the mask, we
+    # work around this problem.
+    # The multiplicator must be changed to the number of valid pixels
+    # being considered in the convolution.
+
+    # Check validity of kernel size
+    if not dim % 2:
+        raise ValueError('The size of the highpass filter must be odd')
+    # Initializing the kernel
+    kernel = np.ones((dim, dim))
+    sl = dim//2
+    if isinstance(img, np.ma.MaskedArray):
+        # Saving the mask
+        mask = np.ma.getmask(img)
+        # These next few lines are to determine the number of pixels being
+        # considered in the convolution
+        value = np.ones(img.shape)
+        # Applying the mask on a matrix of ones and filling the masked values
+        # with 0
+        value = np.ma.MaskedArray(value, mask)
+        value = value.filled(0)
+        # The convolution of the matrix with a 5x5 matrix of ones will return
+        # a matrix where the values where there was no mask correspong to the
+        # number of considred pixels
+        value = convolve(value, kernel)
+        # Slice off values that are invalid after the convolution
+        value = np.ma.MaskedArray(value, mask)[sl:-sl, sl:-sl]
+        # After applying the mask all the values should be equal. If not, the
+        # filter is not bayer and will not work properly with this code
+        if value.max() != value.min():
+            raise ValueError('Masked image does not have a valid bayer'
+                             'filter')
+        # Setting the kernel
+        kernel *= -1
+        kernel[sl, sl] = value.max()-1
+        # Finally computing the filtering and slicing off the edges
+        img = img.filled(0)
+        img = convolve(img, kernel)
+        img = np.ma.array(img, mask=mask)[sl:-sl, sl:-sl]
+    else:
+        # Set the kernel and compute, then slice off the edges
+        kernel *= -1
+        kernel[sl, sl] = dim**2-1
+        img = convolve(img, kernel)[sl:-sl, sl:-sl]
+    return {'img': img, 'multiplicator': kernel[sl, sl] + 1}
