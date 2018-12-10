@@ -14,6 +14,7 @@ Welcome to emva1288's documentation!
    readme_link
    installation
    tutorial
+   datasets
    doc_api/emva1288
 
 Indices and tables

@@ -1,12 +1,18 @@
 Installation
-============
+=============
 
 As a basic requirement is python > 3.5
 
 Windows
--------
-.. todo::
-    Update to use winpython
+--------
+
+WinPython
+^^^^^^^^^^
+Download WinPython from: http://winpython.github.io
+
+| Install it to any directory.
+| Run the **WinPython Command Prompt.exe** from this directory.
+| Within this command prompt procceed with the steps in the sections below.
 
 
 Install for normal users
@@ -36,6 +42,4 @@ To rebuild the documentation::
 
   >> cd doc
   >> make clean
-  >> make html
-
-
+  >> make 
