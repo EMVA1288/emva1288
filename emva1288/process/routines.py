@@ -21,7 +21,6 @@ import warnings
 
 SIGNIFICANT_DIGITS = 7
 
-
 def load_image(fname):
     img = Image.open(fname)
     img = np.asarray(img.split()[0])
