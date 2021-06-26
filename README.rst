@@ -17,15 +17,15 @@ Documentation
 For more information visit `the documentation page
 <http://emva1288.readthedocs.io/en/latest/>`__
 
-Testing with Pytest
+Camera testing (Pytest)
 -------------
 Install Requirements : *pip install -r requirements.txt*
 
-execute a subset of smoke tests:
+execute a subset of smoke tests for the camera:
 
 - **pytest -s -m smoke**
 
-Execute the entire suite of regression tests, with a html report:
+Execute the entire suite of regression tests, with an html report:
 
 - **pytest -m regression -s -v --durations --html=emva1288/tests/reports/pytest_report.html**
 
