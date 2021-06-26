@@ -8,6 +8,7 @@ from emva1288.tests.utils.logger import Logger
 
 logger = Logger('camera_tests.log')
 
+
 @pytest.fixture
 def camera():
     return Camera()

@@ -50,13 +50,16 @@ doc/_build
 cover
 .ipynb_checkpoints
 
-# virtual env #
+
+# virtual environment #
 ###################
 venv/
 
 # log folder #
 ###################
 emva1288/tests/logs/*
+
+
 # pytest artifacts #
 ###################
 .pytest_cache/*
