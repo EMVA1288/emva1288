@@ -112,81 +112,15 @@ def test_get_tile_2d():
     logger.log(f'\n The {inspect.stack()[0][3]} test has passed successfully.')
 
 
-@pytest.mark.order(3)
-@pytest.mark.smoke
-@pytest.mark.regression
-@pytest.mark.filters
-def test_bayer_green_filter_mean():
-    values = bayer()
-    green_filter_mean = (np.ma.masked_array(values['img'], mask=values['green_filter']).mean())
-    expected = 32.32
-    assert (np.ma.masked_array(values['img'], mask=values['green_filter']).mean()) == pytest.approx(expected, abs=.1), \
-        pytest.fail(f' The actual green filter mean value: {green_filter_mean} is not within the expected range')
-    logger.log(f' The {inspect.stack()[0][3]} test has completed successfully.'
-               f'\n The green filter mean value of: {green_filter_mean} \n is within the expected range of: {expected}')
-
-
-@pytest.mark.order(3)
-@pytest.mark.smoke
-@pytest.mark.regression
-@pytest.mark.filters
-def test_bayer_green_filter():
-    values = bayer()
-    expected = 25.115
-    green_filter = (values['target'] * values['rf'])
-    assert (values['target'] * values['gf']) == pytest.approx(expected, abs=.01), \
-        pytest.fail(f' The actual green filter value: {green_filter} is not within the expected range')
-    logger.log(f' \n The {inspect.stack()[0][3]} test has completed successfully.'
-               f'\n The green filter value of: {green_filter} \n is within the expected range of: {expected}')
-
-
+@pytest.mark.parametrize('colour',['red','green','blue'])
 @pytest.mark.order(3)
 @pytest.mark.regression
 @pytest.mark.filters
-def test_bayer_red_filter_mean():
+def test_bayer_filters(colour):
     values = bayer()
-    expected = 34.68
-    red_filter_mean = (np.ma.masked_array(values['img'], mask=values['red_filter']).mean())
-    assert (np.ma.masked_array(values['img'], mask=values['red_filter']).mean()) == pytest.approx(expected, abs=.1), \
-        pytest.fail(f' The actual red filter mean value: {red_filter_mean} is not within the expected range')
-    logger.log(f' The {inspect.stack()[0][3]} test has completed successfully.'
-               f'\n The red filter mean value of: {red_filter_mean} \n is within the expected range of: {expected}')
-
-
-@pytest.mark.order(3)
-@pytest.mark.regression
-@pytest.mark.filters
-def test_bayer_red_filter():
-    values = bayer()
-    expected = 25.03
-    red_filter = (values['target'] * values['rf'])
-    assert (values['target'] * values['rf']) == pytest.approx(expected, abs=.01), \
-        pytest.fail(f' The actual red filter value: {red_filter} is not within the expected range')
-    logger.log(f' The {inspect.stack()[0][3]} test has completed successfully.'
-               f'\n The red filter value of: {red_filter} \n is within the expected range of: {expected}')
-
-
-@pytest.mark.order(3)
-@pytest.mark.regression
-@pytest.mark.filters
-def test_bayer_blue_filter_mean():
-    values = bayer()
-    expected = 20.88
-    blue_filter_mean = (np.ma.masked_array(values['img'], mask=values['blue_filter']).mean())
-    assert (np.ma.masked_array(values['img'], mask=values['blue_filter']).mean()) == pytest.approx(expected, abs=.1), \
-        pytest.fail(f' The actual blue filter mean value: {blue_filter_mean} is not within the expected range')
-    logger.log(f' The {inspect.stack()[0][3]} test has completed successfully.'
-               f'\n The red filter mean value of: {blue_filter_mean} \n is within the expected range of: {expected}')
-
-
-@pytest.mark.order(3)
-@pytest.mark.regression
-@pytest.mark.filters
-def test_bayer_blue_filter():
-    values = bayer()
-    expected = 25.03
-    blue_filter = (values['target'] * values['rf'])
-    assert (values['target'] * values['rf']) == pytest.approx(expected, abs=.01), \
-        pytest.fail(f' The actual blue filter value: {blue_filter} is not within the expected range')
-    logger.log(f' The {inspect.stack()[0][3]} test has completed successfully.'
-               f'\n The blue filter value of: {blue_filter} \n is within the expected range of: {expected}')
+    filter = (values['target'] * values['rf'])
+    filter_mean = (np.ma.masked_array(values['img'], mask=values[colour +'_filter']).mean())
+    test_name = inspect.stack()[0][3]
+    assert filter_mean == pytest.approx(filter, abs=10), \
+        pytest.fail(f'The {colour} filter mean value: {filter_mean}\n is not within the target range: {filter}')
+    logger.log(f' The {test_name} test has completed successfully.')

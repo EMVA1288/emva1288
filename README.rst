@@ -17,7 +17,7 @@ Documentation
 For more information visit `the documentation page
 <http://emva1288.readthedocs.io/en/latest/>`__
 
-Camera testing (Pytest)
+Camera Testing : Pytest
 -------------
 Install Requirements : *pip install -r requirements.txt*
 
@@ -27,8 +27,8 @@ execute a subset of smoke tests for the camera:
 
 Execute the entire suite of regression tests, with an html report:
 
-- **pytest -m regression -s -v --durations --html=emva1288/tests/reports/pytest_report.html**
+- **pytest -m regression --capture=tee-sys -v --durations=0 --html=emva1288/tests/reports/pytest_report.html**
 
--Other available py marks to scope testing: camera , filters , tile
+-Additional marks available in pytest.ini to scope testing: *filters*, *tile*
 
--refer to additional tests logs : *logs/tests.log*
+-Refer to the html report for logging, or in log file:  *logs/tests.log*
