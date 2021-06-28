@@ -15,6 +15,7 @@ etc...) without loosing accuracy.
 
 import numpy as np
 import logging
+from emva1288.process import routines
 
 
 class Data1288(object):
@@ -288,11 +289,17 @@ class Data1288(object):
         avg_ = sum_ / (1.0 * L)
         var_ = pvar_ / (1.0 * np.square(L) * (L - 1))
 
+        # hpf avg image to use as avg_var
+        hpf_dict = routines.high_pass_filter(avg_, 5)
+        avg_hpf = hpf_dict['img'] / hpf_dict['multiplicator']
+        # correct for std reduction from hpf
+        avg_var = (np.std(avg_hpf, ddof=1) / 0.96)**2
+
         return {'sum' + postfix: sum_,
                 'var_mean' + postfix: var_.mean(),
                 'L' + postfix: L,
                 # ddof = 1 (delta degrees of freedom) accounts for the minus 1
                 # in the divisor for the calculation of variance
-                'avg_var' + postfix: np.var(avg_, ddof=1),
+                'avg_var' + postfix: avg_var,
                 'avg_mean' + postfix: avg_.mean()
                 }
