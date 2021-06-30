@@ -3,7 +3,7 @@ import inspect
 from emva1288.camera.camera import Camera
 import numpy as np
 from emva1288.camera import routines
-from emva1288.tests.utils.logger import Logger
+from tests.utils.logger import Logger
 
 
 logger = Logger('camera_tests.log')

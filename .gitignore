@@ -53,10 +53,10 @@ cover
 
 # log folder #
 ###################
-emva1288/tests/logs/*
+tests/logs/*
 
 
 # pytest artifacts #
 ###################
-.pytest_cache/*
-emva1288/tests/reports/*
+/.pytest_cache/*
+tests/reports/*

@@ -35,4 +35,4 @@ Execute the entire suite of regression tests, with an html report:
 
 -Additional marks available in pytest.ini to scope testing: *filters*, *tile*
 
--Refer to the html report for logging, or in log file:  *logs/tests.log*
+-Refer to the html report for logging, or in log file:  *tests/logs/tests.log*

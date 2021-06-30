@@ -7,7 +7,7 @@ from root import ROOT_DIR
 class Logger:
 
     def __init__(self, log_file):
-        folder = 'emva1288/tests/logs/'
+        folder = 'tests/logs/'
         self.logger = logging.getLogger(log_file)
         self.logger.setLevel(logging.INFO)
 
