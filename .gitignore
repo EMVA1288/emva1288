@@ -51,10 +51,6 @@ cover
 .ipynb_checkpoints
 
 
-# virtual environment #
-###################
-venv/
-
 # log folder #
 ###################
 emva1288/tests/logs/*

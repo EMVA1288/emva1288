@@ -12,14 +12,18 @@ Please visit `Emva1288
 Website <http://www.emva.org/standards-technology/emva-1288/>`__ for information
 and latest releases of the standard.
 
+
 Documentation
 -------------
 For more information visit `the documentation page
 <http://emva1288.readthedocs.io/en/latest/>`__
 
+
 Camera Testing : Pytest
 -------------
-Install Requirements : *pip install -r requirements.txt*
+Install the requirements needed for running pytests:
+
+*pip install -r requirements-test.txt*
 
 execute a subset of smoke tests for the camera:
 

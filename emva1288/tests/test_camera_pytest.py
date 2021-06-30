@@ -95,7 +95,7 @@ def test_get_tile_1d():
     res_array = routines.get_tile(dim1, h, w)
     res_dim1 = np.zeros((24))
     assert w == res_array.shape[0]
-    assert res_dim1.tolist() == res_array.tolist()
+    assert (res_dim1 == res_array).all()
     logger.log(f'\n The {inspect.stack()[0][3]} test has passed successfully.')
 
 
@@ -108,19 +108,19 @@ def test_get_tile_2d():
     res_array = routines.get_tile(dim2, h, w)
     res_dim2 = np.zeros((5, 7))
     assert (h, w) == res_array.shape
-    assert res_dim2.tolist() == res_array.tolist()
+    assert (res_dim2 == res_array).all()
     logger.log(f'\n The {inspect.stack()[0][3]} test has passed successfully.')
 
 
-@pytest.mark.parametrize('colour',['red','green','blue'])
+@pytest.mark.parametrize('colour', ['red', 'green', 'blue'])
 @pytest.mark.order(3)
 @pytest.mark.regression
 @pytest.mark.filters
 def test_bayer_filters(colour):
     values = bayer()
-    filter = (values['target'] * values['rf'])
+    filtr = values['target'] * values['rf']
     filter_mean = (np.ma.masked_array(values['img'], mask=values[colour +'_filter']).mean())
     test_name = inspect.stack()[0][3]
-    assert filter_mean == pytest.approx(filter, abs=10), \
-        pytest.fail(f'The {colour} filter mean value: {filter_mean}\n is not within the target range: {filter}')
+    assert filter_mean == pytest.approx(filtr, abs=10), \
+        pytest.fail(f'The {colour} filter mean value: {filter_mean}\n is not within the target range: {filtr}')
     logger.log(f' The {test_name} test has completed successfully.')
