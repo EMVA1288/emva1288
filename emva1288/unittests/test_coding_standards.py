@@ -27,6 +27,7 @@ def test_pep8_conformance():
     msg = "Found code syntax errors (and warnings)."
     assert_equal(result.total_errors, 0, msg)
 
+
 if __name__ == '__main__':
     import nose
     nose.runmodule()
