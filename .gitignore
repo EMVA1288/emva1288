@@ -49,3 +49,14 @@ doc/_build
 .coverage
 cover
 .ipynb_checkpoints
+
+
+# log folder #
+###################
+tests/logs/*
+
+
+# pytest artifacts #
+###################
+/.pytest_cache/*
+tests/reports/*
