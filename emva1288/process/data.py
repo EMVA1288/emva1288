@@ -292,6 +292,7 @@ class Data1288(object):
         # hpf avg image to use as avg_var
         hpf_dict = routines.high_pass_filter(avg_, 5)
         avg_hpf = hpf_dict['img'] / hpf_dict['multiplicator']
+
         # correct for std reduction from hpf
         avg_var = (np.std(avg_hpf, ddof=1) / 0.96)**2
 
