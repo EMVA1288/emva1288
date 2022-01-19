@@ -38,7 +38,8 @@ class Camera(object):
                  u_esat=15000.,
 
                  dsnu=None,
-                 prnu=None
+                 prnu=None,
+                 seed=None
                  ):
         """Camera simulator init method.
 
@@ -107,6 +108,8 @@ class Camera(object):
         prnu : np.array, optional
                PRNU image in percentages (1 = 100%), array with the same shape
                of the image. Every image is multiplied by it.
+        seed : int, optional
+               A seed to initialize the random number generator.
         """
         self._pixel_area = pixel_area
         self._bit_depth = bit_depth
@@ -161,6 +164,8 @@ class Camera(object):
             self._prnu = np.ones(self._shape)
         self.environment = {'temperature': temperature,
                             'f_number': f_number}
+
+        self._rng = np.random.default_rng(seed)
 
     @property
     def bit_depth(self):
@@ -297,17 +302,17 @@ class Camera(object):
         # Thermally induced electrons image
         u_d = self._u_therm(temperature=temperature)
         # Noise centred on the number of electrons thermally generated
-        img_e = np.random.poisson(u_d, size=self._shape)
+        img_e = self._rng.poisson(u_d, size=self._shape)
 
         ###############################
         # Light induced electrons image
         u_e = self._u_e(radiance, f_number=f_number)
         # Noise centred on the number of electrons from the Light
-        img_e += np.random.poisson(u_e, size=self._shape)
+        img_e += self._rng.poisson(u_e, size=self._shape)
         ####################################################################
         # Electronics induced electrons image and Dark Signal non uniformity
         variance = np.sqrt(self._sigma2_dark_0)
-        dark_signal = self._dsnu + np.random.normal(loc=self._dark_signal_0,
+        dark_signal = self._dsnu + self._rng.normal(loc=self._dark_signal_0,
                                                     scale=variance,
                                                     size=self._shape)
         img_e = img_e + dark_signal
@@ -320,7 +325,7 @@ class Camera(object):
         img = self.K * img_e
 
         # Quantization noise image
-        img_q = np.random.uniform(-0.5, 0.5, self._shape)
+        img_q = self._rng.uniform(-0.5, 0.5, self._shape)
         img += img_q
 
         # Offset on the dark_signal
