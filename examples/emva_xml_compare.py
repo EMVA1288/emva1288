@@ -8,5 +8,6 @@ fresult2 = 'EMVA1288_Result2.xml'
 fcompare = 'EMVA1288_Compare.txt'
 
 u = process.routines.compare_xml(os.path.join(dir_, fresult1),
-                                 os.path.join(dir_, fresult2), os.path.join(dir_, fcompare))
+                                 os.path.join(dir_, fresult2),
+                                 os.path.join(dir_, fcompare))
 print(u)

@@ -20,7 +20,7 @@ For more information visit `the documentation page
 
 
 Camera Testing : Pytest
--------------
+------------------------
 Install the requirements needed for running pytests:
 
 *pip install -r requirements-test.txt*

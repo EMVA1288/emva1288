@@ -6,7 +6,6 @@
 """Utils functions
 
 """
-from __future__ import print_function
 import numpy as np
 import os
 from scipy.optimize import leastsq
@@ -20,6 +19,7 @@ import warnings
 
 
 SIGNIFICANT_DIGITS = 7
+
 
 def load_image(fname):
     img = Image.open(fname)

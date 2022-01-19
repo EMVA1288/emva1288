@@ -8,7 +8,6 @@ This class takes the data from data.Data1288 and compute the actual EMVA1288
 values.
 """
 
-from __future__ import print_function
 import logging
 import numpy as np
 from emva1288.process import routines

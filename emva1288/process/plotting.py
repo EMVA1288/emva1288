@@ -9,7 +9,6 @@ needed to create a reference datasheet of the EMVA1288 test
 
 """
 
-from __future__ import print_function
 import numpy as np
 
 from . import routines
