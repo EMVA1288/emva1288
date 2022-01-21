@@ -1,5 +1,0 @@
-include versioneer.py
-include emva1288/_version.py
-include tests.py
-include MANIFEST.in
-recursive-include examples *
