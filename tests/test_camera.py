@@ -3,10 +3,9 @@ import inspect
 from emva1288.camera.camera import Camera
 import numpy as np
 from emva1288.camera import routines
-from tests.utils.logger import Logger
 
-
-logger = Logger('camera_tests.log')
+import logging
+logger = logging.getLogger(__name__)
 
 
 @pytest.fixture
@@ -41,54 +40,35 @@ def bayer():
 
     values = {"img": img, "green_filter": green_filter, "blue_filter": blue_filter, "red_filter": red_filter,
               "gf": gf, "rf": rf, "bf": bf, "target": target}
-    logger.log(values)
+    logger.info(values)
     return values
 
 
-@pytest.mark.order(1)
-@pytest.mark.smoke
-@pytest.mark.regression
-@pytest.mark.camera
 def test_setup_camera(camera):
-    logger.log(f'\n The {inspect.stack()[0][3]} test has passed successfully.')
+    logger.info(f'\n The {inspect.stack()[0][3]} test has passed successfully.')
     return camera
 
 
-@pytest.mark.order(1)
-@pytest.mark.smoke
-@pytest.mark.regression
-@pytest.mark.camera
 def test_teardown_camera(camera):
     del camera
-    logger.log(f'\n The {inspect.stack()[0][3]} test has passed successfully.')
+    logger.info(f'\n The {inspect.stack()[0][3]} test has passed successfully.')
 
 
-@pytest.mark.order(1)
-@pytest.mark.smoke
-@pytest.mark.regression
-@pytest.mark.camera
 def test_img(camera):
     img = camera.grab(0)
     assert (camera.height, camera.width) == np.shape(img)
-    logger.log(f'\n The {inspect.stack()[0][3]} test has passed successfully.')
+    logger.info(f'\n The {inspect.stack()[0][3]} test has passed successfully.')
 
 
-@pytest.mark.order(1)
-@pytest.mark.regression
-@pytest.mark.camera
 def test_radiance(camera):
     img1 = camera.grab(0)
     img2 = camera.grab(camera.get_radiance_for(mean=250))
     assert (img1.mean() < img2.mean()),\
         pytest.fail(f' The mean value of img1 is expected to be less than the mean value of img2 . \n'
                     f'img1::: \n {img1}\n img2::: \n {img2}', False)
-    logger.log(f'\n The {inspect.stack()[0][3]} test has passed successfully.')
+    logger.info(f'\n The {inspect.stack()[0][3]} test has passed successfully.')
 
 
-@pytest.mark.order(2)
-@pytest.mark.smoke
-@pytest.mark.regression
-@pytest.mark.tile
 def test_get_tile_1d():
     h, w = [1, 24]
     dim1 = np.zeros((8))
@@ -96,12 +76,9 @@ def test_get_tile_1d():
     res_dim1 = np.zeros((24))
     assert w == res_array.shape[0]
     assert (res_dim1 == res_array).all()
-    logger.log(f'\n The {inspect.stack()[0][3]} test has passed successfully.')
+    logger.info(f'\n The {inspect.stack()[0][3]} test has passed successfully.')
 
 
-@pytest.mark.order(2)
-@pytest.mark.regression
-@pytest.mark.tile
 def test_get_tile_2d():
     h, w = [5, 7]
     dim2 = np.zeros((3))
@@ -109,13 +86,10 @@ def test_get_tile_2d():
     res_dim2 = np.zeros((5, 7))
     assert (h, w) == res_array.shape
     assert (res_dim2 == res_array).all()
-    logger.log(f'\n The {inspect.stack()[0][3]} test has passed successfully.')
+    logger.info(f'\n The {inspect.stack()[0][3]} test has passed successfully.')
 
 
 @pytest.mark.parametrize('colour', ['red', 'green', 'blue'])
-@pytest.mark.order(3)
-@pytest.mark.regression
-@pytest.mark.filters
 def test_bayer_filters(colour):
     values = bayer()
     filtr = values['target'] * values['rf']
@@ -123,4 +97,4 @@ def test_bayer_filters(colour):
     test_name = inspect.stack()[0][3]
     assert filter_mean == pytest.approx(filtr, abs=10), \
         pytest.fail(f'The {colour} filter mean value: {filter_mean}\n is not within the target range: {filtr}')
-    logger.log(f' The {test_name} test has completed successfully.')
+    logger.info(f' The {test_name} test has completed successfully.')

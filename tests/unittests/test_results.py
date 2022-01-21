@@ -4,7 +4,6 @@ from emva1288.process.loader import LoadImageData
 from emva1288.process.data import Data1288
 from emva1288.process.results import Results1288
 from emva1288.camera.dataset_generator import DatasetGenerator
-from emva1288.unittests.test_routines import del_obj
 from emva1288.process.routines import high_pass_filter
 from emva1288.camera.routines import Qe
 import numpy as np
@@ -216,8 +215,11 @@ class TestResults(unittest.TestCase):
                 self.assertTrue(isinstance(h[key], np.ndarray))
 
         # delete objects
-        del_obj(self.dataset, self.parser, self.loader, self.data,
-                self.results)
+        del self.dataset
+        del self.parser
+        del self.loader
+        del self.data
+        del self.results
 
     def test_results_current_variation(self):
         dt, p, l, da, r = _init(height=self._height,
@@ -247,8 +249,12 @@ class TestResults(unittest.TestCase):
                                np.sqrt(data['temporal']['s2_ydark'][0]),
                                delta=0.1)
 
-        del_obj(self.dataset, self.parser, self.loader, self.data,
-                self.results)
+        # delete objects
+        del self.dataset
+        del self.parser
+        del self.loader
+        del self.data
+        del self.results
 
     def test_results_without_pixel_area(self):
         dt, p, l, da, r = _init(pixel_area=None,
@@ -277,8 +283,12 @@ class TestResults(unittest.TestCase):
         self.assertIs(self.results.u_p_sat_area, None)
         self.assertIs(self.results.u_e_sat_area, None)
 
-        del_obj(self.dataset, self.parser, self.loader, self.data,
-                self.results)
+        # delete objects
+        del self.dataset
+        del self.parser
+        del self.loader
+        del self.data
+        del self.results
 
     def test_nans(self):
         # Test that less than 2 texp will yield a NaN for u_I_mean

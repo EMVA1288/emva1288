@@ -4,7 +4,6 @@ from emva1288.camera.dataset_generator import DatasetGenerator
 from emva1288.process.parser import ParseEmvaDescriptorFile
 from emva1288.process.loader import LoadImageData
 from emva1288.process.data import Data1288
-from emva1288.unittests.test_routines import del_obj
 
 
 class TestData(unittest.TestCase):
@@ -83,7 +82,10 @@ class TestData(unittest.TestCase):
             self.assertEqual(photons, photon)
 
         # delete objects
-        del_obj(self.dataset, self.parser, self.loader, self.data)
+        del self.dataset
+        del self.parser
+        del self.loader
+        del self.data
 
     def test_1exposure(self):
         """Test that when there is only one exposure time, the temporal data
@@ -102,7 +104,11 @@ class TestData(unittest.TestCase):
         self.assertEqual(len(temporal['u_ydark']), l)
         self.assertEqual(len(temporal['s2_ydark']), l)
 
-        del_obj(self.dataset, self.parser, self.loader, self.data)
+        # delete objects
+        del self.dataset
+        del self.parser
+        del self.loader
+        del self.data
 
     def test_data_errors(self):
         # Test that given an incomplete data dictionary, it will raise errors
