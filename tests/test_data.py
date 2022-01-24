@@ -7,8 +7,6 @@ from emva1288.process.data import Data1288
 
 
 def get_dataset(radiance_min=None, exposure_max=50000000):
-    # radiance_min = request.node.get_closest_marker("radiance_min", [None])
-    # exposure_max = request.node.get_closest_marker("exposure_max", [50000000])
     dataset = DatasetGenerator(height=50,
                                width=100,
                                bit_depth=8,

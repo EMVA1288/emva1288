@@ -8,11 +8,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-@pytest.fixture
-def camera():
-    return Camera()
-
-
 def bayer():
     h, w = [480, 640]
     wavelength = np.linspace(400, 800, 100)

@@ -4,23 +4,24 @@ from emva1288.process.parser import ParseEmvaDescriptorFile
 from emva1288.process.loader import LoadImageData
 
 
-@pytest.fixture
-def dataset():
-    dataset = DatasetGenerator(height=50,
-                               width=100,
-                               bit_depth=8,
-                               L=50,
-                               steps=10)
-    descriptor_path = dataset.descriptor_path
-    # create the parser
-    parser = ParseEmvaDescriptorFile(descriptor_path)
-    # create loader
-    loader = LoadImageData(parser.images)
-    return dataset, parser, loader
+# @pytest.fixture
+# def dataset():
+#     dataset = DatasetGenerator(height=50,
+#                                width=100,
+#                                bit_depth=8,
+#                                L=50,
+#                                steps=10)
+#     descriptor_path = dataset.descriptor_path
+#     # create the parser
+#     parser = ParseEmvaDescriptorFile(descriptor_path)
+#     # create loader
+#     loader = LoadImageData(parser.images)
+#     return dataset, parser, loader
 
 
-def test_loader(dataset):
-    dataset, parser, loader = dataset
+@pytest.mark.parametrize("dataset", ['multi_exposure'], indirect=True)
+def test_loader(loader):
+    dataset, parser, loader = loader
     # Test that checks if loader actually loads data from images given
     # by the parser
 
