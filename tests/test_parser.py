@@ -1,4 +1,3 @@
-import pytest
 import numpy as np
 from emva1288.process.parser import ParseEmvaDescriptorFile
 

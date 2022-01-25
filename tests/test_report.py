@@ -1,4 +1,3 @@
-import pytest
 import tempfile
 import os
 from emva1288.report import info_op, Report1288
