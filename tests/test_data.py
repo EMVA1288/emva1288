@@ -70,11 +70,11 @@ def test_1exposure():
     dictionary has same length than the number of photons."""
     dataset, parser, loader, data = get_dataset(radiance_min=0.1, exposure_max=1000000)
     temporal = data.data['temporal']
-    l = len(temporal['u_p'])
+    length = len(temporal['u_p'])
     # test that all temporal data arrays have same length
-    assert len(temporal['texp']) == l
-    assert len(temporal['u_ydark']) == l
-    assert len(temporal['s2_ydark']) == l
+    assert len(temporal['texp']) == length
+    assert len(temporal['u_ydark']) == length
+    assert len(temporal['s2_ydark']) == length
 
 
 def test_data_errors():
@@ -118,4 +118,4 @@ def test_data_errors():
                                0.1: {'sum': 0, 'pvar': 0}},
                            1: {0.0: {'sum': 0, 'pvar': 0},
                                0.1: {'sum': 0, 'pvar': 0}}}}
-        d = Data1288(dat)
+        _ = Data1288(dat)

@@ -45,15 +45,15 @@ def test_loader_errors():
     with pytest.raises(ValueError):
         images = {'temporal': {0: {0.1: ""}},
                   'spatial': {0: {0.1: ""}}}
-        l = LoadImageData(images)
+        _ = LoadImageData(images)
     # check that one image for temporal instead of 2 raise valueerror
     with pytest.raises(ValueError):
         images = {'temporal': {0: {0.0: ""}},
                   'spatial': {0: {0.0: ""}}}
-        l = LoadImageData(images)
+        _ = LoadImageData(images)
 
     # Check that an image that does not exist raise an IOError
     with pytest.raises(IOError):
         images = {'temporal': {0: {0.0: ["."], 0.1: ["."]}},
                   'spatial': {0: {0.0: ["."], 0.1: ["."]}}}
-        l = LoadImageData(images)
+        _ = LoadImageData(images)

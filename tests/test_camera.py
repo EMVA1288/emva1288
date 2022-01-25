@@ -89,11 +89,11 @@ def test_get_tile_2d():
 @pytest.mark.parametrize('colour', ['red', 'green', 'blue'])
 def test_bayer_filters(colour):
     values = bayer()
-    filtr = values['target'] * values['red' +'_bayer']
+    filtr = values['target'] * values['red' + '_bayer']
 
     # TODO: the xxx_filter are too close to one another, so setting a fixed red_filter pass the test.
     #  Make the colors diverge more
-    filter_mean = (np.ma.masked_array(values['img'], mask=values[colour +'_filter']).mean())
+    filter_mean = (np.ma.masked_array(values['img'], mask=values[colour + '_filter']).mean())
     test_name = inspect.stack()[0][3]
     assert filter_mean == pytest.approx(filtr, abs=10), \
         pytest.fail(f'The {colour} filter mean value: {filter_mean}\n is not within the target range: {filtr}')
@@ -103,7 +103,6 @@ def test_bayer_filters(colour):
 def test_prnu():
     # Init the parameters
     h, w = [480, 640]
-    rep = 200
     value8 = 3
     # create the pattern of the prnu
     prnu_array = np.ones((8))
@@ -142,7 +141,6 @@ def test_dsnu():
     # Init the parameters
     h, w = [480, 640]
     value8 = 5
-    rep = 200
     # create the pattern of the dsnu
     dsnu_array = np.ones((8))
     dsnu_array[-1] = value8

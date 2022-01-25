@@ -15,11 +15,9 @@ def camera():
 
 @pytest.fixture(params=['single_exposure', 'multi_exposure'])
 def dataset(request):
-    height=50
-    width=100
-    bit_depth=8
-    L=50
-    steps=10
+    height = 50
+    width = 100
+
     kwargs = {}
     dsnu = np.zeros((height, width))
     dsnu[0, :] += 5
@@ -39,18 +37,28 @@ def dataset(request):
 
     # TODO: replace this fishy selection of values with something more understandable
     if request.param == 'single_exposure':
-        kwargs['exposure_fixed'] = 10000000
-
+        exposure_fixed = 10000000
     elif request.param == 'multi_exposure':
-        kwargs['exposure_fixed'] = None
+        exposure_fixed = None
     else:
         raise ValueError("invalid internal test config")
+
     dataset = DatasetGenerator(height=height,
                                width=width,
-                               bit_depth=bit_depth,
-                               L=L,
-                               steps=steps,
-                               **kwargs
+                               bit_depth=8,
+                               L=50,
+                               steps=10,
+                               qe=Qe(width=width, height=height),
+                               radiance_min=None,
+                               exposure_max=5000000000,
+                               dark_current_ref=30,
+                               temperature=20,
+                               temperature_ref=20,
+                               K=0.5,
+                               exposure_min=50000,
+                               dsnu=dsnu,
+                               prnu=prnu,
+                               exposure_fixed=exposure_fixed
                                )
     return dataset
 
