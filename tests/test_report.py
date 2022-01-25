@@ -1,46 +1,9 @@
 import pytest
 import tempfile
 import os
-from emva1288.process import ParseEmvaDescriptorFile, LoadImageData, Data1288
-from emva1288.camera.dataset_generator import DatasetGenerator
 from emva1288.report import info_op, Report1288
 from emva1288.process.plotting import EVMA1288plots
 
-
-# class TestReportGenerator(unittest.TestCase):
-#     _height = 50
-#     _width = 100
-#     _bit_depth = 8
-#     _L = 50
-#     _steps = 10
-#     _radiance_min = None
-#     _exposure_max = 50000000
-#
-#     def setUp(self):
-#         # create dataset
-#         self.dataset = DatasetGenerator(height=self._height,
-#                                         width=self._width,
-#                                         bit_depth=self._bit_depth,
-#                                         L=self._L,
-#                                         steps=self._steps,
-#                                         radiance_min=self._radiance_min,
-#                                         exposure_max=self._exposure_max)
-#
-#         # parse dataset
-#         self.parser = ParseEmvaDescriptorFile(self.dataset.descriptor_path)
-#         # load images
-#         self.loader = LoadImageData(self.parser.images)
-#         # create data
-#         self.data = Data1288(self.loader.data)
-#         # create operation point dict
-#         self.op = info_op()
-#
-#     def tearDown(self):
-#         del self.dataset
-#         del self.parser
-#         del self.loader
-#         del self.op
-#         del self.data
 
 def test_report_generation(data):
     dataset, parser, loader, data = data

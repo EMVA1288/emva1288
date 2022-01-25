@@ -65,8 +65,6 @@ def test_data():
         assert photons, photon
 
 
-# @pytest.mark.radiance_min(0.1)
-# @pytest.mark.exposure_max(1000000)
 def test_1exposure():
     """Test that when there is only one exposure time, the temporal data
     dictionary has same length than the number of photons."""

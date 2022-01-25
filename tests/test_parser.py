@@ -1,33 +1,7 @@
 import pytest
 import numpy as np
 from emva1288.process.parser import ParseEmvaDescriptorFile
-from emva1288.camera.dataset_generator import DatasetGenerator
 
-
-# class TestParser(unittest.TestCase):
-#     # attrbutes for dataset generator
-#     _bit_depth = 8
-#     _version = '3.0'
-#     _height = 50
-#     _width = 100
-#     _L = 50
-#     _steps = 10
-#
-#     # Don't test error raised because those errors appears when descriptor file
-#     # is not well formatted and not because of a code failure.
-#
-#     def setUp(self):
-#         # create data descriptor file for parser
-#         self.d_generator = DatasetGenerator(bit_depth=self._bit_depth,
-#                                             height=self._height,
-#                                             width=self._width,
-#                                             L=self._L,
-#                                             version=self._version,
-#                                             steps=self._steps)
-#
-#     def tearDown(self):
-#         # delete generator to delete all the generated files
-#         del self.d_generator
 
 def test_good_descriptorfile(dataset):
     # test that the parser actually parses the file with the generated file
