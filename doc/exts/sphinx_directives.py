@@ -19,8 +19,7 @@ class Emva1288Directive(Directive):
     - short: Short description of the value
     - symbol: Latex symbol for the value
     - unit: Unit of the value
-    - latexname: Name to be used when refering the value inside the latex
-        reports
+    - latexname: Name to be used when refering the value inside the latex reports
 
     Example
     -------
@@ -28,10 +27,11 @@ class Emva1288Directive(Directive):
     ::
 
         .. emva1288::
-            :Section: sensitivity
-            :Short: Responsivity
-            :Symbol: R
-            :Unit: DN/p
+            ::Section: spatial
+            :Short: PRNU
+            :Symbol: $PRNU_{1288}$
+            :Unit: \%
+            :LatexName: PRNU
 
     """
     has_content = True

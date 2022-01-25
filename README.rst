@@ -12,6 +12,7 @@ Please visit `Emva1288
 Website <http://www.emva.org/standards-technology/emva-1288/>`__ for information
 and latest releases of the standard.
 
+.. end_of_package_description
 
 Documentation
 -------------

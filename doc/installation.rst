@@ -1,45 +1,42 @@
 Installation
 =============
 
-As a basic requirement is python > 3.5
+Minimum supported python version is  3.6
 
-Windows
---------
-
-WinPython
-^^^^^^^^^^
-Download WinPython from: http://winpython.github.io
-
-| Install it to any directory.
-| Run the **WinPython Command Prompt.exe** from this directory.
-| Within this command prompt procceed with the steps in the sections below.
-
-
-Install for normal users
-------------------------
-Once the python environment is installed just run ::
+Install libraries
+------------------
+In your preferred python environment run ::
 
   >> pip install emva1288
 
 
 Development
 ------------
-If you want to contribute to this project, clone it and install it::
+If you want to contribute to this project, clone it and install it in development mode::
 
   >> git clone https://github.com/EMVA1288/emva1288.git (or from a fork)
-  >> pip install -e .[doc]
+  >> pip install -e .
 
-If you make code modifications, you can run the unittests to make sure
-nothing important is broken::
 
-  >> python tests.py
+Tests
+^^^^^^
+To add and run the tests, first install the test dependencies::
 
-This will run the test suite and print the code coverage in the console.
+  >> pip install -e .[tests]
+
+Run the tests to make sure nothing important is broken::
+
+  >> pytest
+
 
 Documentation
--------------
-To rebuild the documentation::
+^^^^^^^^^^^^^
+To rebuild the documentation you must first install the documentation packages::
+
+  >> pip install -e .[doc]
+
+Go to the documentation folder and rebuild::
 
   >> cd doc
   >> make clean
-  >> make 
+  >> make
