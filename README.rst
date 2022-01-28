@@ -24,16 +24,8 @@ Camera Testing : Pytest
 ------------------------
 Install the requirements needed for running pytests:
 
-*pip install -r requirements-test.txt*
+  >> pip install .[tests]
 
-execute a subset of smoke tests for the camera:
+Execute all the tests:
 
-- **pytest -s -m smoke**
-
-Execute the entire suite of regression tests, with an html report:
-
-- **pytest -m regression --capture=tee-sys -v --durations=0 --html=emva1288/tests/reports/pytest_report.html**
-
--Additional marks available in pytest.ini to scope testing: *filters*, *tile*
-
--Refer to the html report for logging, or in log file:  *tests/logs/tests.log*
+  >> pytest
