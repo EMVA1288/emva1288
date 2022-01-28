@@ -179,8 +179,8 @@ class ParseEmvaDescriptorFile(object):
                                       'exposure photons"' % line)
 
                 # Replace floating point representation if wrong format.
-                exposure = np.float(l[1].replace(',', '.'))
-                photons = np.float(l[2].replace(',', '.'))
+                exposure = float(l[1].replace(',', '.'))
+                photons = float(l[2].replace(',', '.'))
                 # For this settings, get all the corresponding images
                 fnames = self._get_images_filenames()
                 # Add the images path to the images[kind][exposure][photons]
@@ -197,11 +197,11 @@ class ParseEmvaDescriptorFile(object):
                                       'exposure"' % line)
 
                 # replace floating point representation if wring format
-                exposure = np.float(l[1].replace(',', '.'))
+                exposure = float(l[1].replace(',', '.'))
                 # For this exposure, get all the corresponding images
                 fnames = self._get_images_filenames()
                 # Add the images path to the images dict.
-                self._add_pcount(exposure, np.float(0.0), fnames)
+                self._add_pcount(exposure, float(0.0), fnames)
 
                 continue
 

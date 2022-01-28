@@ -1,14 +1,8 @@
 Image Comparison
 =================
 
-| To easily exchange images and perform inter-implementation tests, we have defined a set of rules.
-| ANYBODY who wants somebody else to test a set of images has to follow this convention.
-
 Store the image stack for comparison
 -------------------------------------
-
-Measurements
-^^^^^^^^^^^^^
 
 | All images to perform an EMVA1288 measurement are stored as 8bit or 16bit images. 
 | The used exposure times and number of collected photons per pixel are reported.
@@ -24,7 +18,7 @@ Measurements
   * Dark: N Images; Exposure time for 50% of the saturation capacity
 
 File Format
-^^^^^^^^^^^^
+-----------
 
 | One plain text file organize the path to the images and holds the information about the used exposure times and number of photons.
 | There are some key characters to organize the file:
@@ -72,6 +66,6 @@ The char 'l' passes information for the latex file to use with the template::
   l InterfaceType Gigabit Ethernet
 
 Complete Example File
-^^^^^^^^^^^^^^^^^^^^^^
+----------------------
 
 `Example of a descriptor file <https://github.com/EMVA1288/datasets/blob/master/EMVA1288_ReferenceSet_003_Simulation_12Bit/EMVA1288_Data.txt>`__

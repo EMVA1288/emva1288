@@ -1,21 +1,21 @@
-.. emva1288 documentation master file, created by
-   sphinx-quickstart on Fri Jun  3 08:58:10 2016.
+.. EMVA1288 documentation master file, created by
+   sphinx-quickstart on Tue Jan 25 13:51:20 2022.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-
-Welcome to emva1288's documentation!
-====================================
-
+.. include:: ../README.rst
+   :end-before: .. end_of_package_description
 
 .. toctree::
-   :maxdepth: 4 
-   
-   readme_link
-   installation
-   tutorial
-   datasets
+   :maxdepth: 2
+   :caption: Contents:
+
+   install_link
+   datasets/index
    doc_api/emva1288
+   tutorial
+   examples/index
+
 
 Indices and tables
 ==================
@@ -23,11 +23,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
-
-Documentation TODO
-==================
-These are the missing parts of the documentation
-
-.. todolist::
-
