@@ -24,7 +24,7 @@
 
 # EXAMPLE FILES #
 ##################
-examples/myreport/
+doc/examples/myreport/
 
 # OS generated files #
 ######################
@@ -50,7 +50,7 @@ doc/_build
 cover
 .ipynb_checkpoints
 #setuptools_csm version
-emva1288._version.py
+emva1288/_version.py
 
 
 # log folder #
