@@ -10,7 +10,7 @@
    :maxdepth: 2
    :caption: Contents:
 
-   installation
+   install_link
    datasets/index
    doc_api/emva1288
    tutorial

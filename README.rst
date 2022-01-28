@@ -18,14 +18,3 @@ Documentation
 -------------
 For more information visit `the documentation page
 <http://emva1288.readthedocs.io/en/latest/>`__
-
-
-Camera Testing : Pytest
-------------------------
-Install the requirements needed for running pytests:
-
-  >> pip install .[tests]
-
-Execute all the tests:
-
-  >> pytest
