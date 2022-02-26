@@ -869,5 +869,5 @@ class Plotting1288(object):
             for test in self.tests:
                 plot.plot(test)
             plot.rearrange()
-            figure.canvas.set_window_title(plot.name)
+            figure.canvas.manager.set_window_title(plot.name)
         plt.show()
