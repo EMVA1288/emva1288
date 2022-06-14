@@ -216,6 +216,6 @@ as input in the examples shown below.
 Examples
 ========
 
--  `A simple example <https://github.com/EMVA1288/emva1288/blob/master/examples/simple_emva_process.py>`__
--  `Step by step example <https://github.com/EMVA1288/emva1288/blob/master/examples/full_emva_process.py>`__
--  `Experimental report generation module <https://github.com/EMVA1288/emva1288/blob/master/examples/sample_report.py>`__
+-  `A simple example <https://github.com/EMVA1288/emva1288/blob/master/doc/examples/simple_emva_process.py>`__
+-  `Step by step example <https://github.com/EMVA1288/emva1288/blob/master/doc/examples/full_emva_process.py>`__
+-  `Experimental report generation module <https://github.com/EMVA1288/emva1288/blob/master/doc/examples/sample_report.py>`__
