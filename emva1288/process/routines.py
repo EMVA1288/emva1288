@@ -124,6 +124,10 @@ def FFT1288(img_, rotate=False, n=1):
 
     Compute an FFT per line and average the resulting ffts
 
+    If img is a masked array then remove the masked data line
+    by line and calculate the FFT on the minimum number of valid
+    columns.
+
     Parameters
     ----------
     img : array
@@ -144,19 +148,29 @@ def FFT1288(img_, rotate=False, n=1):
 
     _rows, cols = GetImgShape(img)
 
+    # remove masked entries if img is a masked array
     if isinstance(img, np.ma.masked_array):
-        img_line = []
-        # If img is masked, perform fft line by line
+        # use the same ndarray to save memory
+        compressed = np.ma.getdata(img)
+        # the maximum numbers or cols is the shape
+        cols = compressed.shape[1]
+        # keep count of non empty lines
+        lines = 0
+        # compress line by line
         for line in img:
-            # fft must be performed on compressed line
+            # drop masked data
             line = line.compressed()
-            # Assuring the line is not empty
+            # assure the line is not empty
             if line.size == 0:
                 continue
-            img_line.append(line)
-        # cols might be changed, it corresponds to len(arr)
-        cols = np.min([len(line)for line in img_line])
-        img = img_line[:][0:cols]
+            # set the data in the compressed array
+            compressed[lines, :line.size] = line
+            # keep count of non-empty lines
+            lines += 1
+            # keep trac of minimum column size
+            cols = min(cols, line.size)
+        # trim to actual number of lines and columns
+        img = compressed[:lines, :cols]
 
     # simply perform fft on x axis
     img = np.asfarray(img) - np.mean(img)
