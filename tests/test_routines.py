@@ -53,3 +53,15 @@ def test_highpass_filter():
     # equal
     assert np.allclose(sig_img_filt, img_filt, rtol=0, atol=10e-4)
     assert np.allclose(sig_imgc_filt, imgc_filt, rtol=0, atol=10e-4)
+
+
+def test_FFT1288_masked():
+    """ Make sure the masking happens properly in the fft calculation """
+    rows = 512
+    cols = 128
+    bayer_filter = np.tile([[0, 1], [1, 0]], (rows//2, cols//2))
+    img = np.abs(np.random.random([rows, cols]))
+    # apply column offset to some bottom rows only and make sure we see it in the fft
+    img[128::, ::8] += 10
+    fft = routines.FFT1288(img_=np.ma.array(img, mask=bayer_filter))
+    assert (fft > 1).any()
