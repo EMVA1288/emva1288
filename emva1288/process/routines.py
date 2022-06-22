@@ -164,8 +164,8 @@ def FFT1288(img, rotate=False, n=1):
     # if the image is the sum of n image, the fft of the average image is
     r /= n ** 2
 
-    # Return only half of the spectrogram (it is symemtrical)
-    return r[: cols // 2]
+    # Return only half of the spectrogram (it is symmetrical)
+    return r[: cols // 2 + 1]
 
 
 def _row_wise_compress(img):

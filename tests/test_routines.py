@@ -65,3 +65,15 @@ def test_FFT1288_masked():
     img[128::, ::8] += 10
     fft = routines.FFT1288(img=np.ma.array(img, mask=bayer_filter))
     assert (fft > 1).any()
+
+
+def test_FFT1288_at_nyquist():
+    '''Make sure the nyquist freq is also included
+
+    An odd-even offset in the image should show up as a high spike at nyquist
+    '''
+    img = np.random.random([256, 128])
+    img[:, ::2] += 1
+    fft = routines.FFT1288(img_=img)
+    print(fft)
+    assert fft[-1] > 1
