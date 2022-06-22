@@ -142,7 +142,7 @@ def FFT1288(img_, rotate=False, n=1):
     -------
     array : One dimension FFT power spectrum
     '''
-    img = np.ma.copy(img_)
+    img = img_.copy()
     if rotate:
         img = img.transpose()
 
