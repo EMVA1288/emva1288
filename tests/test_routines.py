@@ -63,5 +63,5 @@ def test_FFT1288_masked():
     img = np.abs(np.random.random([rows, cols]))
     # apply column offset to some bottom rows only and make sure we see it in the fft
     img[128::, ::8] += 10
-    fft = routines.FFT1288(img_=np.ma.array(img, mask=bayer_filter))
+    fft = routines.FFT1288(img=np.ma.array(img, mask=bayer_filter))
     assert (fft > 1).any()

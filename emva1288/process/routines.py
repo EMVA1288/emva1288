@@ -119,7 +119,7 @@ def GetImgShape(img):
     return rows, cols
 
 
-def FFT1288(img_, rotate=False, n=1):
+def FFT1288(img, rotate=False, n=1):
     '''Compute the FFT emva1288 style
 
     Compute an FFT per line and average the resulting ffts
@@ -142,35 +142,14 @@ def FFT1288(img_, rotate=False, n=1):
     -------
     array : One dimension FFT power spectrum
     '''
-    img = img_.copy()
     if rotate:
         img = img.transpose()
 
-    _rows, cols = GetImgShape(img)
-
     # remove masked entries if img is a masked array
     if isinstance(img, np.ma.masked_array):
-        # use the same ndarray to save memory
-        compressed = np.ma.getdata(img)
-        # the maximum numbers or cols is the shape
-        cols = compressed.shape[1]
-        # keep count of non empty lines
-        lines = 0
-        # compress line by line
-        for line in img:
-            # drop masked data
-            line = line.compressed()
-            # assure the line is not empty
-            if line.size == 0:
-                continue
-            # set the data in the compressed array
-            compressed[lines, :line.size] = line
-            # keep count of non-empty lines
-            lines += 1
-            # keep trac of minimum column size
-            cols = min(cols, line.size)
-        # trim to actual number of lines and columns
-        img = compressed[:lines, :cols]
+        img = _row_wise_compress(img)
+
+    _rows, cols = GetImgShape(img)
 
     # simply perform fft on x axis
     img = np.asfarray(img) - np.mean(img)
@@ -187,6 +166,36 @@ def FFT1288(img_, rotate=False, n=1):
 
     # Return only half of the spectrogram (it is symemtrical)
     return r[: cols // 2]
+
+
+def _row_wise_compress(img):
+    """ Compress masked ndarrays row-by-row
+
+    Empty (fully masked) rows are removed. The number of columns is truncated to the row with the least amount
+    of valid entries.
+    """
+    img = img.copy()
+    # use the same ndarray to save memory
+    compressed = np.ma.getdata(img)
+    # the maximum numbers or cols is the shape
+    cols = compressed.shape[1]
+    # keep count of non empty lines
+    lines = 0
+    # compress line by line
+    for line in img:
+        # drop masked data
+        line = line.compressed()
+        # assure the line is not empty
+        if line.size == 0:
+            continue
+        # set the data in the compressed array
+        compressed[lines, :line.size] = line
+        # keep count of non-empty lines
+        lines += 1
+        # keep trac of minimum column size
+        cols = min(cols, line.size)
+    # trim to actual number of lines and columns
+    return compressed[:lines, :cols]
 
 
 def GetFrecs(fft):
