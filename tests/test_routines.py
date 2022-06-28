@@ -74,6 +74,6 @@ def test_FFT1288_at_nyquist():
     '''
     img = np.random.random([256, 128])
     img[:, ::2] += 1
-    fft = routines.FFT1288(img_=img)
+    fft = routines.FFT1288(img=img)
     print(fft)
     assert fft[-1] > 1
