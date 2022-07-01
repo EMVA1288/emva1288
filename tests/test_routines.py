@@ -75,5 +75,7 @@ def test_FFT1288_at_nyquist():
     img = np.random.random([256, 128])
     img[:, ::2] += 1
     fft = routines.FFT1288(img=img)
-    print(fft)
+    assert fft[-1] > 1
+    # check if it also works on 127 columns
+    fft = routines.FFT1288(img=np.delete(img, -1, 1))
     assert fft[-1] > 1
