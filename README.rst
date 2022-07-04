@@ -17,4 +17,4 @@ and latest releases of the standard.
 Documentation
 -------------
 For more information visit `the documentation page
-<http://emva1288.readthedocs.io/en/latest/>`__
+<http://emva1288.readthedocs.io/en/latest/>`__.
