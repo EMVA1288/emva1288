@@ -422,8 +422,8 @@ class PlotHorizontalSpectrogramDSNU(Emva1288Plot):
                 label='Data',
                 gid='%d:data' % test.id)
 
-        ax.axhline(test.DSNU1288_DN(),
-                   label='$DSNU_{1288.DN}$',
+        ax.axhline(test.DSNU1288,
+                   label='$DSNU_{1288}$',
                    linestyle='--',
                    color='r',
                    gid='%d:marker' % test.id)
@@ -491,8 +491,8 @@ class PlotVerticalSpectrogramDSNU(Emva1288Plot):
                 label='Data',
                 gid='%d:data' % test.id)
 
-        ax.axhline(test.DSNU1288_DN(),
-                   label='$DSNU_{1288.DN}$',
+        ax.axhline(test.DSNU1288,
+                   label='$DSNU_{1288}$',
                    linestyle='--',
                    color='r',
                    gid='%d:marker' % test.id)

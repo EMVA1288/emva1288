@@ -48,6 +48,8 @@ class Data1288(object):
         self.log.setLevel(loglevel)
 
         self.pixels = pixels or data['width'] * data['height']
+        self.rows = data['width']
+        self.cols = data['height']
 
         self.data = {}
         self.data['temporal'] = self._get_temporal(data['temporal'])
@@ -205,7 +207,7 @@ class Data1288(object):
                  pvar images for each photon count and each exposure time,
                - *'avg'*: the average computed from the sum image for
                  each photon count and each exposure time,
-               - *'var'*: the varianve computed from the pvar image for each
+               - *'var'*: the variance computed from the pvar image for each
                  photon count and each exposure time,
                - *'sum_dark'*: the sum image in the dark for
                  each exposure time,
@@ -281,18 +283,36 @@ class Data1288(object):
         """
 
         # This cast is just in case the original images are unint
-        sum_ = d['sum'].astype(np.int64)
+        sum_ = d['sum'].astype(np.int64)  # <y> --> eqn(33)
         pvar_ = d['pvar'].astype(np.int64)
 
         L = d['L']
-        avg_ = sum_ / (1.0 * L)
+        M = self.rows
+        N = self.cols
+
+        # Eqn(38)
+        avg_ = sum_ / (1.0 * L)          # u_y (on image)
+        avg = avg_.mean()                # u_y --> int
+        avg_row = np.mean(avg_, axis=0)  # u_y[n]
+        avg_col = np.mean(avg_, axis=1)  # u_y[m]
+
         var_ = pvar_ / (1.0 * np.square(L) * (L - 1))
+        var_mean = var_.mean()
+
+        # ddof = 1 (delta degrees of freedom) accounts for the minus 1
+        # in the divisor for the calculation of variance
+        avg_var = np.var(avg_, ddof=1)  # s_2_y
+        # Eqn(41) ->
+        s_2_y_cav = 1/M * np.sum(np.square(avg_row - avg)) - var_mean/(L*M)
+        s_2_y_rav = 1/N * np.sum(np.square(avg_col - avg)) - var_mean/(L*M)
 
         return {'sum' + postfix: sum_,
-                'var_mean' + postfix: var_.mean(),
-                'L' + postfix: L,
-                # ddof = 1 (delta degrees of freedom) accounts for the minus 1
-                # in the divisor for the calculation of variance
-                'avg_var' + postfix: np.var(avg_, ddof=1),
-                'avg_mean' + postfix: avg_.mean()
+                'var_mean' + postfix: var_mean,  # sigma_2_y(_stack)
+                'L' + postfix: L,                # int -> number of images
+                'M' + postfix: M,                # int -> image rows
+                'N' + postfix: N,                # int -> image columns
+                'avg_var' + postfix: avg_var,    # s_2_y_measured
+                'avg_mean' + postfix: avg,       # u_y
+                'avg_var_cav' + postfix: s_2_y_cav,
+                'avg_var_rav' + postfix: s_2_y_rav,
                 }

@@ -112,7 +112,7 @@ def test_DSNU(results):
     assert results.DSNU1288 == np.sqrt(results.s_2_y_dark) / results.K
 
     # Test that DSNU in DN is DSNU * K
-    assert results.DSNU1288_DN() == results.DSNU1288 * results.K
+    # TODO: add nan test of DSNU.row,col,pixel
 
 
 @pytest.mark.parametrize("dataset", ['single_exposure'], indirect=True)
@@ -172,4 +172,4 @@ def test_nans():
                        'L_dark': 3}
     r = Results1288(data)
     assert r.DSNU1288 is np.nan
-    assert r.DSNU1288_DN() is np.nan
+    #TODO: add nan test of DSNU.row,col,pixel
