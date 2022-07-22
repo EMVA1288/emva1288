@@ -43,7 +43,7 @@ def get_int_imgs(imgs):
         sum : total summed image [M x N] --> array. int64
         pvar : summed variance image [M x N] --> array. int64
     '''
-    L = len(imgs)         # number of images
+    L = len(imgs)  # number of images
 
     sum_ = 0
     sq_ = 0

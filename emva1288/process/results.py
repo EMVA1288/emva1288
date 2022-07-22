@@ -208,7 +208,7 @@ class Results1288(object):
     def QE(self):
         """Quantum efficiency.
 
-        It is retrieved as the ratio of the responsively to the overall
+        It is retrieved as the ratio of the responsivity to the overall
         system gain.
 
         .. emva1288::
@@ -808,8 +808,8 @@ class Results1288(object):
     def s_2_y_col(self):
         M = self.spatial['M']
         N = self.spatial['N']
-        para_1 = (M*N - M)/(M*N-M-N)
-        para_2 = N/(M*N-M-N)
+        para_1 = (M * N - M) / (M * N - M - N)
+        para_2 = N / (M * N - M - N)
         s_2_y_col = para_1 * self.s_2_y_cav - para_2 * (self.s_2_y - self.s_2_y_rav)
         return s_2_y_col
 
@@ -817,8 +817,8 @@ class Results1288(object):
     def s_2_y_col_dark(self):
         M = self.spatial['M']
         N = self.spatial['N']
-        para_1 = (M*N - M)/(M*N-M-N)
-        para_2 = N/(M*N-M-N)
+        para_1 = (M * N - M) / (M * N - M - N)
+        para_2 = N / (M * N - M - N)
         s_2_y_col_dark = para_1 * self.s_2_y_cav_dark - para_2 * (self.s_2_y_dark - self.s_2_y_rav_dark)
         return s_2_y_col_dark
 
@@ -827,8 +827,8 @@ class Results1288(object):
         # L = self.spatial['L']
         M = self.spatial['M']
         N = self.spatial['N']
-        para_1 = (M*N - M)/(M*N-M-N)
-        para_2 = N/(M*N-M-N)
+        para_1 = (M * N - N) / (M * N - M - N)
+        para_2 = M / (M * N - M - N)
         s_2_y_row = para_1 * self.s_2_y_rav - para_2 * (self.s_2_y - self.s_2_y_cav)
         return s_2_y_row
 
@@ -837,8 +837,8 @@ class Results1288(object):
         # L = self.spatial['L']
         M = self.spatial['M']
         N = self.spatial['N']
-        para_1 = (M*N - M)/(M*N-M-N)
-        para_2 = N/(M*N-M-N)
+        para_1 = (M * N - N) / (M * N - M - N)
+        para_2 = M / (M * N - M - N)
         s_2_y_row_dark = para_1 * self.s_2_y_rav_dark - para_2 * (self.s_2_y_dark - self.s_2_y_cav_dark)
         return s_2_y_row_dark
 
@@ -847,7 +847,7 @@ class Results1288(object):
         # L = self.spatial['L']
         M = self.spatial['M']
         N = self.spatial['N']
-        para = M*N / (M*N-M-N)
+        para = M * N / (M * N - M - N)
         s_y_pixel = para*(self.s_2_y - self.s_2_y_cav - self.s_2_y_rav)
         return s_y_pixel
 
@@ -856,7 +856,7 @@ class Results1288(object):
         # L = self.spatial['L']
         M = self.spatial['M']
         N = self.spatial['N']
-        para = M*N / (M*N-M-N)
+        para = M * N / (M * N - M - N)
         s_2_y_pixel_dark = para*(self.s_2_y_dark - self.s_2_y_cav_dark - self.s_2_y_rav_dark)
         return s_2_y_pixel_dark
 
@@ -892,7 +892,7 @@ class Results1288(object):
 
         .. emva1288::
             :Section: spatial
-            :Short: DSNU
+            :Short: DSNUrow
             :Symbol: $DSNU_{1288.row}$
             :Unit: $e^-$
             :LatexName: DSNU
@@ -913,7 +913,7 @@ class Results1288(object):
 
         .. emva1288::
             :Section: spatial
-            :Short: DSNU
+            :Short: DSNUcol
             :Symbol: $DSNU_{1288.col}$
             :Unit: $e^-$
             :LatexName: DSNU
@@ -934,7 +934,7 @@ class Results1288(object):
 
         .. emva1288::
             :Section: spatial
-            :Short: DSNU
+            :Short: DSNUpixel
             :Symbol: $DSNU_{1288.pixel}$
             :Unit: $e^-$
             :LatexName: DSNU
@@ -977,7 +977,7 @@ class Results1288(object):
 
         .. emva1288::
             :Section: spatial
-            :Short: PRNU
+            :Short: PRNUrow
             :Symbol: $PRNU_{1288.row}$
             :Unit: \%
             :LatexName: PRNU
@@ -998,7 +998,7 @@ class Results1288(object):
 
         .. emva1288::
             :Section: spatial
-            :Short: PRNU
+            :Short: PRNUcol
             :Symbol: $PRNU_{1288.col}$
             :Unit: \%
             :LatexName: PRNU
@@ -1019,7 +1019,7 @@ class Results1288(object):
 
         .. emva1288::
             :Section: spatial
-            :Short: PRNU
+            :Short: PRNUpixel
             :Symbol: $PRNU_{1288.pixel}$
             :Unit: \%
             :LatexName: PRNU

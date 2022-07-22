@@ -303,8 +303,8 @@ class Data1288(object):
         # in the divisor for the calculation of variance
         avg_var = np.var(avg_, ddof=1)  # s_2_y
         # Eqn(41) ->
-        s_2_y_cav = 1/M * np.sum(np.square(avg_row - avg)) - var_mean/(L*M)
-        s_2_y_rav = 1/N * np.sum(np.square(avg_col - avg)) - var_mean/(L*M)
+        s_2_y_cav = 1 / N * np.sum(np.square(avg_row - avg)) - var_mean / (L * M)
+        s_2_y_rav = 1 / M * np.sum(np.square(avg_col - avg)) - var_mean / (L * N)
 
         return {'sum' + postfix: sum_,
                 'var_mean' + postfix: var_mean,  # sigma_2_y(_stack)
