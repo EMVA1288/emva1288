@@ -815,8 +815,8 @@ class Results1288(object):
 
     @property
     def s_2_y_col_dark(self):
-        M = self.spatial['M']
-        N = self.spatial['N']
+        M = self.spatial['M_dark']
+        N = self.spatial['N_dark']
         para_1 = (M * N - M) / (M * N - M - N)
         para_2 = N / (M * N - M - N)
         s_2_y_col_dark = para_1 * self.s_2_y_cav_dark - para_2 * (self.s_2_y_dark - self.s_2_y_rav_dark)
@@ -835,8 +835,8 @@ class Results1288(object):
     @property
     def s_2_y_row_dark(self):
         # L = self.spatial['L']
-        M = self.spatial['M']
-        N = self.spatial['N']
+        M = self.spatial['M_dark']
+        N = self.spatial['N_dark']
         para_1 = (M * N - N) / (M * N - M - N)
         para_2 = M / (M * N - M - N)
         s_2_y_row_dark = para_1 * self.s_2_y_rav_dark - para_2 * (self.s_2_y_dark - self.s_2_y_cav_dark)
@@ -854,8 +854,8 @@ class Results1288(object):
     @property
     def s_2_y_pixel_dark(self):
         # L = self.spatial['L']
-        M = self.spatial['M']
-        N = self.spatial['N']
+        M = self.spatial['M_dark']
+        N = self.spatial['N_dark']
         para = M * N / (M * N - M - N)
         s_2_y_pixel_dark = para*(self.s_2_y_dark - self.s_2_y_cav_dark - self.s_2_y_rav_dark)
         return s_2_y_pixel_dark

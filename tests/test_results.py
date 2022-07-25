@@ -111,8 +111,10 @@ def test_DSNU(results):
     # Test that DSNU is sqrt(s2_ydark) / gain
     assert results.DSNU1288 == np.sqrt(results.s_2_y_dark) / results.K
 
-    # Test that DSNU in DN is DSNU * K
-    # TODO: add nan test of DSNU.row,col,pixel
+    # Test DSNU.row,col,pixel
+    assert results.DSNU1288_row == np.sqrt(results.s_2_y_row_dark) / results.K
+    assert results.DSNU1288_col == np.sqrt(results.s_2_y_col_dark) / results.K
+    assert results.DSNU1288_pixel == np.sqrt(results.s_2_y_pixel_dark) / results.K
 
 
 @pytest.mark.parametrize("dataset", ['single_exposure'], indirect=True)
@@ -167,9 +169,20 @@ def test_nans():
     assert r.u_I_var is np.nan
 
     # Test that a negative s2y_dark will yield a Nan for DSNU1288
-    data['spatial'] = {'avg_var_dark': 0.,
+    data['temporal']['s2_ydark'] = np.array([1, 0])
+    data['temporal']['s2_y'] = np.array([1, 0])
+    data['temporal']['u_y'] = np.array([1, 0])
+    data['temporal']['u_ydark'] = np.array([1, 0])
+
+    data['spatial'] = {'avg_var_dark': -0.5,
+                       'avg_var_rav_dark': -0.1,
+                       'avg_var_cav_dark': -0.1,
                        'var_mean_dark': 1.,
-                       'L_dark': 3}
+                       'L_dark': 2,
+                       'M_dark': 30,
+                       'N_dark': 50}
     r = Results1288(data)
     assert r.DSNU1288 is np.nan
-    #TODO: add nan test of DSNU.row,col,pixel
+    assert r.DSNU1288_row is np.nan
+    assert r.DSNU1288_col is np.nan
+    assert r.DSNU1288_pixel is np.nan
