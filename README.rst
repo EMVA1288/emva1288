@@ -8,6 +8,16 @@ This is the reference implementation for the EMVA1288 Standard for
 Measurement and Presentation of Specifications for Machine Vision
 Sensors and Cameras.
 
++------------------+------------------+
+| Software version | Standard version |
++==================+==================+
+| Master           | 3.1              |
++------------------+------------------+
+| 0.6.*            | 3.1              |
++------------------+------------------+
+| 0.5.*            | 3.1              |
++------------------+------------------+
+
 Please visit `Emva1288
 Website <http://www.emva.org/standards-technology/emva-1288/>`__ for information
 and latest releases of the standard.
