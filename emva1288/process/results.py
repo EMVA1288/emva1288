@@ -578,8 +578,8 @@ class Results1288(object):
         lin['fit_slope'] = a
         lin['fit_offset'] = b
         lin['relative_deviation'] = dev
-        lin['linearity_error_min'] = np.min(dev[imin: imax])
-        lin['linearity_error_max'] = np.max(dev[imin: imax])
+        lin['linearity_error_min'] = np.min(dev[self.index_linearity_min: self.index_linearity_max])
+        lin['linearity_error_max'] = np.max(dev[self.index_linearity_min: self.index_linearity_max])
 
         return lin
 
