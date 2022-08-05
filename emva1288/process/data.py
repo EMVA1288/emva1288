@@ -127,7 +127,6 @@ class Data1288(object):
                 d = self._get_temporal_data(data[t][p])
                 u_y.append(d['mean'])
                 s2_y.append(d['var'] - d['dmean'])
-                print('percentage_diff = ',d['dmean'] , d['var'], d['dmean']/d['var'])
 
         # Append all data to temporal dict
         temporal['u_p'] = np.asarray(u_p)
