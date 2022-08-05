@@ -89,9 +89,9 @@ def test_data_errors():
     # if no dark data in spatial
     with pytest.raises(ValueError):
         dat = {'width': 1, 'height': 1,
-               'temporal': {0: {0.0: {'sum': 0, 'pvar': 0},
-                                0.1: {'sum': 0, 'pvar': 0}}},
-               'spatial': {0: {0.1: {'sum': 0, 'pvar': 0}}}}
+               'temporal': {0: {0.0: {'sum': 0, 'pvar': 0, 'dmean': 0},
+                                0.1: {'sum': 0, 'pvar': 0, 'dmean': 0}}},
+               'spatial': {0: {0.1: {'sum': 0, 'pvar': 0, 'dmean': 0}}}}
         d = Data1288(dat)
 
     # if there is no bright image for each dark
@@ -104,18 +104,18 @@ def test_data_errors():
     # If there is no bright image for spatial
     with pytest.raises(ValueError):
         dat = {'width': 1, 'height': 1,
-               'temporal': {0: {0.0: {'sum': 0, 'pvar': 0},
-                                0.1: {'sum': 0, 'pvar': 0}}},
-               'spatial': {0: {0.0: {'sum': 0, 'pvar': 0}}}}
+               'temporal': {0: {0.0: {'sum': 0, 'pvar': 0, 'dmean': 0},
+                                0.1: {'sum': 0, 'pvar': 0, 'dmean': 0}}},
+               'spatial': {0: {0.0: {'sum': 0, 'pvar': 0, 'dmean': 0}}}}
         d = Data1288(dat)
 
     # If there is more than 1 exposure time with spatial data
     with pytest.raises(ValueError):
         dat = {'width': 1, 'height': 1,
-               'temporal': {0: {0.0: {'sum': 0, 'pvar': 0},
-                                0.1: {'sum': 0, 'pvar': 0}}},
-               'spatial': {0: {0.0: {'sum': 0, 'pvar': 0},
-                               0.1: {'sum': 0, 'pvar': 0}},
-                           1: {0.0: {'sum': 0, 'pvar': 0},
-                               0.1: {'sum': 0, 'pvar': 0}}}}
+               'temporal': {0: {0.0: {'sum': 0, 'pvar': 0, 'dmean': 0},
+                                0.1: {'sum': 0, 'pvar': 0, 'dmean': 0}}},
+               'spatial': {0: {0.0: {'sum': 0, 'pvar': 0, 'dmean': 0},
+                               0.1: {'sum': 0, 'pvar': 0, 'dmean': 0}},
+                           1: {0.0: {'sum': 0, 'pvar': 0, 'dmean': 0},
+                               0.1: {'sum': 0, 'pvar': 0, 'dmean': 0}}}}
         _ = Data1288(dat)

@@ -120,6 +120,7 @@ class LoadImageData(object):
         d = {}
         d['sum'] = np.sum(imgs['sum'])  # sum of the sum of images
         d['pvar'] = np.sum(imgs['pvar'])  # sum of the pvar image
+        d['dmean'] = imgs['dmean']  # sum of the dmean image
         return d
 
     def _load_imgs(self, fnames):

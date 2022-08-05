@@ -42,17 +42,23 @@ def get_int_imgs(imgs):
 
     sum_ = 0
     sq_ = 0
+    n = 0
+    dmean_ = 0
     for img in imgs:
         # we force the images as int64 to make sure we do not clip
         i = img.astype(np.int64)
         sum_ += i
         sq_ += np.square(i)
+        if n > 0:
+            dmean_ += np.square(np.mean(i) - np.mean(oi))
+        oi = i  # old image
+        n += 1
 
     # the pseudo variance can be computed from the sum image and the sum of
     # the square images
     var_ = L * (L * sq_ - np.square(sum_))
 
-    return {'L': L, 'sum': sum_, 'pvar': var_}
+    return {'L': L, 'sum': sum_, 'pvar': var_, 'dmean': dmean_}
 
 
 def LinearB0(Xi, Yi):
