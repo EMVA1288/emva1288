@@ -104,6 +104,7 @@ def test_DR(results):
     # Test that DR_bit is log_2(DR)
     assert results.DR_bit() == np.log2(results.DR)
 
+
 @pytest.mark.parametrize("dataset", ['single_exposure'], indirect=True)
 def test_DSNU(results):
     dataset, parser, loader, data, results = results
