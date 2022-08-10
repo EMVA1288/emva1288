@@ -483,7 +483,9 @@ class Results1288(object):
 
     def DR_bit(self):
         """Dynamic Range in bits.
+        
         It is defined as log_2 ( Dynamic Range ).
+        
         .. emva1288::
             :Section: sensitivity
             :Short: Dynamic Range
