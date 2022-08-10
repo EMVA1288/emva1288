@@ -177,7 +177,7 @@ class Data1288(object):
         """
         mean_ = d['sum'] / (2.0 * self.pixels)
         var_ = d['pvar'] / (4.0 * self.pixels)
-        dmean_ = d['dmean'] / 2
+        dmean_ = np.square(d['dmean']) / 2
         return {'mean': mean_, 'var': var_, 'dmean': dmean_}
 
     def _get_spatial(self, data):

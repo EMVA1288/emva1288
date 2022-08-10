@@ -50,7 +50,7 @@ def get_int_imgs(imgs):
         sum_ += i
         sq_ += np.square(i)
         if n > 0:
-            dmean_ += np.square(np.mean(i) - np.mean(oi))
+            dmean_ += np.mean(i) - np.mean(oi)
         oi = i  # old image
         n += 1
 
