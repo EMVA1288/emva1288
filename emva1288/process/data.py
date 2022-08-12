@@ -161,6 +161,9 @@ class Data1288(object):
         The variance is the pseudo variance(integer), divided by
         (4 * self.pixels)
 
+        The mean difference of images used for correction for the variance,
+        squared and then divided by 2
+
         Parameters
         ----------
         d : dict

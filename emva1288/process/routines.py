@@ -31,12 +31,16 @@ def load_image(fname):
 
 def get_int_imgs(imgs):
     '''
-    Returns the sum and pseudo-variance from list of images
+    Returns the sum, pseudo-variance, mean difference from list of images
     sum is just the image resulting on the addition of all the images
     pvar is the pseudo-variance, this is
     pvar = SUM((Li - SUM(i))^2)
     to get variance from pseudo-variance
     var = (1/(L^2) * 1/(L - 1)) * pvar
+    dmean is the mean difference between the images, obtained by:
+    SUM(mean(i) - mean(i-1)), when i>0
+    this is used to remove mu_y^2 from the total variance
+    important value to get sigma_y (temporal variance).
     '''
     L = len(imgs)
 
