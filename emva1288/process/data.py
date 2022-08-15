@@ -277,9 +277,13 @@ class Data1288(object):
         are:
                - *'sum'*: the sum image preserved from input,
                - *'L'*: the number of image summed,
+               - *'M'*: the number of rows for one image
+               - *'N'*: the number of columns for one image
                - *'avg_var'*: variance of the the average image
                - *'avg_mean'*: mean of the the average image
                - *'var_mean'*: the variance of the variance image
+               - *'avg_var_cav'*: residual column spatial variance
+               - *'avg_var_rav'*: residual row spatial variance
         """
 
         # This cast is just in case the original images are unint

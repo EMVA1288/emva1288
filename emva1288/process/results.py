@@ -788,24 +788,62 @@ class Results1288(object):
 
     @property
     def s_2_y_cav(self):
+        """Mid value of Spatial variance from image,
+
+        .. emva1288::
+            :Section: spatial
+            :Short: Spatial variance from image
+            :Symbol: $s^2_{y.cav}$
+            :Unit: DN2
+        """
         return self.spatial['avg_var_cav']
 
     @property
     def s_2_y_cav_dark(self):
+        """Mid value of Spatial variance from image,
+
+        .. emva1288::
+            :Section: spatial
+            :Short: Spatial variance from image
+            :Symbol: $s^2_{y.cav.dark}$
+            :Unit: DN2
+        """
         return self.spatial['avg_var_cav_dark']
 
     @property
     def s_2_y_rav(self):
-        '''Mid value.'''
+        """Mid value of Spatial variance from image,
+
+        .. emva1288::
+            :Section: spatial
+            :Short: Spatial variance from image
+            :Symbol: $s^2_{y.rav}$
+            :Unit: DN2
+        """
         return self.spatial['avg_var_rav']
 
     @property
     def s_2_y_rav_dark(self):
-        '''Mid value.'''
+        """Mid value of Spatial variance from image,
+
+        .. emva1288::
+            :Section: spatial
+            :Short: Spatial variance from image
+            :Symbol: $s^2_{y.rav.dark}$
+            :Unit: DN2
+        """
         return self.spatial['avg_var_rav_dark']
 
     @property
     def s_2_y_col(self):
+        """Column Spatial variance from image,
+
+        .. emva1288::
+            :Section: spatial
+            :Short: Spatial variance from image
+            :Symbol: $s^2_{y.col}$
+            :Unit: DN2
+        """
         M = self.spatial['M']
         N = self.spatial['N']
         para_1 = (M * N - M) / (M * N - M - N)
@@ -815,6 +853,14 @@ class Results1288(object):
 
     @property
     def s_2_y_col_dark(self):
+        """Column Spatial variance from dark image,
+
+        .. emva1288::
+            :Section: spatial
+            :Short: Spatial variance from image
+            :Symbol: $s^2_{y.col.dark}$
+            :Unit: DN2
+        """
         M = self.spatial['M_dark']
         N = self.spatial['N_dark']
         para_1 = (M * N - M) / (M * N - M - N)
@@ -824,6 +870,14 @@ class Results1288(object):
 
     @property
     def s_2_y_row(self):
+        """Row Spatial variance from image,
+
+        .. emva1288::
+            :Section: spatial
+            :Short: Spatial variance from image
+            :Symbol: $s^2_{y.row}$
+            :Unit: DN2
+        """
         # L = self.spatial['L']
         M = self.spatial['M']
         N = self.spatial['N']
@@ -834,6 +888,14 @@ class Results1288(object):
 
     @property
     def s_2_y_row_dark(self):
+        """Row Spatial variance from dark image,
+
+        .. emva1288::
+            :Section: spatial
+            :Short: Spatial variance from image
+            :Symbol: $s^2_{y.row.dark}$
+            :Unit: DN2
+        """
         # L = self.spatial['L']
         M = self.spatial['M_dark']
         N = self.spatial['N_dark']
@@ -844,6 +906,14 @@ class Results1288(object):
 
     @property
     def s_2_y_pixel(self):
+        """Pixel Spatial variance from image,
+
+        .. emva1288::
+            :Section: spatial
+            :Short: Spatial variance from image
+            :Symbol: $s^2_{y.pixel}$
+            :Unit: DN2
+        """
         # L = self.spatial['L']
         M = self.spatial['M']
         N = self.spatial['N']
@@ -853,6 +923,14 @@ class Results1288(object):
 
     @property
     def s_2_y_pixel_dark(self):
+        """Pixel Spatial variance from dark image,
+
+        .. emva1288::
+            :Section: spatial
+            :Short: Spatial variance from image
+            :Symbol: $s^2_{y.pixel.dark}$
+            :Unit: DN2
+        """
         # L = self.spatial['L']
         M = self.spatial['M_dark']
         N = self.spatial['N_dark']
@@ -895,7 +973,7 @@ class Results1288(object):
             :Short: DSNUrow
             :Symbol: $DSNU_{1288.row}$
             :Unit: $e^-$
-            :LatexName: DSNU
+            :LatexName: DSNUrow
         """
 
         if self.s_2_y_row_dark < 0:
@@ -916,7 +994,7 @@ class Results1288(object):
             :Short: DSNUcol
             :Symbol: $DSNU_{1288.col}$
             :Unit: $e^-$
-            :LatexName: DSNU
+            :LatexName: DSNUcol
         """
 
         if self.s_2_y_col_dark < 0:
@@ -937,7 +1015,7 @@ class Results1288(object):
             :Short: DSNUpixel
             :Symbol: $DSNU_{1288.pixel}$
             :Unit: $e^-$
-            :LatexName: DSNU
+            :LatexName: DSNUpixel
         """
 
         if self.s_2_y_pixel_dark < 0:
@@ -980,7 +1058,7 @@ class Results1288(object):
             :Short: PRNUrow
             :Symbol: $PRNU_{1288.row}$
             :Unit: \%
-            :LatexName: PRNU
+            :LatexName: PRNUrow
         """
 
         return (np.sqrt(self.s_2_y_row - self.s_2_y_row_dark) * 100 /
@@ -1001,7 +1079,7 @@ class Results1288(object):
             :Short: PRNUcol
             :Symbol: $PRNU_{1288.col}$
             :Unit: \%
-            :LatexName: PRNU
+            :LatexName: PRNUcol
         """
 
         return (np.sqrt(self.s_2_y_col - self.s_2_y_col_dark) * 100 /
@@ -1022,7 +1100,7 @@ class Results1288(object):
             :Short: PRNUpixel
             :Symbol: $PRNU_{1288.pixel}$
             :Unit: \%
-            :LatexName: PRNU
+            :LatexName: PRNUpixel
         """
 
         return (np.sqrt(self.s_2_y_pixel - self.s_2_y_pixel_dark) * 100 /
