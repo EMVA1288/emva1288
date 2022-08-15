@@ -788,7 +788,7 @@ class Results1288(object):
 
     @property
     def s_2_y_cav(self):
-        """Mid value of Spatial variance from image,
+        """Mid column value of Spatial variance from image,
 
         .. emva1288::
             :Section: spatial
@@ -800,7 +800,7 @@ class Results1288(object):
 
     @property
     def s_2_y_cav_dark(self):
-        """Mid value of Spatial variance from image,
+        """Mid column value of Spatial variance from image,
 
         .. emva1288::
             :Section: spatial
@@ -812,7 +812,7 @@ class Results1288(object):
 
     @property
     def s_2_y_rav(self):
-        """Mid value of Spatial variance from image,
+        """Mid row value of Spatial variance from image,
 
         .. emva1288::
             :Section: spatial
@@ -824,7 +824,7 @@ class Results1288(object):
 
     @property
     def s_2_y_rav_dark(self):
-        """Mid value of Spatial variance from image,
+        """Mid row value of Spatial variance from image,
 
         .. emva1288::
             :Section: spatial
