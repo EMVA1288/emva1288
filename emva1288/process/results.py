@@ -788,7 +788,7 @@ class Results1288(object):
 
     @property
     def s_2_y_cav(self):
-        """Mid column value of Spatial variance from image,
+        """Average of column spatial variance from image,
 
         .. emva1288::
             :Section: spatial
@@ -800,7 +800,7 @@ class Results1288(object):
 
     @property
     def s_2_y_cav_dark(self):
-        """Mid column value of Spatial variance from image,
+        """Average of column spatial variance from image,
 
         .. emva1288::
             :Section: spatial
@@ -812,7 +812,7 @@ class Results1288(object):
 
     @property
     def s_2_y_rav(self):
-        """Mid row value of Spatial variance from image,
+        """Average of row spatial variance from image,
 
         .. emva1288::
             :Section: spatial
@@ -824,7 +824,7 @@ class Results1288(object):
 
     @property
     def s_2_y_rav_dark(self):
-        """Mid row value of Spatial variance from image,
+        """Average of row spatial variance from image,
 
         .. emva1288::
             :Section: spatial
@@ -836,7 +836,7 @@ class Results1288(object):
 
     @property
     def s_2_y_col(self):
-        """Column Spatial variance from image,
+        """Column spatial variance from image,
 
         .. emva1288::
             :Section: spatial
@@ -853,7 +853,7 @@ class Results1288(object):
 
     @property
     def s_2_y_col_dark(self):
-        """Column Spatial variance from dark image,
+        """Column spatial variance from dark image,
 
         .. emva1288::
             :Section: spatial
@@ -870,7 +870,7 @@ class Results1288(object):
 
     @property
     def s_2_y_row(self):
-        """Row Spatial variance from image,
+        """Row spatial variance from image,
 
         .. emva1288::
             :Section: spatial
@@ -888,7 +888,7 @@ class Results1288(object):
 
     @property
     def s_2_y_row_dark(self):
-        """Row Spatial variance from dark image,
+        """Row spatial variance from dark image,
 
         .. emva1288::
             :Section: spatial
@@ -906,7 +906,7 @@ class Results1288(object):
 
     @property
     def s_2_y_pixel(self):
-        """Pixel Spatial variance from image,
+        """Pixel spatial variance from image,
 
         .. emva1288::
             :Section: spatial
@@ -923,7 +923,7 @@ class Results1288(object):
 
     @property
     def s_2_y_pixel_dark(self):
-        """Pixel Spatial variance from dark image,
+        """Pixel spatial variance from dark image,
 
         .. emva1288::
             :Section: spatial
