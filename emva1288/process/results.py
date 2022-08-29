@@ -878,7 +878,6 @@ class Results1288(object):
             :Symbol: $s^2_{y.row}$
             :Unit: DN2
         """
-        # L = self.spatial['L']
         M = self.spatial['M']
         N = self.spatial['N']
         para_1 = (M * N - N) / (M * N - M - N)
@@ -896,7 +895,6 @@ class Results1288(object):
             :Symbol: $s^2_{y.row.dark}$
             :Unit: DN2
         """
-        # L = self.spatial['L']
         M = self.spatial['M_dark']
         N = self.spatial['N_dark']
         para_1 = (M * N - N) / (M * N - M - N)
@@ -914,7 +912,6 @@ class Results1288(object):
             :Symbol: $s^2_{y.pixel}$
             :Unit: DN2
         """
-        # L = self.spatial['L']
         M = self.spatial['M']
         N = self.spatial['N']
         para = M * N / (M * N - M - N)
@@ -931,7 +928,6 @@ class Results1288(object):
             :Symbol: $s^2_{y.pixel.dark}$
             :Unit: DN2
         """
-        # L = self.spatial['L']
         M = self.spatial['M_dark']
         N = self.spatial['N_dark']
         para = M * N / (M * N - M - N)
