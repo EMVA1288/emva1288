@@ -961,11 +961,15 @@ class Results1288(object):
 
     def DSNU1288_DN(self):
         """DSNU in DN.
+
         Defined as the DSNU in e^- multiplied by the overall system gain.
         Returns NaN if the dark signal variance is negative.
         Returns
+
         -------
         float : The DSNU in DN.
+
+
         .. emva1288::
             :Section: spatial
             :Short: DSNU in DN
