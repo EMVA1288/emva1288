@@ -959,6 +959,25 @@ class Results1288(object):
             return np.nan
         return np.sqrt(self.s_2_y_dark) / self.K
 
+    def DSNU1288_DN(self):
+        """DSNU in DN.
+        Defined as the DSNU in e^- multiplied by the overall system gain.
+        Returns NaN if the dark signal variance is negative.
+        Returns
+        -------
+        float : The DSNU in DN.
+        .. emva1288::
+            :Section: spatial
+            :Short: DSNU in DN
+            :Symbol: $DSNU_{1288.DN}$
+            :Unit: DN
+            :LatexName: DSNUDN
+        """
+
+        if self.s_2_y_dark < 0:
+            return np.nan
+        return np.sqrt(self.s_2_y_dark)
+
     @property
     def DSNU1288_row(self):
         """DSNU in rows.

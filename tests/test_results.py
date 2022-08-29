@@ -134,6 +134,9 @@ def test_DSNU(results):
     # Test that DSNU is sqrt(s2_ydark) / gain
     assert results.DSNU1288 == np.sqrt(results.s_2_y_dark) / results.K
 
+    # Test that DSNU in DN is DSNU * K
+    assert results.DSNU1288_DN() == results.DSNU1288 * results.K
+
     # Test DSNU.row,col,pixel
     assert results.DSNU1288_row == np.sqrt(results.s_2_y_row_dark) / results.K
     assert results.DSNU1288_col == np.sqrt(results.s_2_y_col_dark) / results.K
@@ -206,6 +209,7 @@ def test_nans():
                        'N_dark': 50}
     r = Results1288(data)
     assert r.DSNU1288 is np.nan
+    assert r.DSNU1288_DN() is np.nan
     assert r.DSNU1288_row is np.nan
     assert r.DSNU1288_col is np.nan
     assert r.DSNU1288_pixel is np.nan
