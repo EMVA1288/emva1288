@@ -964,8 +964,8 @@ class Results1288(object):
 
         Defined as the DSNU in e^- multiplied by the overall system gain.
         Returns NaN if the dark signal variance is negative.
-        Returns
 
+        Returns
         -------
         float : The DSNU in DN.
 
