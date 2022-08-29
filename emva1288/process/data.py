@@ -48,8 +48,8 @@ class Data1288(object):
         self.log.setLevel(loglevel)
 
         self.pixels = pixels or data['width'] * data['height']
-        self.rows = data['width']
-        self.cols = data['height']
+        self.rows = data['height']
+        self.cols = data['width']
 
         self.data = {}
         self.data['temporal'] = self._get_temporal(data['temporal'])
@@ -277,8 +277,8 @@ class Data1288(object):
         are:
                - *'sum'*: the sum image preserved from input,
                - *'L'*: the number of image summed,
-               - *'M'*: the number of rows for one image
-               - *'N'*: the number of columns for one image
+               - *'M'*: the number of columns for one image
+               - *'N'*: the number of rows for one image
                - *'avg_var'*: variance of the the average image
                - *'avg_mean'*: mean of the the average image
                - *'var_mean'*: the variance of the variance image
@@ -291,8 +291,8 @@ class Data1288(object):
         pvar_ = d['pvar'].astype(np.int64)
 
         L = d['L']
-        M = self.rows
-        N = self.cols
+        M = self.cols
+        N = self.rows
 
         # Eqn(38)
         avg_ = sum_ / (1.0 * L)          # u_y (on image)

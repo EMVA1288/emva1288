@@ -452,7 +452,7 @@ class Results1288(object):
     def DR(self):
         """Dynamic Range.
 
-        Defined as the saturation capacity devided by the absolute sensitivity
+        Defined as the saturation capacity divided by the absolute sensitivity
         threshold. The greater this number is, the greater the operational
         range of a camera (between the dark noise level and the saturation
         level).
@@ -788,7 +788,7 @@ class Results1288(object):
 
     @property
     def s_2_y_cav(self):
-        """Average of column spatial variance from image,
+        """Average of column spatial variance from image.
 
         .. emva1288::
             :Section: spatial
@@ -800,7 +800,7 @@ class Results1288(object):
 
     @property
     def s_2_y_cav_dark(self):
-        """Average of column spatial variance from image,
+        """Average of column spatial variance from image.
 
         .. emva1288::
             :Section: spatial
@@ -812,7 +812,7 @@ class Results1288(object):
 
     @property
     def s_2_y_rav(self):
-        """Average of row spatial variance from image,
+        """Average of row spatial variance from image.
 
         .. emva1288::
             :Section: spatial
@@ -824,7 +824,7 @@ class Results1288(object):
 
     @property
     def s_2_y_rav_dark(self):
-        """Average of row spatial variance from image,
+        """Average of row spatial variance from image.
 
         .. emva1288::
             :Section: spatial
@@ -836,7 +836,7 @@ class Results1288(object):
 
     @property
     def s_2_y_col(self):
-        """Column spatial variance from image,
+        """Column spatial variance from image.
 
         .. emva1288::
             :Section: spatial
@@ -853,7 +853,7 @@ class Results1288(object):
 
     @property
     def s_2_y_col_dark(self):
-        """Column spatial variance from dark image,
+        """Column spatial variance from dark image.
 
         .. emva1288::
             :Section: spatial
@@ -870,7 +870,7 @@ class Results1288(object):
 
     @property
     def s_2_y_row(self):
-        """Row spatial variance from image,
+        """Row spatial variance from image.
 
         .. emva1288::
             :Section: spatial
@@ -888,7 +888,7 @@ class Results1288(object):
 
     @property
     def s_2_y_row_dark(self):
-        """Row spatial variance from dark image,
+        """Row spatial variance from dark image.
 
         .. emva1288::
             :Section: spatial
@@ -906,7 +906,7 @@ class Results1288(object):
 
     @property
     def s_2_y_pixel(self):
-        """Pixel spatial variance from image,
+        """Pixel spatial variance from image.
 
         .. emva1288::
             :Section: spatial
@@ -923,7 +923,7 @@ class Results1288(object):
 
     @property
     def s_2_y_pixel_dark(self):
-        """Pixel spatial variance from dark image,
+        """Pixel spatial variance from dark image.
 
         .. emva1288::
             :Section: spatial
@@ -942,8 +942,8 @@ class Results1288(object):
     def DSNU1288(self):
         """DSNU overall.
 
-        Dark Signal NonUniformity (in e^-) is defined as the deviation
-        standard of the dark signal devided by the overall system gain.
+        Dark Signal NonUniformity (in e^-) is defined as the standard
+        deviation of the dark signal divided by the overall system gain.
         If the variance is negative, it will return NaN instead of an
         imaginary number.
 
@@ -963,8 +963,8 @@ class Results1288(object):
     def DSNU1288_row(self):
         """DSNU in rows.
 
-        Dark Signal NonUniformity (in e^-) is defined as the deviation
-        standard of the dark signal devided by the overall system gain.
+        Dark Signal NonUniformity (in e^-) is defined as the standard
+        deviation of the dark signal divided by the overall system gain.
         If the variance is negative, it will return NaN instead of an
         imaginary number.
 
@@ -984,8 +984,8 @@ class Results1288(object):
     def DSNU1288_col(self):
         """DSNU in columns.
 
-        Dark Signal NonUniformity (in e^-) is defined as the deviation
-        standard of the dark signal devided by the overall system gain.
+        Dark Signal NonUniformity (in e^-) is defined as the standard
+        deviation of the dark signal divided by the overall system gain.
         If the variance is negative, it will return NaN instead of an
         imaginary number.
 
@@ -1005,8 +1005,8 @@ class Results1288(object):
     def DSNU1288_pixel(self):
         """DSNU in pixel.
 
-        Dark Signal NonUniformity (in e^-) is defined as the deviation
-        standard of the dark signal devided by the overall system gain.
+        Dark Signal NonUniformity (in e^-) is defined as the standard
+        deviation of the dark signal divided by the overall system gain.
         If the variance is negative, it will return NaN instead of an
         imaginary number.
 
