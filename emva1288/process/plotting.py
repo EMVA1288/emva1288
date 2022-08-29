@@ -409,7 +409,7 @@ class PlotHorizontalSpectrogramDSNU(Emva1288Plot):
 
     name = 'Horizontal spectrogram DSNU'
     xlabel = 'cycles [periods/pixel]'
-    ylabel = 'Standard deviation and\nrelative presence of each cycle [DN]'
+    ylabel = 'Standard deviation and\nrelative presence of each cycle [e^{-}]'
     yscale = 'log'
 
     def plot(self, test):
@@ -477,7 +477,7 @@ class PlotVerticalSpectrogramDSNU(Emva1288Plot):
 
     name = 'Vertical spectrogram DSNU'
     xlabel = 'Cycles [periods/pixel]'
-    ylabel = 'Standard deviation and\nrelative presence of each cycle [DN]'
+    ylabel = 'Standard deviation and\nrelative presence of each cycle [e^{-}]'
     yscale = 'log'
 
     def plot(self, test):
@@ -510,7 +510,7 @@ class PlotLogarithmicHistogramDSNU(Emva1288Plot):
     '''Create Logarithmic histogram DSNU plot'''
 
     name = 'Logarithmic histogram DSNU'
-    xlabel = 'Dark value [DN]'
+    xlabel = 'Dark value [e^{-}]'
     ylabel = 'Number of pixels'
     yscale = 'log'
 
@@ -559,7 +559,7 @@ class PlotAccumulatedLogHistogramDSNU(Emva1288Plot):
     '''Create Accumulated log histogram DSNU plot'''
 
     name = 'Accumulated log histogram DSNU'
-    xlabel = 'Minimal deviation from the mean [DN]'
+    xlabel = 'Minimal deviation from the mean [e^{-}]'
     ylabel = 'Number of pixels'
     yscale = 'log'
 
@@ -745,7 +745,7 @@ class PlotHorizontalProfile(ProfileBase):
         self.ax.set_ylabel('Vertical line [DN]')
         self.ax2.set_title('DSNU')
         self.ax2.set_xlabel('Index of the line')
-        self.ax2.set_ylabel('Vertical line [DN]')
+        self.ax2.set_ylabel('Vertical line [e^{-}]')
 
     def rearrange(self):
         self.ax.set_xticks([])
@@ -772,7 +772,7 @@ class PlotVerticalProfile(ProfileBase):
         self.ax = self.figure.add_subplot(122)
         self.figure.suptitle(self.name)
         self.ax2.set_title('DSNU')
-        self.ax2.set_xlabel('Vertical line [DN]')
+        self.ax2.set_xlabel('Vertical line [e^{-}]')
         self.ax2.set_ylabel('Index of the line')
         self.ax.set_title('PRNU')
         self.ax.set_xlabel('Vertical line [DN]')
