@@ -559,7 +559,7 @@ class PlotAccumulatedLogHistogramDSNU(Emva1288Plot):
     '''Create Accumulated log histogram DSNU plot'''
 
     name = 'Accumulated log histogram DSNU'
-    xlabel = 'Minimal deviation from the mean [DN}]'
+    xlabel = 'Minimal deviation from the mean [DN]'
     ylabel = 'Number of pixels'
     yscale = 'log'
 
