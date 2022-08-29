@@ -295,8 +295,8 @@ class Data1288(object):
         N = self.cols
 
         # Eqn(38)
-        avg_ = sum_ / (1.0 * L)          # u_y (on image)
-        avg = avg_.mean()                # u_y --> int
+        avg_ = sum_ / (1.0 * L)          # <y>
+        avg = avg_.mean()                # u_y
         avg_row = np.mean(avg_, axis=0)  # u_y[n]
         avg_col = np.mean(avg_, axis=1)  # u_y[m]
 
