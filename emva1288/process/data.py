@@ -287,7 +287,7 @@ class Data1288(object):
         """
 
         # This cast is just in case the original images are unint
-        sum_ = d['sum'].astype(np.int64)  # <y> --> eqn(33)
+        sum_ = d['sum'].astype(np.int64)  # y[l] sum from eqn(33)
         pvar_ = d['pvar'].astype(np.int64)
 
         L = d['L']
