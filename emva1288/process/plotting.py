@@ -349,9 +349,9 @@ class PlotDeviationLinearity(Emva1288Plot):
         ax = self.ax
 
         X = test.temporal['u_p'][test.index_linearity_min:
-                                 test.index_linearity_max]
+                                 test.index_linearity_max + 1]
         deviation = test.linearity()['relative_deviation']
-        Y = deviation[test.index_linearity_min: test.index_linearity_max]
+        Y = deviation[test.index_linearity_min: test.index_linearity_max + 1]
         ax.plot(X, Y,
                 label='Data',
                 gid='%d:data' % test.id)
