@@ -33,12 +33,17 @@ def get_int_imgs(imgs):
     '''
     Returns the sum and pseudo-variance from list of images
     sum is just the image resulting on the addition of all the images
-    pvar is the pseudo-variance, this is
-    pvar = SUM((Li - SUM(i))^2)
+    pvar is the pseudo-variance, this is defined by:
+    pvar = SUM((L(i)^2 - (SUM(i))^2)
     to get variance from pseudo-variance
     var = (1/(L^2) * 1/(L - 1)) * pvar
+
+    keys & value in output dict:
+        L : number of images for computation--> int
+        sum : total summed image [M x N] --> array. int64
+        pvar : summed variance image [M x N] --> array. int64
     '''
-    L = len(imgs)
+    L = len(imgs)  # number of images
 
     sum_ = 0
     sq_ = 0
