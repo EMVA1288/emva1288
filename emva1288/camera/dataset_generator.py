@@ -53,7 +53,7 @@ class DatasetGenerator:
     def __init__(self,
                  steps=100,
                  L=50,
-                 version='3.0',
+                 version='4.0',
                  image_format='png',  # best memory consumption
                  outdir=None,  # directory where to save the dataset
                  radiance_min=None,

@@ -452,7 +452,7 @@ class Results1288(object):
     def DR(self):
         """Dynamic Range.
 
-        Defined as the saturation capacity devided by the absolute sensitivity
+        Defined as the saturation capacity divided by the absolute sensitivity
         threshold. The greater this number is, the greater the operational
         range of a camera (between the dark noise level and the saturation
         level).
@@ -756,7 +756,7 @@ class Results1288(object):
             :Unit: DN2
         """
         return self.s_2_y_measured - (self.sigma_2_y_stack /
-                                      self.spatial['L'])
+                                      self.spatial['L'])  # eqn(36)
 
     @property
     def s_2_y_dark(self):
@@ -772,11 +772,159 @@ class Results1288(object):
                                            self.spatial['L_dark'])
 
     @property
-    def DSNU1288(self):
-        """DSNU.
+    def s_2_y_cav(self):
+        """Average of column spatial variance from image.
 
-        Dark Signal NonUniformity (in e^-) is defined as the deviation
-        standard of the dark signal devided by the overall system gain.
+        .. emva1288::
+            :Section: spatial
+            :Short: Spatial variance from image
+            :Symbol: $s^2_{y.cav}$
+            :Unit: DN2
+        """
+        return self.spatial['avg_var_cav']
+
+    @property
+    def s_2_y_cav_dark(self):
+        """Average of column spatial variance from image.
+
+        .. emva1288::
+            :Section: spatial
+            :Short: Spatial variance from image
+            :Symbol: $s^2_{y.cav.dark}$
+            :Unit: DN2
+        """
+        return self.spatial['avg_var_cav_dark']
+
+    @property
+    def s_2_y_rav(self):
+        """Average of row spatial variance from image.
+
+        .. emva1288::
+            :Section: spatial
+            :Short: Spatial variance from image
+            :Symbol: $s^2_{y.rav}$
+            :Unit: DN2
+        """
+        return self.spatial['avg_var_rav']
+
+    @property
+    def s_2_y_rav_dark(self):
+        """Average of row spatial variance from image.
+
+        .. emva1288::
+            :Section: spatial
+            :Short: Spatial variance from image
+            :Symbol: $s^2_{y.rav.dark}$
+            :Unit: DN2
+        """
+        return self.spatial['avg_var_rav_dark']
+
+    @property
+    def s_2_y_col(self):
+        """Column spatial variance from image.
+
+        .. emva1288::
+            :Section: spatial
+            :Short: Spatial variance from image
+            :Symbol: $s^2_{y.col}$
+            :Unit: DN2
+        """
+        M = self.spatial['M']
+        N = self.spatial['N']
+        para_1 = (M * N - M) / (M * N - M - N)
+        para_2 = N / (M * N - M - N)
+        s_2_y_col = para_1 * self.s_2_y_cav - para_2 * (self.s_2_y - self.s_2_y_rav)
+        return s_2_y_col
+
+    @property
+    def s_2_y_col_dark(self):
+        """Column spatial variance from dark image.
+
+        .. emva1288::
+            :Section: spatial
+            :Short: Spatial variance from image
+            :Symbol: $s^2_{y.col.dark}$
+            :Unit: DN2
+        """
+        M = self.spatial['M_dark']
+        N = self.spatial['N_dark']
+        para_1 = (M * N - M) / (M * N - M - N)
+        para_2 = N / (M * N - M - N)
+        s_2_y_col_dark = para_1 * self.s_2_y_cav_dark - para_2 * (self.s_2_y_dark - self.s_2_y_rav_dark)
+        return s_2_y_col_dark
+
+    @property
+    def s_2_y_row(self):
+        """Row spatial variance from image.
+
+        .. emva1288::
+            :Section: spatial
+            :Short: Spatial variance from image
+            :Symbol: $s^2_{y.row}$
+            :Unit: DN2
+        """
+        M = self.spatial['M']
+        N = self.spatial['N']
+        para_1 = (M * N - N) / (M * N - M - N)
+        para_2 = M / (M * N - M - N)
+        s_2_y_row = para_1 * self.s_2_y_rav - para_2 * (self.s_2_y - self.s_2_y_cav)
+        return s_2_y_row
+
+    @property
+    def s_2_y_row_dark(self):
+        """Row spatial variance from dark image.
+
+        .. emva1288::
+            :Section: spatial
+            :Short: Spatial variance from image
+            :Symbol: $s^2_{y.row.dark}$
+            :Unit: DN2
+        """
+        M = self.spatial['M_dark']
+        N = self.spatial['N_dark']
+        para_1 = (M * N - N) / (M * N - M - N)
+        para_2 = M / (M * N - M - N)
+        s_2_y_row_dark = para_1 * self.s_2_y_rav_dark - para_2 * (self.s_2_y_dark - self.s_2_y_cav_dark)
+        return s_2_y_row_dark
+
+    @property
+    def s_2_y_pixel(self):
+        """Pixel spatial variance from image.
+
+        .. emva1288::
+            :Section: spatial
+            :Short: Spatial variance from image
+            :Symbol: $s^2_{y.pixel}$
+            :Unit: DN2
+        """
+        M = self.spatial['M']
+        N = self.spatial['N']
+        para = M * N / (M * N - M - N)
+        s_y_pixel = para*(self.s_2_y - self.s_2_y_cav - self.s_2_y_rav)
+        return s_y_pixel
+
+    @property
+    def s_2_y_pixel_dark(self):
+        """Pixel spatial variance from dark image.
+
+        .. emva1288::
+            :Section: spatial
+            :Short: Spatial variance from image
+            :Symbol: $s^2_{y.pixel.dark}$
+            :Unit: DN2
+        """
+        M = self.spatial['M_dark']
+        N = self.spatial['N_dark']
+        para = M * N / (M * N - M - N)
+        s_2_y_pixel_dark = para*(self.s_2_y_dark - self.s_2_y_cav_dark - self.s_2_y_rav_dark)
+        return s_2_y_pixel_dark
+
+    @property
+    def DSNU1288(self):
+        """DSNU overall.
+
+        Dark Signal NonUniformity (in e^-) is defined as the standard
+        deviation of the dark signal divided by the overall system gain.
         If the variance is negative, it will return NaN instead of an
         imaginary number.
 
@@ -788,7 +936,7 @@ class Results1288(object):
             :LatexName: DSNU
         """
 
-        if self.s_2_y_dark < 0.:
+        if self.s_2_y_dark < 0:
             return np.nan
         return np.sqrt(self.s_2_y_dark) / self.K
 
@@ -816,8 +964,71 @@ class Results1288(object):
         return np.sqrt(self.s_2_y_dark)
 
     @property
+    def DSNU1288_row(self):
+        """DSNU in rows.
+
+        Dark Signal NonUniformity (in e^-) is defined as the standard
+        deviation of the dark signal divided by the overall system gain.
+        If the variance is negative, it will return NaN instead of an
+        imaginary number.
+
+        .. emva1288::
+            :Section: spatial
+            :Short: DSNUrow
+            :Symbol: $DSNU_{1288.row}$
+            :Unit: $e^-$
+            :LatexName: DSNUrow
+        """
+
+        if self.s_2_y_row_dark < 0:
+            return np.nan
+        return np.sqrt(self.s_2_y_row_dark) / self.K
+
+    @property
+    def DSNU1288_col(self):
+        """DSNU in columns.
+
+        Dark Signal NonUniformity (in e^-) is defined as the standard
+        deviation of the dark signal divided by the overall system gain.
+        If the variance is negative, it will return NaN instead of an
+        imaginary number.
+
+        .. emva1288::
+            :Section: spatial
+            :Short: DSNUcol
+            :Symbol: $DSNU_{1288.col}$
+            :Unit: $e^-$
+            :LatexName: DSNUcol
+        """
+
+        if self.s_2_y_col_dark < 0:
+            return np.nan
+        return np.sqrt(self.s_2_y_col_dark) / self.K
+
+    @property
+    def DSNU1288_pixel(self):
+        """DSNU in pixel.
+
+        Dark Signal NonUniformity (in e^-) is defined as the standard
+        deviation of the dark signal divided by the overall system gain.
+        If the variance is negative, it will return NaN instead of an
+        imaginary number.
+
+        .. emva1288::
+            :Section: spatial
+            :Short: DSNUpixel
+            :Symbol: $DSNU_{1288.pixel}$
+            :Unit: $e^-$
+            :LatexName: DSNUpixel
+        """
+
+        if self.s_2_y_pixel_dark < 0:
+            return np.nan
+        return np.sqrt(self.s_2_y_pixel_dark) / self.K
+
+    @property
     def PRNU1288(self):
-        """PRNU.
+        """PRNU overall.
 
         Photo Response NonUniformity (in %) is defined as the square root of
         the difference between the spatial variance of a bright image (or from
@@ -834,6 +1045,69 @@ class Results1288(object):
         """
 
         return (np.sqrt(self.s_2_y - self.s_2_y_dark) * 100 /
+                (self.spatial['avg_mean'] - self.spatial['avg_mean_dark']))
+
+    @property
+    def PRNU1288_row(self):
+        """PRNU in row.
+
+        Photo Response NonUniformity (in %) is defined as the square root of
+        the difference between the spatial variance of a bright image (or from
+        an average of bright images to remove temporal difformities) and the
+        spatial variance of dark signal, divided by the difference between the
+        mean of a bright image and the mean of a dark image.
+
+        .. emva1288::
+            :Section: spatial
+            :Short: PRNUrow
+            :Symbol: $PRNU_{1288.row}$
+            :Unit: \%
+            :LatexName: PRNUrow
+        """
+
+        return (np.sqrt(self.s_2_y_row - self.s_2_y_row_dark) * 100 /
+                (self.spatial['avg_mean'] - self.spatial['avg_mean_dark']))
+
+    @property
+    def PRNU1288_col(self):
+        """PRNU in column.
+
+        Photo Response NonUniformity (in %) is defined as the square root of
+        the difference between the spatial variance of a bright image (or from
+        an average of bright images to remove temporal difformities) and the
+        spatial variance of dark signal, divided by the difference between the
+        mean of a bright image and the mean of a dark image.
+
+        .. emva1288::
+            :Section: spatial
+            :Short: PRNUcol
+            :Symbol: $PRNU_{1288.col}$
+            :Unit: \%
+            :LatexName: PRNUcol
+        """
+
+        return (np.sqrt(self.s_2_y_col - self.s_2_y_col_dark) * 100 /
+                (self.spatial['avg_mean'] - self.spatial['avg_mean_dark']))
+
+    @property
+    def PRNU1288_pixel(self):
+        """PRNU in pixel.
+
+        Photo Response NonUniformity (in %) is defined as the square root of
+        the difference between the spatial variance of a bright image (or from
+        an average of bright images to remove temporal difformities) and the
+        spatial variance of dark signal, divided by the difference between the
+        mean of a bright image and the mean of a dark image.
+
+        .. emva1288::
+            :Section: spatial
+            :Short: PRNUpixel
+            :Symbol: $PRNU_{1288.pixel}$
+            :Unit: \%
+            :LatexName: PRNUpixel
+        """
+
+        return (np.sqrt(self.s_2_y_pixel - self.s_2_y_pixel_dark) * 100 /
                 (self.spatial['avg_mean'] - self.spatial['avg_mean_dark']))
 
     @property

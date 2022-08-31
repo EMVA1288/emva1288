@@ -104,12 +104,40 @@ def test_DR(results):
 
 @pytest.mark.parametrize("dataset", ['single_exposure'], indirect=True)
 def test_DSNU(results):
-    dataset, parser, loader, data, results = results
+    data = {'temporal': {'texp': [0, 1],
+                         'u_y': np.array([0.1, 0.2]),
+                         's2_y': np.array([0.1, 0.2]),
+                         'u_ydark': np.array([0.1, 0.2]),
+                         's2_ydark': np.array([0.1, 0.2])},
+            'spatial': {'texp': 1,
+                        'var_mean_dark': 0.25,
+                        'L_dark': 50,
+                        'M_dark': 640,
+                        'N_dark': 480,
+                        'avg_var_dark': 0.1,
+                        'avg_mean_dark': 30,
+                        'avg_var_cav_dark': 0.01,
+                        'avg_var_rav_dark': 0.01,
+                        'u_p': 50882.141,
+                        'var_mean': 0.1,
+                        'L': 50,
+                        'M': 640,
+                        'N': 480,
+                        'avg_var': 0.002,
+                        'avg_mean': 1600,
+                        'avg_var_cav': 0.01,
+                        'avg_var_rav': 0.01}}
+    results = Results1288(data)
     # Test that DSNU is sqrt(s2_ydark) / gain
     assert results.DSNU1288 == np.sqrt(results.s_2_y_dark) / results.K
 
     # Test that DSNU in DN is DSNU * K
     assert results.DSNU1288_DN() == results.DSNU1288 * results.K
+
+    # Test DSNU.row,col,pixel
+    assert results.DSNU1288_row == np.sqrt(results.s_2_y_row_dark) / results.K
+    assert results.DSNU1288_col == np.sqrt(results.s_2_y_col_dark) / results.K
+    assert results.DSNU1288_pixel == np.sqrt(results.s_2_y_pixel_dark) / results.K
 
 
 @pytest.mark.parametrize("dataset", ['single_exposure'], indirect=True)
@@ -164,9 +192,21 @@ def test_nans():
     assert r.u_I_var is np.nan
 
     # Test that a negative s2y_dark will yield a Nan for DSNU1288
-    data['spatial'] = {'avg_var_dark': 0.,
+    data['temporal']['s2_ydark'] = np.array([1, 0])
+    data['temporal']['s2_y'] = np.array([1, 0])
+    data['temporal']['u_y'] = np.array([1, 0])
+    data['temporal']['u_ydark'] = np.array([1, 0])
+
+    data['spatial'] = {'avg_var_dark': -0.5,
+                       'avg_var_rav_dark': -0.1,
+                       'avg_var_cav_dark': -0.1,
                        'var_mean_dark': 1.,
-                       'L_dark': 3}
+                       'L_dark': 2,
+                       'M_dark': 30,
+                       'N_dark': 50}
     r = Results1288(data)
     assert r.DSNU1288 is np.nan
     assert r.DSNU1288_DN() is np.nan
+    assert r.DSNU1288_row is np.nan
+    assert r.DSNU1288_col is np.nan
+    assert r.DSNU1288_pixel is np.nan

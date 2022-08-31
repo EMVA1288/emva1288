@@ -22,7 +22,7 @@
 
 %{{ op.results.sensitivity.QE.symbol %}} &
 %{{ '%.2f' % op.results.sensitivity.QE.value %}} &
-%{{ op.results.sensitivity.QE.unit %}} \\[5mm]
+%{{ op.results.sensitivity.QE.unit %}} \\[3mm]
 
 \multicolumn{3}{l}{\textbf{%{{ op.results.sensitivity.K.short %}}}} \\
 
@@ -32,7 +32,7 @@
 
 %{{ op.results.sensitivity.inverse_K.symbol %}} &
 %{{ '%.3f' % op.results.sensitivity.inverse_K.value %}} &
-%{{ op.results.sensitivity.inverse_K.unit %}} \\[5mm]
+%{{ op.results.sensitivity.inverse_K.unit %}} \\[3mm]
 
 \multicolumn{3}{l}{\textbf{Temporal dark noise}} \\
 
@@ -42,7 +42,7 @@
 
 %{{ op.results.sensitivity.sigma_y_dark.symbol %}} &
 %{{ '%.3f' % op.results.sensitivity.sigma_y_dark.value %}} &
-%{{ op.results.sensitivity.sigma_y_dark.unit %}} \\[5mm]
+%{{ op.results.sensitivity.sigma_y_dark.unit %}} \\[3mm]
 
 \multicolumn{3}{l}{\textbf{%{{ op.results.sensitivity.SNR_max.short %}}}} \\
 
@@ -59,7 +59,7 @@
 
 %{{ op.results.sensitivity.inverse_SNR_max.symbol %}} &
 %{{ '%.3f' % op.results.sensitivity.inverse_SNR_max.value %}} &
-%{{ op.results.sensitivity.inverse_SNR_max.unit %}} \\[5mm]
+%{{ op.results.sensitivity.inverse_SNR_max.unit %}} \\[3mm]
 
 \multicolumn{3}{l}{\textbf{%{{ op.results.sensitivity.u_p_min.short %}}}} \\
 
@@ -77,7 +77,7 @@
 
 %{{ op.results.sensitivity.u_e_min_area.symbol %}} &
 %{{ op.results.sensitivity.u_e_min_area.value|missingnumber(3) %}} &
-%{{ op.results.sensitivity.u_e_min_area.unit %}} \\[5mm]
+%{{ op.results.sensitivity.u_e_min_area.unit %}} \\[3mm]
 
 
 \multicolumn{3}{l}{\textbf{%{{ op.results.sensitivity.u_p_sat.short %}}}} \\
@@ -96,7 +96,7 @@
 
 %{{ op.results.sensitivity.u_e_sat_area.symbol %}} &
 %{{ op.results.sensitivity.u_e_sat_area.value|missingnumber(0) %}} &
-%{{ op.results.sensitivity.u_e_sat_area.unit %}} \\[5mm]
+%{{ op.results.sensitivity.u_e_sat_area.unit %}} \\[3mm]
 
 
 \multicolumn{3}{l}{\textbf{%{{ op.results.sensitivity.DR.short %}}}} \\
@@ -106,7 +106,12 @@
 
 & % %{{ op.results.sensitivity.DR_dB.symbol %}} &
 %{{ '%.1f' % op.results.sensitivity.DR_dB.value %}} &
-%{{ op.results.sensitivity.DR_dB.unit %}} \\[3mm]
+
+%{{ op.results.sensitivity.DR_dB.unit %}} \\
+
+& % %{{ op.results.sensitivity.DR_bit.symbol %}} &
+%{{ '%.1f' % op.results.sensitivity.DR_bit.value %}} &
+%{{ op.results.sensitivity.DR_bit.unit %}} \\[3mm]
 
 \multicolumn{3}{l}{\textbf{Spatial Nonuniformities}} \\
 
@@ -114,13 +119,33 @@
 %{{ '%.1f' % op.results.spatial.DSNU1288.value %}} &
 %{{ op.results.spatial.DSNU1288.unit %}} \\
 
-& % %{{ op.results.spatial.DSNU1288_DN.symbol %}} &
-%{{ '%.1f' % op.results.spatial.DSNU1288_DN.value %}} &
-%{{ op.results.spatial.DSNU1288_DN.unit %}} \\
+%{{ op.results.spatial.DSNU1288_row.symbol %}} &
+%{{ '%.1f' % op.results.spatial.DSNU1288_row.value %}} &
+%{{ op.results.spatial.DSNU1288_row.unit %}} \\
+
+%{{ op.results.spatial.DSNU1288_col.symbol %}} &
+%{{ '%.1f' % op.results.spatial.DSNU1288_col.value %}} &
+%{{ op.results.spatial.DSNU1288_col.unit %}} \\
+
+%{{ op.results.spatial.DSNU1288_pixel.symbol %}} &
+%{{ '%.1f' % op.results.spatial.DSNU1288_pixel.value %}} &
+%{{ op.results.spatial.DSNU1288_pixel.unit %}} \\
 
 %{{ op.results.spatial.PRNU1288.symbol %}} &
 %{{ '%.1f' % op.results.spatial.PRNU1288.value %}} &
-%{{ op.results.spatial.PRNU1288.unit %}} \\[5mm]
+%{{ op.results.spatial.PRNU1288.unit %}} \\
+
+%{{ op.results.spatial.PRNU1288_row.symbol %}} &
+%{{ '%.1f' % op.results.spatial.PRNU1288_row.value %}} &
+%{{ op.results.spatial.PRNU1288_row.unit %}} \\
+
+%{{ op.results.spatial.PRNU1288_col.symbol %}} &
+%{{ '%.1f' % op.results.spatial.PRNU1288_col.value %}} &
+%{{ op.results.spatial.PRNU1288_col.unit %}} \\
+
+%{{ op.results.spatial.PRNU1288_pixel.symbol %}} &
+%{{ '%.1f' % op.results.spatial.PRNU1288_pixel.value %}} &
+%{{ op.results.spatial.PRNU1288_pixel.unit %}} \\[3mm]
 
 \multicolumn{3}{l}{\textbf{Linearity error}} \\
 
@@ -130,7 +155,7 @@
 
 %{{ op.results.linearity.LE_max.symbol %}} &
 %{{ '%.3f' % op.results.linearity.LE_max.value %}} &
-%{{ op.results.linearity.LE_max.unit %}} \\[5mm]
+%{{ op.results.linearity.LE_max.unit %}} \\[3mm]
 
 \multicolumn{3}{l}{\textbf{Dark current}} \\
 
@@ -146,7 +171,7 @@
 %{{ op.results.dark_current.u_I_var.unit %}} \\
 &
 %{{ op.results.dark_current.u_I_var_DN.value|missingnumber(3) %}} &
-%{{ op.results.dark_current.u_I_var_DN.unit %}}  \\[5mm]
+%{{ op.results.dark_current.u_I_var_DN.unit %}}  \\[3mm]
 
 \end{tabular}
 \end{minipage}
