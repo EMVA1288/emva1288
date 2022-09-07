@@ -163,8 +163,9 @@ class Data1288(object):
         The variance is the pseudo variance(integer), divided by
         (4 * self.pixels)
 
-        The mean difference of images used for correction for the variance,
-        squared and then divided by 2
+        The difference of mean values is calculated by difference of two 
+        images, used for correction for the variance, squared and then 
+        divided by 2
 
         Parameters
         ----------
@@ -179,6 +180,7 @@ class Data1288(object):
         dict : A data dictionary with the following keys:
                *'mean'*: the mean as described above and
                *'var'*: the variance as described above.
+               *'deman'*: the mean difference as described above.
         """
         mean_ = d['sum'] / (2.0 * self.pixels)
         var_ = d['pvar'] / (4.0 * self.pixels)
