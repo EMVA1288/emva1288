@@ -105,14 +105,6 @@ Only *Short*, *Symbol* and *Comment* fields are optional::
           <Value>0</Value>
           <Unit></Unit>
         </index_sensitivity_min>
-        <DR_bit>
-          <Comment></Comment>
-          <Short>Dynamic Range in bits</Short>
-          <LatexName>DRBit</LatexName>
-          <Value>10.2534914503</Value>
-          <Symbol>$DR_{bit}$</Symbol>
-          <Unit>bit</Unit>
-        </DR_bit>
         <u_p_min>
           <Comment></Comment>
           <Short>Absolute sensitivity threshold</Short>
@@ -390,12 +382,12 @@ Only *Short*, *Symbol* and *Comment* fields are optional::
       </dark_current>
     </results>
 
-    
+
 Naming Convention
 ------------------
 
 For details about the naming convention for the XML file content refer to the API documentation in the Process Mudule dokumentation in the resuls part.
-  
+
 API Reference: :class:`~emva1288.process.results.Results1288`
 
 
@@ -427,7 +419,7 @@ To process a reference set or any other image stack compliant to the image stack
   f =  open(os.path.join(dir_, fresult), "wb")
   f.write(res.xml())
   f.close()
-  
+
 
 Compare Results
 ----------------
@@ -454,7 +446,7 @@ This will output something like::
     info
     **********************************************************************
     index_start                         0.0                 0.0                  OK
-    
+
     **********************************************************************
     sensitivity
     **********************************************************************
@@ -475,9 +467,8 @@ This will output something like::
     inverse_SNR_max                     0.845981598556      0.845981598556       OK
     index_sensitivity_min               0.0                 0.0                  OK
     QE                                  45.1356082834       45.1356082834        OK
-    DR_bit                              10.2534914503       10.2534914503        OK
     sigma_d                             10.8980275235       10.8980275235        OK
-    
+
     **********************************************************************
     linearity
     **********************************************************************
@@ -485,7 +476,7 @@ This will output something like::
     index_linearity_max                 34.0                34.0                 OK
     index_linearity_min                 2.0                 2.0                  OK
     LE_min                              -0.615797581149     -0.615797581149      OK
-    
+
     **********************************************************************
     defect_pixel
     **********************************************************************
@@ -493,7 +484,7 @@ This will output something like::
     histogram_PRNU_accumulated          Array               Array                OK
     histogram_PRNU                      Array               Array                OK
     histogram_DSNU                      Array               Array                OK
-    
+
     **********************************************************************
     spatial
     **********************************************************************
@@ -512,7 +503,7 @@ This will output something like::
     s_2_y_measured_spectrogram_dark     0.213951679236      0.213951679236       OK
     F_dark                              1.13639226727       1.13639226727        OK
     sigma_2_y_stack                     553.573746657       553.573746657        OK
-    
+
     **********************************************************************
     dark_current
     **********************************************************************

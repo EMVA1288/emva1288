@@ -481,21 +481,6 @@ class Results1288(object):
 
         return 20. * np.log10(self.DR)
 
-    def DR_bit(self):
-        """Dynamic Range in bits.
-
-        It is defined as log_2 ( Dynamic Range ).
-
-        .. emva1288::
-            :Section: sensitivity
-            :Short: Dynamic Range
-            :Symbol: $DR_{bit}$
-            :Unit: bit
-            :LatexName: DRBit
-        """
-
-        return np.log2(self.DR)
-
     @property
     def index_linearity_min(self):
         """Linearity fit minimun index.
