@@ -131,20 +131,20 @@ class Emva1288Plot(object):
 
 
 class PlotSensitivity(Emva1288Plot):
-    name = 'Sensitivity'
-    xlabel = '$\mu_p$ [mean number of photons/pixel]'
-    ylabel = '$\mu_y - \mu_{y.dark}$ [DN]'
+    name = r'Sensitivity'
+    xlabel = r'$\mu_p$ [mean number of photons/pixel]'
+    ylabel = r'$\mu_y - \mu_{y.dark}$ [DN]'
 
     def plot(self, test):
         ax = self.ax
         ax.plot(test.temporal['u_p'],
                 test.temporal['u_y'] - test.temporal['u_ydark'],
-                label='Data',
+                label=r'Data',
                 gid='%d:data' % test.id)
 
         ax.plot(test.temporal['u_p'],
                 test.R * test.temporal['u_p'], '--',
-                label='Fit',
+                label=r'Fit',
                 gid='%d:fit' % test.id)
 
         xi = test.temporal['u_p'][test.index_sensitivity_min]
@@ -155,7 +155,7 @@ class PlotSensitivity(Emva1288Plot):
               test.temporal['u_ydark'])[test.index_sensitivity_max]
 
         ax.plot((xi, xf), (yi, yf),
-                label='Fit range',
+                label=r'Fit range',
                 linestyle='None',
                 marker='o',
                 gid='%d:marker' % test.id)
@@ -168,12 +168,12 @@ class PlotSensitivity(Emva1288Plot):
 
 
 class PlotUyDark(Emva1288Plot):
-    '''Create $\mu_{y.dark}$ plot'''
+    '''Create $\\mu_{y.dark}$ plot'''
 
-    name = 'Mean gray value in dark'
-    title = '$\mu_{y.dark}$'
-    xlabel = 'exposure time [ns]'
-    ylabel = '$\mu_{y.dark}$ [DN]'
+    name = r'Mean gray value in dark'
+    title = r'$\mu_{y.dark}$'
+    xlabel = r'exposure time [ns]'
+    ylabel = r'$\mu_{y.dark}$ [DN]'
 
     def plot(self, test):
         ax = self.ax
@@ -183,12 +183,12 @@ class PlotUyDark(Emva1288Plot):
                     test.temporal['u_ydark'],
                     'o',
                     markersize=5,
-                    label='Data',
+                    label=r'Data',
                     gid='%d:data' % test.id)
         else:
             ax.plot(test.temporal['texp'],
                     test.temporal['u_ydark'],
-                    label='Data',
+                    label=r'Data',
                     gid='%d:data' % test.id)
         ax.ticklabel_format(axis='x', style='sci', scilimits=(1, 4))
         self.set_legend(ax)
@@ -197,9 +197,9 @@ class PlotUyDark(Emva1288Plot):
 class PlotPTC(Emva1288Plot):
     '''Create Photon Transfer plot'''
 
-    name = 'Photon Transfer'
-    xlabel = '$\mu_y - \mu_{y.dark}$ [DN]'
-    ylabel = '$\sigma^2_y - \sigma^2_{y.dark}$ [DN$^2$]'
+    name = r'Photon Transfer'
+    xlabel = r'$\mu_y - \mu_{y.dark}$ [DN]'
+    ylabel = r'$\sigma^2_y - \sigma^2_{y.dark}$ [DN$^2$]'
 
     def plot(self, test):
         ax = self.ax
@@ -207,18 +207,18 @@ class PlotPTC(Emva1288Plot):
         X = test.temporal['u_y'] - test.temporal['u_ydark']
         Y = test.temporal['s2_y'] - test.temporal['s2_ydark']
         ax.plot(X, Y,
-                label='Data',
+                label=r'Data',
                 gid='%d:data' % test.id)
 
         ax.plot(X, test.K * X,
                 linestyle='--',
-                label='Fit',
+                label=r'Fit',
                 gid='%d:fit' % test.id)
 
         ax.plot((X[test.index_u_ysat], ), (Y[test.index_u_ysat], ),
                 marker='s',
                 linestyle='None',
-                label='Saturation',
+                label=r'Saturation',
                 gid='%d:marker' % test.id)
 
         ax.plot((X[test.index_sensitivity_min],
@@ -227,7 +227,7 @@ class PlotPTC(Emva1288Plot):
                  Y[test.index_sensitivity_max]),
                 linestyle='None',
                 marker='o',
-                label='Fit range',
+                label=r'Fit range',
                 gid='%d:marker' % test.id)
 
         self.set_legend(ax)
@@ -236,9 +236,9 @@ class PlotPTC(Emva1288Plot):
 class PlotSNR(Emva1288Plot):
     '''Create SNR plot '''
 
-    name = 'Signal to Noise Ratio'
-    xlabel = '$\mu_{p}$ [mean number of photons/pixel]'
-    ylabel = 'SNR'
+    name = r'Signal to Noise Ratio'
+    xlabel = r'$\mu_{p}$ [mean number of photons/pixel]'
+    ylabel = r'SNR'
 
     def setup_figure(self):
         super(PlotSNR, self).setup_figure()
@@ -260,7 +260,7 @@ class PlotSNR(Emva1288Plot):
                 np.sqrt(test.temporal['s2_y'][nz]),
                 marker='.',
                 ls=' ',
-                label='Data',
+                label=r'Data',
                 gid='%d:data' % test.id)
 
         ax.plot(X,
@@ -269,7 +269,7 @@ class PlotSNR(Emva1288Plot):
                         (test.s2q / (test.K) ** 2) +
                         ((test.QE / 100) * X)),
                 linestyle=':',
-                label='Theoretical',
+                label=r'Theoretical',
                 gid='%d:fit' % test.id)
 
         ideal = np.sqrt(X)
@@ -277,15 +277,15 @@ class PlotSNR(Emva1288Plot):
         ax.plot((X),
                 ideal,
                 linestyle='-.',
-                label='Ideal',
+                label=r'Ideal',
                 gid='%d:fit' % test.id)
 
         ax.axvline(test.u_p_min,
-                   label='$\mu_{p.min} = %.1f[p]$' % test.u_p_min,
+                   label=r'$\mu_{p.min} = %.1f[p]$' % test.u_p_min,
                    gid='%d:marker' % test.id)
 
         ax.axvline(test.u_p_sat,
-                   label='$\mu_{p.sat} = %.1f[p]$' % test.u_p_sat,
+                   label=r'$\mu_{p.sat} = %.1f[p]$' % test.u_p_sat,
                    gid='%d:marker' % test.id)
 
         ax.plot(X,
@@ -297,7 +297,7 @@ class PlotSNR(Emva1288Plot):
                         (((test.PRNU1288 / 100) *
                           (test.QE / 100.) * X) ** 2)),
                 linestyle='--',
-                label='Total SNR',
+                label=r'Total SNR',
                 gid='%d:fit' % test.id)
 
         ax.set_ylim(1, max(self.max_ideal))
@@ -307,9 +307,9 @@ class PlotSNR(Emva1288Plot):
 class PlotLinearity(Emva1288Plot):
     '''Create Linearity plot'''
 
-    name = 'Linearity'
-    xlabel = '$\mu_{p}$ [mean number of photons/pixel]'
-    ylabel = '$\mu_y - \mu_{y.dark}$ [DN]'
+    name = r'Linearity'
+    xlabel = r'$\mu_{p}$ [mean number of photons/pixel]'
+    ylabel = r'$\mu_y - \mu_{y.dark}$ [DN]'
 
     def plot(self, test):
         ax = self.ax
@@ -317,19 +317,19 @@ class PlotLinearity(Emva1288Plot):
         X = test.temporal['u_p']
         Y = test.temporal['u_y'] - test.temporal['u_ydark']
         ax.plot(X, Y,
-                label='Data',
+                label=r'Data',
                 gid='%d:data' % test.id)
 
         ax.plot(X,
                 test.linearity()['fit_slope'] *
                 X + test.linearity()['fit_offset'],
                 linestyle='--',
-                label='Fit',
+                label=r'Fit',
                 gid='%d:fit' % test.id)
 
         ax.plot((X[test.index_linearity_min], X[test.index_linearity_max]),
                 (Y[test.index_linearity_min], Y[test.index_linearity_max]),
-                label='Fit range',
+                label=r'Fit range',
                 linestyle='None',
                 marker='o',
                 gid='%d:marker' % test.id)
@@ -341,9 +341,9 @@ class PlotLinearity(Emva1288Plot):
 class PlotDeviationLinearity(Emva1288Plot):
     '''Create Deviation Linearity plot'''
 
-    name = 'Deviation linearity'
-    xlabel = '$\mu_{p}$ [mean number of photons/pixel]'
-    ylabel = 'Linearity error LE [%]'
+    name = r'Deviation linearity'
+    xlabel = r'$\mu_{p}$ [mean number of photons/pixel]'
+    ylabel = r'Linearity error LE [%]'
 
     def plot(self, test):
         ax = self.ax
@@ -353,12 +353,12 @@ class PlotDeviationLinearity(Emva1288Plot):
         deviation = test.linearity()['relative_deviation']
         Y = deviation[test.index_linearity_min: test.index_linearity_max + 1]
         ax.plot(X, Y,
-                label='Data',
+                label=r'Data',
                 gid='%d:data' % test.id)
 
         ax.plot((X[0], X[-1]),
                 (Y[0], Y[-1]),
-                label='Fit range',
+                label=r'Fit range',
                 linestyle='None',
                 marker='o',
                 gid='%d:marker' % test.id)
@@ -370,9 +370,9 @@ class PlotDeviationLinearity(Emva1288Plot):
 class PlotHorizontalSpectrogramPRNU(Emva1288Plot):
     '''Create Horizontal spectrogram PRNU plot'''
 
-    name = 'Horizontal spectrogram PRNU'
-    xlabel = 'cycles [periods/pixel]'
-    ylabel = 'Standard deviation and\nrelative presence of each cycle [%]'
+    name = r'Horizontal spectrogram PRNU'
+    xlabel = r'cycles [periods/pixel]'
+    ylabel = r'Standard deviation and\nrelative presence of each cycle [%]'
     yscale = 'log'
 
     def plot(self, test):
@@ -386,17 +386,17 @@ class PlotHorizontalSpectrogramPRNU(Emva1288Plot):
 
         ax.plot(routines.GetFrecs(spectrogram),
                 (np.sqrt(spectrogram)),
-                label='Data',
+                label=r'Data',
                 gid='%d:data' % test.id)
 
         ax.axhline(test.PRNU1288,
-                   label='$PRNU_{1288}$',
+                   label=r'$PRNU_{1288}$',
                    linestyle='--',
                    color='r',
                    gid='%d:marker' % test.id)
 
         ax.axhline(100 * np.sqrt(test.sigma_2_y_stack) / data_mean,
-                   label='$\sigma^2_{y.stack}$',
+                   label=r'$\sigma^2_{y.stack}$',
                    linestyle='-.',
                    color='g',
                    gid='%d:marker' % test.id)
@@ -407,9 +407,9 @@ class PlotHorizontalSpectrogramPRNU(Emva1288Plot):
 class PlotHorizontalSpectrogramDSNU(Emva1288Plot):
     '''Create Horizontal spectrogram DSNU plot'''
 
-    name = 'Horizontal spectrogram DSNU'
-    xlabel = 'cycles [periods/pixel]'
-    ylabel = 'Standard deviation and\nrelative presence of each cycle [DN]'
+    name = r'Horizontal spectrogram DSNU'
+    xlabel = r'cycles [periods/pixel]'
+    ylabel = r'Standard deviation and\nrelative presence of each cycle [DN]'
     yscale = 'log'
 
     def plot(self, test):
@@ -419,17 +419,17 @@ class PlotHorizontalSpectrogramDSNU(Emva1288Plot):
                                        n=test.spatial['L'])
         ax.plot(routines.GetFrecs(spectrogram),
                 np.sqrt(spectrogram),
-                label='Data',
+                label=r'Data',
                 gid='%d:data' % test.id)
 
         ax.axhline(test.DSNU1288_DN(),
-                   label='$DSNU_{1288.DN}$',
+                   label=r'$DSNU_{1288.DN}$',
                    linestyle='--',
                    color='r',
                    gid='%d:marker' % test.id)
 
         ax.axhline(np.sqrt(test.sigma_2_y_stack_dark),
-                   label='$\sigma^2_{y.stack.dark}$',
+                   label=r'$\sigma^2_{y.stack.dark}$',
                    linestyle='-.',
                    color='g',
                    gid='%d:marker' % test.id)
@@ -440,9 +440,9 @@ class PlotHorizontalSpectrogramDSNU(Emva1288Plot):
 class PlotVerticalSpectrogramPRNU(Emva1288Plot):
     '''Create Vertical spectrogram PRNU plot'''
 
-    name = 'Vertical spectrogram PRNU'
-    xlabel = 'cycles [periods/pixel]'
-    ylabel = 'Standard deviation and\nrelative presence of each cycle [%]'
+    name = r'Vertical spectrogram PRNU'
+    xlabel = r'cycles [periods/pixel]'
+    ylabel = r'Standard deviation and\nrelative presence of each cycle [%]'
     yscale = 'log'
 
     def plot(self, test):
@@ -454,17 +454,17 @@ class PlotVerticalSpectrogramPRNU(Emva1288Plot):
 
         ax.plot((routines.GetFrecs(spectrogram)),
                 (np.sqrt(spectrogram)),
-                label='Data',
+                label=r'Data',
                 gid='%d:data' % test.id)
 
         ax.axhline(test.PRNU1288,
-                   label='$PRNU_{1288}$',
+                   label=r'$PRNU_{1288}$',
                    linestyle='--',
                    color='r',
                    gid='%d:marker' % test.id)
 
         ax.axhline(100 * np.sqrt(test.sigma_2_y_stack) / data_mean,
-                   label='$\sigma^2_{y.stack}$',
+                   label=r'$\sigma^2_{y.stack}$',
                    linestyle='-.',
                    color='g',
                    gid='%d:marker' % test.id)
@@ -475,9 +475,9 @@ class PlotVerticalSpectrogramPRNU(Emva1288Plot):
 class PlotVerticalSpectrogramDSNU(Emva1288Plot):
     '''Create Vertical spectrogram DSNU plot'''
 
-    name = 'Vertical spectrogram DSNU'
-    xlabel = 'Cycles [periods/pixel]'
-    ylabel = 'Standard deviation and\nrelative presence of each cycle [DN]'
+    name = r'Vertical spectrogram DSNU'
+    xlabel = r'Cycles [periods/pixel]'
+    ylabel = r'Standard deviation and\nrelative presence of each cycle [DN]'
     yscale = 'log'
 
     def plot(self, test):
@@ -488,17 +488,17 @@ class PlotVerticalSpectrogramDSNU(Emva1288Plot):
                                        n=test.spatial['L'])
         ax.plot(routines.GetFrecs(spectrogram),
                 np.sqrt(spectrogram),
-                label='Data',
+                label=r'Data',
                 gid='%d:data' % test.id)
 
         ax.axhline(test.DSNU1288_DN(),
-                   label='$DSNU_{1288.DN}$',
+                   label=r'$DSNU_{1288.DN}$',
                    linestyle='--',
                    color='r',
                    gid='%d:marker' % test.id)
 
         ax.axhline(np.sqrt(test.sigma_2_y_stack_dark),
-                   label='$\sigma^2_{y.stack.dark}$',
+                   label=r'$\sigma^2_{y.stack.dark}$',
                    linestyle='-.',
                    color='g',
                    gid='%d:marker' % test.id)
@@ -509,9 +509,9 @@ class PlotVerticalSpectrogramDSNU(Emva1288Plot):
 class PlotLogarithmicHistogramDSNU(Emva1288Plot):
     '''Create Logarithmic histogram DSNU plot'''
 
-    name = 'Logarithmic histogram DSNU'
-    xlabel = 'Dark value [DN]'
-    ylabel = 'Number of pixels'
+    name = r'Logarithmic histogram DSNU'
+    xlabel = r'Dark value [DN]'
+    ylabel = r'Number of pixels'
     yscale = 'log'
 
     def plot(self, test):
@@ -521,11 +521,11 @@ class PlotLogarithmicHistogramDSNU(Emva1288Plot):
 
         ax.plot(hist['bins'], hist['values'],
                 gid='%d:data' % test.id,
-                label='Data')
+                label=r'Data')
         ax.plot(hist['bins'], hist['model'],
                 '--',
                 gid='%d:fit' % test.id,
-                label='Model')
+                label=r'Model')
 
         self.set_legend(ax)
 
@@ -535,9 +535,9 @@ class PlotLogarithmicHistogramDSNU(Emva1288Plot):
 class PlotLogarithmicHistogramPRNU(Emva1288Plot):
     '''Create Logarithmic histogram PRNU plot'''
 
-    name = 'Logarithmic histogram PRNU'
-    xlabel = 'Deviation from the mean [DN]'
-    ylabel = 'Number of pixels'
+    name = r'Logarithmic histogram PRNU'
+    xlabel = r'Deviation from the mean [DN]'
+    ylabel = r'Number of pixels'
     yscale = 'log'
 
     def plot(self, test):
@@ -546,10 +546,10 @@ class PlotLogarithmicHistogramPRNU(Emva1288Plot):
 
         ax.plot(hist['bins'], hist['values'],
                 gid='%d:data' % test.id,
-                label='Data')
+                label=r'Data')
         ax.plot(hist['bins'], hist['model'], '--',
                 gid='%d:fit' % test.id,
-                label='Model')
+                label=r'Model')
 
         self.set_legend(ax)
         ax.axis(ymin=0.5, ymax=np.max(hist['values']) * 2)
@@ -558,9 +558,9 @@ class PlotLogarithmicHistogramPRNU(Emva1288Plot):
 class PlotAccumulatedLogHistogramDSNU(Emva1288Plot):
     '''Create Accumulated log histogram DSNU plot'''
 
-    name = 'Accumulated log histogram DSNU'
-    xlabel = 'Minimal deviation from the mean [DN]'
-    ylabel = 'Number of pixels'
+    name = r'Accumulated log histogram DSNU'
+    xlabel = r'Minimal deviation from the mean [DN]'
+    ylabel = r'Number of pixels'
     yscale = 'log'
 
     def plot(self, test):
@@ -569,7 +569,7 @@ class PlotAccumulatedLogHistogramDSNU(Emva1288Plot):
 
         ax.plot(hist['bins'], hist['values'],
                 gid='%d:data' % test.id,
-                label='Data')
+                label=r'Data')
 
         self.set_legend(ax)
         self.figure.tight_layout()
@@ -578,9 +578,9 @@ class PlotAccumulatedLogHistogramDSNU(Emva1288Plot):
 class PlotAccumulatedLogHistogramPRNU(Emva1288Plot):
     '''Create Accumulated log histogram PRNU plot'''
 
-    name = 'Accumulated log histogram PRNU'
-    xlabel = 'Minimal deviation from the mean [%]'
-    ylabel = 'Number of pixels'
+    name = r'Accumulated log histogram PRNU'
+    xlabel = r'Minimal deviation from the mean [%]'
+    ylabel = r'Number of pixels'
     yscale = 'log'
 
     def plot(self, test):
@@ -590,7 +590,7 @@ class PlotAccumulatedLogHistogramPRNU(Emva1288Plot):
 
         ax.plot(hist['bins'], hist['values'],
                 gid='%d:data' % test.id,
-                label='Data')
+                label=r'Data')
 
         self.set_legend(ax)
 
@@ -607,14 +607,14 @@ class ProfileBase(Emva1288Plot):
         min_min_i = np.argmax(mean_ - min_)
         min_min = min_[min_min_i]
         min_perc = np.abs(100. - (min_min * 100. / mean_[min_min_i]))
-        min_label = 'Min ({:.1f} {:.1f}%)'.format(min_min,
-                                                  min_perc)
+        min_label = r'Min ({:.1f} {:.1f}%)'.format(min_min,
+                                                   min_perc)
 
         max_max_i = np.argmax(max_ - min_)
         max_max = max_[max_max_i]
         max_perc = np.abs(100. - (max_max * 100. / mean_[max_max_i]))
-        max_label = 'Max ({:.1f} {:.1f}%)'.format(max_max,
-                                                  max_perc)
+        max_label = r'Max ({:.1f} {:.1f}%)'.format(max_max,
+                                                   max_perc)
 
         return {'min_deviation': min_min, 'min_precentage': min_perc,
                 'min_label': min_label, 'max_label': max_label,
@@ -734,18 +734,18 @@ class PlotHorizontalProfile(ProfileBase):
     Profile is done with spatial images.
     '''
 
-    name = 'Horizontal profile'
+    name = r'Horizontal profile'
     vertical = False
 
     def setup_figure(self):
         self.ax = self.figure.add_subplot(211)
         self.ax2 = self.figure.add_subplot(212)
         self.figure.suptitle(self.name)
-        self.ax.set_title('PRNU')
-        self.ax.set_ylabel('Vertical line [DN]')
-        self.ax2.set_title('DSNU')
-        self.ax2.set_xlabel('Index of the line')
-        self.ax2.set_ylabel('Vertical line [DN]')
+        self.ax.set_title(r'PRNU')
+        self.ax.set_ylabel(r'Vertical line [DN]')
+        self.ax2.set_title(r'DSNU')
+        self.ax2.set_xlabel(r'Index of the line')
+        self.ax2.set_ylabel(r'Vertical line [DN]')
 
     def rearrange(self):
         self.ax.set_xticks([])
@@ -771,11 +771,11 @@ class PlotVerticalProfile(ProfileBase):
         self.ax2 = self.figure.add_subplot(121)
         self.ax = self.figure.add_subplot(122)
         self.figure.suptitle(self.name)
-        self.ax2.set_title('DSNU')
-        self.ax2.set_xlabel('Vertical line [DN]')
-        self.ax2.set_ylabel('Index of the line')
-        self.ax.set_title('PRNU')
-        self.ax.set_xlabel('Vertical line [DN]')
+        self.ax2.set_title(r'DSNU')
+        self.ax2.set_xlabel(r'Vertical line [DN]')
+        self.ax2.set_ylabel(r'Index of the line')
+        self.ax.set_title(r'PRNU')
+        self.ax.set_xlabel(r'Vertical line [DN]')
 
     def rearrange(self):
         self.ax.set_yticks([])
