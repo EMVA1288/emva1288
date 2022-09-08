@@ -6,7 +6,7 @@ from emva1288.process.plotting import Emva1288Plot, EVMA1288plots
 
 
 # Create a plot
-class PRNUmage(Emva1288Plot):
+class PRNUImage(Emva1288Plot):
     name = 'PRNU Image'
 
     def plot(self, test):
@@ -25,9 +25,9 @@ e = Emva1288(fname)
 
 ######
 # To plot only the PRNUImage
-e.plot(PRNUmage)
+e.plot(PRNUImage)
 
 #####
 # To plot all plus PRNUImage
-plots = EVMA1288plots + [PRNUmage]
+plots = EVMA1288plots + [PRNUImage]
 e.plot(*plots)
