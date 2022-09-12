@@ -180,7 +180,7 @@ class Data1288(object):
         dict : A data dictionary with the following keys:
                *'mean'*: the mean as described above and
                *'var'*: the variance as described above.
-               *'deman'*: the mean difference as described above.
+               *'dmean'*: the mean difference as described above.
         """
         mean_ = d['sum'] / (2.0 * self.pixels)
         var_ = d['pvar'] / (4.0 * self.pixels)
