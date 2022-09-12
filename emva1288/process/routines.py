@@ -52,9 +52,8 @@ def get_int_imgs(imgs):
 
     sum_ = 0
     sq_ = 0
-    n = 0
     dmean_ = 0
-    for img in imgs:
+    for n, img in enumerate(imgs):
         # we force the images as int64 to make sure we do not clip
         i = img.astype(np.int64)
         sum_ += i
@@ -62,7 +61,6 @@ def get_int_imgs(imgs):
         if n > 0:
             dmean_ += np.mean(i) - np.mean(oi)
         oi = i  # old image
-        n += 1
 
     # the pseudo variance can be computed from the sum image and the sum of
     # the square images
