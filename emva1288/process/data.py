@@ -121,14 +121,14 @@ class Data1288(object):
             # get data for dark image
             d = self._get_temporal_data(data[t][0.0])
             u_ydark.append(d['mean'])
-            s2_ydark.append(d['var'])
+            s2_ydark.append(d['var'] - d['dmean'])
 
             for p in photons[1:]:
                 # For each photon count, get the data
                 u_p.append(p)
                 d = self._get_temporal_data(data[t][p])
                 u_y.append(d['mean'])
-                s2_y.append(d['var'])
+                s2_y.append(d['var'] - d['dmean'])
 
         # Append all data to temporal dict
         temporal['u_p'] = np.asarray(u_p)
@@ -163,6 +163,10 @@ class Data1288(object):
         The variance is the pseudo variance(integer), divided by
         (4 * self.pixels)
 
+        The difference of mean values is calculated by difference of two 
+        images, used for correction for the variance, squared and then 
+        divided by 2
+
         Parameters
         ----------
         d : dict
@@ -176,10 +180,12 @@ class Data1288(object):
         dict : A data dictionary with the following keys:
                *'mean'*: the mean as described above and
                *'var'*: the variance as described above.
+               *'dmean'*: the mean difference as described above.
         """
         mean_ = d['sum'] / (2.0 * self.pixels)
         var_ = d['pvar'] / (4.0 * self.pixels)
-        return {'mean': mean_, 'var': var_}
+        dmean_ = np.square(d['dmean']) / 2
+        return {'mean': mean_, 'var': var_, 'dmean': dmean_}
 
     def _get_spatial(self, data):
         """Fill the spatial dictionary.

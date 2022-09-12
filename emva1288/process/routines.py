@@ -31,33 +31,42 @@ def load_image(fname):
 
 def get_int_imgs(imgs):
     '''
-    Returns the sum and pseudo-variance from list of images
+    Returns the sum, pseudo-variance, mean difference from list of images
     sum is just the image resulting on the addition of all the images
     pvar is the pseudo-variance, this is defined by:
     pvar = SUM((L(i)^2 - (SUM(i))^2)
     to get variance from pseudo-variance
     var = (1/(L^2) * 1/(L - 1)) * pvar
+    dmean is the mean difference between the images, obtained by:
+    SUM(mean(i) - mean(i-1)), when i>0
+    this is used to remove mu_y^2 from the total variance
+    important value to get sigma_y (temporal variance).
 
     keys & value in output dict:
         L : number of images for computation--> int
         sum : total summed image [M x N] --> array. int64
         pvar : summed variance image [M x N] --> array. int64
+        dmean: summed mean differences --> float
     '''
     L = len(imgs)  # number of images
 
     sum_ = 0
     sq_ = 0
-    for img in imgs:
+    dmean_ = 0
+    for n, img in enumerate(imgs):
         # we force the images as int64 to make sure we do not clip
         i = img.astype(np.int64)
         sum_ += i
         sq_ += np.square(i)
+        if n > 0:
+            dmean_ += np.mean(i) - np.mean(oi)
+        oi = i  # old image
 
     # the pseudo variance can be computed from the sum image and the sum of
     # the square images
     var_ = L * (L * sq_ - np.square(sum_))
 
-    return {'L': L, 'sum': sum_, 'pvar': var_}
+    return {'L': L, 'sum': sum_, 'pvar': var_, 'dmean': dmean_}
 
 
 def LinearB0(Xi, Yi):
