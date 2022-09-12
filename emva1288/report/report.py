@@ -1,7 +1,7 @@
 import jinja2
 import os
 import shutil
-from distutils.dir_util import copy_tree
+from shutil import copytree
 from collections import OrderedDict
 import posixpath
 from matplotlib.figure import Figure
@@ -256,9 +256,7 @@ class Report1288(object):
         return renderer
 
     def _make_dirs(self, outdir):
-        """Create the directory structure for the report
-        If the directory exist, raise an error
-        """
+        """Create the directory structure for the report"""
         try:
             os.makedirs(self._outdir)
         except FileExistsError:  # pragma: no cover
@@ -266,12 +264,11 @@ class Report1288(object):
         print('Output Dir: ', self._outdir)
 
         files_dir = os.path.join(self._outdir, 'files')
+        currfiles = os.path.join(_CURRDIR, 'files')
         try:
-            os.makedirs(files_dir)
+            copytree(currfiles, files_dir)
         except FileExistsError:  # pragma: no cover
             pass
-        currfiles = os.path.join(_CURRDIR, 'files')
-        copy_tree(currfiles, files_dir)
 
         upload_dir = os.path.join(self._outdir, 'upload')
         try:
