@@ -7,9 +7,12 @@
 \usepackage{xcolor}
 \usepackage{emvadatasheet}
 \usepackage{lastpage}
-\usepackage[printwatermark]{xwatermark}
 \usepackage{tikz}
 \usepackage{multicol}
+%{ if marketing.watermark %}
+\usepackage[color={red!30}, fontsize=96pt, text={%{{marketing.watermark%}}}]{draftwatermark}
+%{ endif %}
+
 \title{}
 \author{}
 \date{}
@@ -17,14 +20,6 @@
 
 \newcommand{\TheReportSection}{}
 \newcommand{\ReportSection}[1]{\renewcommand{\TheReportSection}{#1}}
-
-%{ if marketing.watermark %}
-\newsavebox\wtmkbox
-\savebox\wtmkbox{\tikz[color=red,opacity=0.3]\node{%{{marketing.watermark%}}};}
-\newwatermark*[
-allpages, angle=45.0, scale=8.0, xpos=-20, ypos=15
-]{\usebox\wtmkbox}
-%{ endif %}
 
 %First marketing cover page
 %{ if cover_page %}

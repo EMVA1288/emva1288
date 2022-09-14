@@ -8,8 +8,8 @@ import os
 # fname = 'EMVA1288_ReferenceSet_003_Simulation_12Bit/EMVA1288_Data.txt'
 # fname = os.path.join(dir_, fname)
 
-dataset_generator = DatasetGenerator(width=640,
-                                     height=480,
+dataset_generator = DatasetGenerator(width=160,
+                                     height=120,
                                      K=0.1,
                                      blackoffset=29.4,
                                      bit_depth=12,
@@ -33,7 +33,7 @@ basic = report.info_basic()
 basic['vendor'] = 'Simulation'
 basic['data_type'] = 'Single'
 basic['sensor_type'] = 'simulated sensor'
-basic['resolution'] = '640x480'
+basic['resolution'] = '160x120'
 basic['model'] = 'Simulated camera'
 
 
