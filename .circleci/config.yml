@@ -4,7 +4,7 @@ version: 2.1
 jobs:
   run-tests:
     docker:
-      - image: cimg/python:3.10.2
+      - image: cimg/python:latest
     steps:
       - checkout
       - run:
@@ -15,14 +15,31 @@ jobs:
 
   run-examples:
     docker:
-      - image: cimg/python:3.10.2
+      - image: cimg/python:latest
     steps:
       - checkout
       - run:
           command: pip install --upgrade pip; pip install .[doc]
       - run:
+          # The report example requires a lot of RAM. Since we only want to
+          # check the syntax, we change the parameters for the execution in
+          # the CI so that only little RAM is consumed.
           name: Generate report tex-file
-          command: python doc/examples/sample_report.py
+          command: >
+            echo -e \
+              '#!/bin/bash\n' \
+              'echo -n "Replace the unique line \"${1}\" with \"${2}\"" && ' \
+              'sed -i "/^${1}\\$/{s//${2}/;x;/./{q1};x;h};\\${x;/./{x;q0};x;q1}" doc/examples/sample_report.py && ' \
+              'echo -e "\\033[1;32m Success\\033[0m" && exit 0 || ' \
+              'echo -e "\\033[1;31m Fail\\033[0m" && exit 1' \
+                > ~/.local/bin/update_sample_report.sh;
+            chmod +x ~/.local/bin/update_sample_report.sh;
+            update_sample_report.sh "width = 640" "width = 32";
+            update_sample_report.sh "height = 480" "height = 24";
+            update_sample_report.sh "steps = 50" "steps = 10";
+            set -o xtrace;
+            cat doc/examples/sample_report.py;
+            python doc/examples/sample_report.py
       - persist_to_workspace:
           root: .
           paths:

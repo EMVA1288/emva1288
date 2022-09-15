@@ -8,12 +8,20 @@ import os
 # fname = 'EMVA1288_ReferenceSet_003_Simulation_12Bit/EMVA1288_Data.txt'
 # fname = os.path.join(dir_, fname)
 
-dataset_generator = DatasetGenerator(width=160,
-                                     height=120,
-                                     K=0.1,
-                                     blackoffset=29.4,
-                                     bit_depth=12,
-                                     steps=50,
+# Arguments used for dataset generation and report configuration
+width = 640
+height = 480
+gain = 0.1
+black_level = 29.4
+bit_depth = 12
+steps = 50
+
+dataset_generator = DatasetGenerator(width=width,
+                                     height=height,
+                                     K=gain,
+                                     blackoffset=black_level,
+                                     bit_depth=bit_depth,
+                                     steps=steps,
                                      exposure_fixed=1000000,
                                      dark_current_ref=30)
 
@@ -33,7 +41,7 @@ basic = report.info_basic()
 basic['vendor'] = 'Simulation'
 basic['data_type'] = 'Single'
 basic['sensor_type'] = 'simulated sensor'
-basic['resolution'] = '160x120'
+basic['resolution'] = f'{width}x{height}'
 basic['model'] = 'Simulated camera'
 
 
@@ -55,12 +63,12 @@ myreport = report.Report1288('myreport',
 
 op1 = report.info_op()
 op1['summary_only'] = False
-op1['camera_settings']['Gain'] = 0.1
-op1['camera_settings']['Black level'] = 29.4
-op1['camera_settings']['Bit depth'] = '12 bits'
+op1['camera_settings']['Gain'] = gain
+op1['camera_settings']['Black level'] = black_level
+op1['camera_settings']['Bit depth'] = f'{bit_depth} bits'
 op1['test_parameters']['Illumination'] = 'Variable with constant \
 exposure time'
-op1['test_parameters']['Irradiation steps'] = 50
+op1['test_parameters']['Irradiation steps'] = steps
 
 # Add the operation point to the report
 # we can add as many operation points as we want
