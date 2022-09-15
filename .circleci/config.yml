@@ -19,7 +19,7 @@ jobs:
     steps:
       - checkout
       - run:
-          command: pip install --upgrade pip; pip install .[emva1288]
+          command: pip install --upgrade pip; pip install .[doc]
       - run:
           name: Generate report tex-file
           command: python doc/examples/sample_report.py
