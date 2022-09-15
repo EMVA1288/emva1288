@@ -4,7 +4,7 @@ version: 2.1
 jobs:
   run-tests:
     docker:
-      - image: cimg/python:latest
+      - image: cimg/python:3.10
     steps:
       - checkout
       - run:
@@ -15,7 +15,7 @@ jobs:
 
   run-examples:
     docker:
-      - image: cimg/python:latest
+      - image: cimg/python:3.10
     steps:
       - checkout
       - run:
