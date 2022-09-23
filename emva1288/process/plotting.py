@@ -372,7 +372,7 @@ class PlotHorizontalSpectrogramPRNU(Emva1288Plot):
 
     name = r'Horizontal spectrogram PRNU'
     xlabel = r'cycles [periods/pixel]'
-    ylabel = r'Standard deviation and\nrelative presence of each cycle [%]'
+    ylabel = 'Standard deviation and\nrelative presence of each cycle [%]'
     yscale = 'log'
 
     def plot(self, test):
