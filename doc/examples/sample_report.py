@@ -26,7 +26,6 @@ def main(dataset_descripton_file,
     basic['resolution'] = f'{dat.cols}x{dat.rows}'
     basic['model'] = 'Simulated camera'
 
-
     # Marketing information
     marketing = report.info_marketing()
     marketing['watermark'] = 'Example'
