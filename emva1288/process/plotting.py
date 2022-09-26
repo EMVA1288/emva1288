@@ -608,13 +608,13 @@ class ProfileBase(Emva1288Plot):
         min_min = min_[min_min_i]
         min_perc = np.abs(100. - (min_min * 100. / mean_[min_min_i]))
         min_label = 'Min ({:.1f} {:.1f}%)'.format(min_min,
-                                                   min_perc)
+                                                  min_perc)
 
         max_max_i = np.argmax(max_ - min_)
         max_max = max_[max_max_i]
         max_perc = np.abs(100. - (max_max * 100. / mean_[max_max_i]))
         max_label = 'Max ({:.1f} {:.1f}%)'.format(max_max,
-                                                   max_perc)
+                                                  max_perc)
 
         return {'min_deviation': min_min, 'min_precentage': min_perc,
                 'min_label': min_label, 'max_label': max_label,
