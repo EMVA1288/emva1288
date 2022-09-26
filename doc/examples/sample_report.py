@@ -60,6 +60,7 @@ def main(dataset_descripton_file,
     # Generate the latex files
     myreport.latex()
 
+
 if __name__ == '__main__':
     # Arguments used for dataset generation and report configuration
     gain = 0.1
