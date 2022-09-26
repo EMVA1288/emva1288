@@ -168,7 +168,7 @@ class PlotSensitivity(Emva1288Plot):
 
 
 class PlotUyDark(Emva1288Plot):
-    '''Create $\\mu_{y.dark}$ plot'''
+    r'''Create $\mu_{y.dark}$ plot'''
 
     name = 'Mean gray value in dark'
     title = r'$\mu_{y.dark}$'
