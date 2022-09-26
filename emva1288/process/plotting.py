@@ -390,7 +390,7 @@ class PlotHorizontalSpectrogramPRNU(Emva1288Plot):
                 gid='%d:data' % test.id)
 
         ax.axhline(test.PRNU1288,
-                   label=r'$PRNU_{1288}$',
+                   label='$PRNU_{1288}$',
                    linestyle='--',
                    color='r',
                    gid='%d:marker' % test.id)
@@ -423,7 +423,7 @@ class PlotHorizontalSpectrogramDSNU(Emva1288Plot):
                 gid='%d:data' % test.id)
 
         ax.axhline(test.DSNU1288_DN(),
-                   label=r'$DSNU_{1288.DN}$',
+                   label='$DSNU_{1288.DN}$',
                    linestyle='--',
                    color='r',
                    gid='%d:marker' % test.id)
@@ -454,11 +454,11 @@ class PlotVerticalSpectrogramPRNU(Emva1288Plot):
 
         ax.plot((routines.GetFrecs(spectrogram)),
                 (np.sqrt(spectrogram)),
-                label=r'Data',
+                label='Data',
                 gid='%d:data' % test.id)
 
         ax.axhline(test.PRNU1288,
-                   label=r'$PRNU_{1288}$',
+                   label='$PRNU_{1288}$',
                    linestyle='--',
                    color='r',
                    gid='%d:marker' % test.id)
@@ -492,7 +492,7 @@ class PlotVerticalSpectrogramDSNU(Emva1288Plot):
                 gid='%d:data' % test.id)
 
         ax.axhline(test.DSNU1288_DN(),
-                   label=r'$DSNU_{1288.DN}$',
+                   label='$DSNU_{1288.DN}$',
                    linestyle='--',
                    color='r',
                    gid='%d:marker' % test.id)
