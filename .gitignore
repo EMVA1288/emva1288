@@ -24,7 +24,7 @@
 
 # EXAMPLE FILES #
 ##################
-doc/examples/myreport/
+myreport/
 
 # OS generated files #
 ######################
@@ -62,3 +62,7 @@ tests/logs/*
 ###################
 /.pytest_cache/*
 tests/reports/*
+
+# CI doc examples tests #
+#########################
+/doc/examples/ci_test_*.py
