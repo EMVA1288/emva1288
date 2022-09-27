@@ -132,8 +132,8 @@ class Emva1288Plot(object):
 
 class PlotSensitivity(Emva1288Plot):
     name = 'Sensitivity'
-    xlabel = '$\mu_p$ [mean number of photons/pixel]'
-    ylabel = '$\mu_y - \mu_{y.dark}$ [DN]'
+    xlabel = r'$\mu_p$ [mean number of photons/pixel]'
+    ylabel = r'$\mu_y - \mu_{y.dark}$ [DN]'
 
     def plot(self, test):
         ax = self.ax
@@ -168,12 +168,12 @@ class PlotSensitivity(Emva1288Plot):
 
 
 class PlotUyDark(Emva1288Plot):
-    '''Create $\mu_{y.dark}$ plot'''
+    r'''Create $\mu_{y.dark}$ plot'''
 
     name = 'Mean gray value in dark'
-    title = '$\mu_{y.dark}$'
+    title = r'$\mu_{y.dark}$'
     xlabel = 'exposure time [ns]'
-    ylabel = '$\mu_{y.dark}$ [DN]'
+    ylabel = r'$\mu_{y.dark}$ [DN]'
 
     def plot(self, test):
         ax = self.ax
@@ -198,8 +198,8 @@ class PlotPTC(Emva1288Plot):
     '''Create Photon Transfer plot'''
 
     name = 'Photon Transfer'
-    xlabel = '$\mu_y - \mu_{y.dark}$ [DN]'
-    ylabel = '$\sigma^2_y - \sigma^2_{y.dark}$ [DN$^2$]'
+    xlabel = r'$\mu_y - \mu_{y.dark}$ [DN]'
+    ylabel = r'$\sigma^2_y - \sigma^2_{y.dark}$ [DN$^2$]'
 
     def plot(self, test):
         ax = self.ax
@@ -237,7 +237,7 @@ class PlotSNR(Emva1288Plot):
     '''Create SNR plot '''
 
     name = 'Signal to Noise Ratio'
-    xlabel = '$\mu_{p}$ [mean number of photons/pixel]'
+    xlabel = r'$\mu_{p}$ [mean number of photons/pixel]'
     ylabel = 'SNR'
 
     def setup_figure(self):
@@ -281,11 +281,11 @@ class PlotSNR(Emva1288Plot):
                 gid='%d:fit' % test.id)
 
         ax.axvline(test.u_p_min,
-                   label='$\mu_{p.min} = %.1f[p]$' % test.u_p_min,
+                   label=r'$\mu_{p.min} = %.1f[p]$' % test.u_p_min,
                    gid='%d:marker' % test.id)
 
         ax.axvline(test.u_p_sat,
-                   label='$\mu_{p.sat} = %.1f[p]$' % test.u_p_sat,
+                   label=r'$\mu_{p.sat} = %.1f[p]$' % test.u_p_sat,
                    gid='%d:marker' % test.id)
 
         ax.plot(X,
@@ -308,8 +308,8 @@ class PlotLinearity(Emva1288Plot):
     '''Create Linearity plot'''
 
     name = 'Linearity'
-    xlabel = '$\mu_{p}$ [mean number of photons/pixel]'
-    ylabel = '$\mu_y - \mu_{y.dark}$ [DN]'
+    xlabel = r'$\mu_{p}$ [mean number of photons/pixel]'
+    ylabel = r'$\mu_y - \mu_{y.dark}$ [DN]'
 
     def plot(self, test):
         ax = self.ax
@@ -342,7 +342,7 @@ class PlotDeviationLinearity(Emva1288Plot):
     '''Create Deviation Linearity plot'''
 
     name = 'Deviation linearity'
-    xlabel = '$\mu_{p}$ [mean number of photons/pixel]'
+    xlabel = r'$\mu_{p}$ [mean number of photons/pixel]'
     ylabel = 'Linearity error LE [%]'
 
     def plot(self, test):
@@ -396,7 +396,7 @@ class PlotHorizontalSpectrogramPRNU(Emva1288Plot):
                    gid='%d:marker' % test.id)
 
         ax.axhline(100 * np.sqrt(test.sigma_2_y_stack) / data_mean,
-                   label='$\sigma^2_{y.stack}$',
+                   label=r'$\sigma^2_{y.stack}$',
                    linestyle='-.',
                    color='g',
                    gid='%d:marker' % test.id)
@@ -429,7 +429,7 @@ class PlotHorizontalSpectrogramDSNU(Emva1288Plot):
                    gid='%d:marker' % test.id)
 
         ax.axhline(np.sqrt(test.sigma_2_y_stack_dark),
-                   label='$\sigma^2_{y.stack.dark}$',
+                   label=r'$\sigma^2_{y.stack.dark}$',
                    linestyle='-.',
                    color='g',
                    gid='%d:marker' % test.id)
@@ -464,7 +464,7 @@ class PlotVerticalSpectrogramPRNU(Emva1288Plot):
                    gid='%d:marker' % test.id)
 
         ax.axhline(100 * np.sqrt(test.sigma_2_y_stack) / data_mean,
-                   label='$\sigma^2_{y.stack}$',
+                   label=r'$\sigma^2_{y.stack}$',
                    linestyle='-.',
                    color='g',
                    gid='%d:marker' % test.id)
@@ -498,7 +498,7 @@ class PlotVerticalSpectrogramDSNU(Emva1288Plot):
                    gid='%d:marker' % test.id)
 
         ax.axhline(np.sqrt(test.sigma_2_y_stack_dark),
-                   label='$\sigma^2_{y.stack.dark}$',
+                   label=r'$\sigma^2_{y.stack.dark}$',
                    linestyle='-.',
                    color='g',
                    gid='%d:marker' % test.id)

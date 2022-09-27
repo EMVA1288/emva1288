@@ -206,7 +206,7 @@ class Results1288(object):
 
     @property
     def QE(self):
-        """Quantum efficiency.
+        r"""Quantum efficiency.
 
         It is retrieved as the ratio of the responsivity to the overall
         system gain.
@@ -223,7 +223,7 @@ class Results1288(object):
 
     @property
     def sigma_y_dark(self):
-        """Temporal Dark Noise.
+        r"""Temporal Dark Noise.
 
         Uses :func:`~emva1288.process.routines.LinearB` to make the fit.
 
@@ -252,7 +252,7 @@ class Results1288(object):
 
     @property
     def sigma_d(self):
-        """Temporal Dark Noise.
+        r"""Temporal Dark Noise.
 
         .. emva1288::
             :Section: sensitivity
@@ -266,7 +266,7 @@ class Results1288(object):
 
     @property
     def u_p_min(self):
-        """Absolute sensitivity threshold.
+        r"""Absolute sensitivity threshold.
 
         .. emva1288::
             :Section: sensitivity
@@ -280,7 +280,7 @@ class Results1288(object):
 
     @property
     def u_p_min_area(self):
-        """Sensitivity threshold per pixel area.
+        r"""Sensitivity threshold per pixel area.
 
         Returns None if pixel area is not defined or 0.
 
@@ -299,7 +299,7 @@ class Results1288(object):
 
     @property
     def u_e_min(self):
-        """Sensitivity threshold.
+        r"""Sensitivity threshold.
 
         .. emva1288::
             :Section: sensitivity
@@ -312,7 +312,7 @@ class Results1288(object):
 
     @property
     def u_e_min_area(self):
-        """Sensitivity threshold per pixel area.
+        r"""Sensitivity threshold per pixel area.
 
         Returns None if the pixel area is not defined or 0.
 
@@ -330,7 +330,7 @@ class Results1288(object):
 
     @property
     def u_p_sat(self):
-        """Saturation Capacity.
+        r"""Saturation Capacity.
 
         .. emva1288::
             :Section: sensitivity
@@ -344,7 +344,7 @@ class Results1288(object):
 
     @property
     def u_p_sat_area(self):
-        """Saturation Capacity per pixel area.
+        r"""Saturation Capacity per pixel area.
 
         Returns None if pixel area is not defined or 0.
 
@@ -363,7 +363,7 @@ class Results1288(object):
 
     @property
     def u_e_sat(self):
-        """Saturation Capacity.
+        r"""Saturation Capacity.
 
         Number of electrons at saturation.
 
@@ -379,7 +379,7 @@ class Results1288(object):
 
     @property
     def u_e_sat_area(self):
-        """Saturation Capacity per pixel area.
+        r"""Saturation Capacity per pixel area.
 
         Returns None if pixel area is not defined or 0.
 
@@ -436,7 +436,7 @@ class Results1288(object):
         return np.log2(self.SNR_max)
 
     def inverse_SNR_max(self):
-        """Inverse Maximum Signal to Noise Ratio.
+        r"""Inverse Maximum Signal to Noise Ratio.
 
         .. emva1288::
             :Section: sensitivity
@@ -570,7 +570,7 @@ class Results1288(object):
 
     @property
     def LE_min(self):
-        """ Min Linearity error.
+        r""" Min Linearity error.
 
         .. emva1288::
             :Section: linearity
@@ -584,7 +584,7 @@ class Results1288(object):
 
     @property
     def LE_max(self):
-        """Max Linearity error.
+        r"""Max Linearity error.
 
         .. emva1288::
             :Section: linearity
@@ -598,7 +598,7 @@ class Results1288(object):
 
     @property
     def u_I_var_DN(self):
-        """Dark Current from variance.
+        r"""Dark Current from variance.
 
         The dark current from variance (in DN/s) is the slope of the dark
         signal variance as a function of the exposure time divided by the
@@ -624,7 +624,7 @@ class Results1288(object):
 
     @property
     def u_I_var(self):
-        """Dark Current from variance.
+        r"""Dark Current from variance.
 
         The dark current from variance (in e-/s) is the dark current from
         variance (in DN/s) divided by the system gain.
@@ -645,7 +645,7 @@ class Results1288(object):
 
     @property
     def u_I_mean_DN(self):
-        """Dark Current from mean.
+        r"""Dark Current from mean.
 
         The dark current from mean is the slope of the dark signal mean in
         function of the exposure time.
@@ -668,7 +668,7 @@ class Results1288(object):
 
     @property
     def u_I_mean(self):
-        """Dark Current from mean.
+        r"""Dark Current from mean.
 
         The dark current from mean is the slope of the dark signal mean in
         function of the exposure times divided by the overall system gain.
@@ -687,7 +687,7 @@ class Results1288(object):
 
     @property
     def sigma_2_y_stack(self):
-        """Temporal variance stack.
+        r"""Temporal variance stack.
 
         Mean value of the bright variance image.
 
@@ -702,7 +702,7 @@ class Results1288(object):
 
     @property
     def sigma_2_y_stack_dark(self):
-        """Temporal variance stack dark.
+        r"""Temporal variance stack dark.
 
         Mean value of the dark variance image.
 
@@ -1028,7 +1028,7 @@ class Results1288(object):
 
     @property
     def PRNU1288(self):
-        """PRNU overall.
+        r"""PRNU overall.
 
         Photo Response NonUniformity (in %) is defined as the square root of
         the difference between the spatial variance of a bright image (or from
@@ -1049,7 +1049,7 @@ class Results1288(object):
 
     @property
     def PRNU1288_row(self):
-        """PRNU in row.
+        r"""PRNU in row.
 
         Photo Response NonUniformity (in %) is defined as the square root of
         the difference between the spatial variance of a bright image (or from
@@ -1070,7 +1070,7 @@ class Results1288(object):
 
     @property
     def PRNU1288_col(self):
-        """PRNU in column.
+        r"""PRNU in column.
 
         Photo Response NonUniformity (in %) is defined as the square root of
         the difference between the spatial variance of a bright image (or from
@@ -1091,7 +1091,7 @@ class Results1288(object):
 
     @property
     def PRNU1288_pixel(self):
-        """PRNU in pixel.
+        r"""PRNU in pixel.
 
         Photo Response NonUniformity (in %) is defined as the square root of
         the difference between the spatial variance of a bright image (or from
