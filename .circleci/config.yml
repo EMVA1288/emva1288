@@ -2,10 +2,10 @@
 version: 2.1
 
 jobs:
-  run-tests:
+  run-tests-3-10:
     docker:
       - image: cimg/python:3.10
-    steps:
+    steps: &run-tests
       - checkout
       - run:
           command: pip install --upgrade pip; pip install .[tests]
@@ -13,10 +13,15 @@ jobs:
           name: Run unittests
           command: pytest
 
-  run-examples:
+  run-tests-3-8:
+    docker:
+      - image: cimg/python:3.8
+    steps: *run-tests
+
+  run-examples-3-10:
     docker:
       - image: cimg/python:3.10
-    steps:
+    steps: &run-examples
       - checkout
       - run:
           command: pip install --upgrade pip; pip install .[doc]
@@ -31,7 +36,12 @@ jobs:
           paths:
             - myreport
 
-  compile-report:
+  run-examples-3-8:
+    docker:
+      - image: cimg/python:3.8
+    steps: *run-examples
+
+  compile-report-3-10:
     docker:
       - image: texlive/texlive:latest
     steps:
@@ -42,12 +52,14 @@ jobs:
           command: cd myreport; set -o xtrace; ls -laR; cat -n report.tex; latexmk --pdflatex report.tex
 
 workflows:
-  unittests:
+  python-3-10:
     jobs:
-      - run-tests
-  create-report:
-    jobs:
-      - run-examples
-      - compile-report:
+      - run-tests-3-10
+      - run-examples-3-10
+      - compile-report-3-10:
           requires:
-            - run-examples
+            - run-examples-3-10
+  python-3-8:
+    jobs:
+      - run-tests-3-8
+      - run-examples-3-8
