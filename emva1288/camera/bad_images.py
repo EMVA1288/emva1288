@@ -19,7 +19,7 @@ def bad_pixel(cam, num_bad_pixel, bad_value=1):
     """
     # TODO: add error message if num_bad_pixel is higger than pixel_num
     # Set the bad value at the Full well capacity for the camera if 1.
-    bad_value = bad_value * cam._u_esat
+    bad_value = bad_value * cam._electron_saturation
     # Count the number of pixel in the camera
     pixel_num = cam.height * cam.width
     # Select the number of bad pixel in a 1D with number
