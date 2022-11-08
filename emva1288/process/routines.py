@@ -263,7 +263,7 @@ def Histogram1288(img, Qmax):
     # When too many bins, create a new integer binwidth
     if Q > Qmax:
         # We want the number of bins as close as possible to Qmax (256)
-        W = int(np.ceil(1. * q / (Qmax - 1)))
+        W = int(np.floor(1. * q / Qmax)) + 1
         Q = int(np.floor(1. * q / W)) + 1
 
     # The bins

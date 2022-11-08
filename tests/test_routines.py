@@ -79,3 +79,21 @@ def test_FFT1288_at_nyquist():
     # check if it also works on 127 columns
     fft = routines.FFT1288(img=np.delete(img, -1, 1))
     assert fft[-1] > 1
+
+
+def test_Histogram1288():
+    """Make sure we obtain the expected bins, values, and model."""
+    Qmax = 256
+    N = Qmax * 2
+    img = np.arange(N).reshape(16, 32)
+    ymax = N - 1
+
+    h = routines.Histogram1288(img, Qmax)
+    assert np.array_equal(h['bins'], np.arange(0, N, 2, dtype=np.float64))
+    assert np.array_equal(h['values'], np.full((Qmax,), 2, dtype=np.int64))
+    mu = ymax / 2
+    sigma = 147.80138700296422
+    model = ((float(ymax) / Qmax) *
+             N / (np.sqrt(2 * np.pi) * sigma) *
+             np.exp(-0.5 * (1. / sigma * (h['bins'] - mu)) ** 2))
+    assert np.allclose(h['model'], model)
