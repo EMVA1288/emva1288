@@ -833,7 +833,7 @@ class Plotting1288(object):
     """EMVA1288 plots
 
     Creates and shows all plots necessary to prepare a camera or sensor
-    descriptive report compliant with EMVA Standard 1288 version 4.0.
+    descriptive report compliant with EMVA Standard 1288.
     """
 
     def __init__(self, *tests):
