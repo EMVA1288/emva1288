@@ -530,6 +530,8 @@ class Results1288(object):
                  relative deviation.
                - *'linearity_error_max'* : The maximal value of the
                  relative deviation.
+               - *'linearity_error_mean'* : In version >= 4.0 the computation
+                 of LE was changed. The v >= 4.0 is represented here
         """
         Y = self.temporal['u_y'] - self.temporal['u_ydark']
         X = self.temporal['u_p']
@@ -563,8 +565,9 @@ class Results1288(object):
         lin['fit_slope'] = a
         lin['fit_offset'] = b
         lin['relative_deviation'] = dev
-        lin['linearity_error_min'] = np.min(dev[imin: imax])
-        lin['linearity_error_max'] = np.max(dev[imin: imax])
+        lin['linearity_error_min'] = np.min(dev[imin: imax])    # deprecated
+        lin['linearity_error_max'] = np.max(dev[imin: imax])    # deprecated
+        lin['linearity_error_mean'] = np.mean(np.abs(dev))
 
         return lin
 
@@ -574,7 +577,7 @@ class Results1288(object):
 
         .. emva1288::
             :Section: linearity
-            :Short: Min Linearity error
+            :Short: Min Linearity error (deprecated)
             :Symbol: $LE_{min}$
             :Unit: \%
             :LatexName: LEMin
@@ -588,13 +591,27 @@ class Results1288(object):
 
         .. emva1288::
             :Section: linearity
-            :Short: Max Linearity error
+            :Short: Max Linearity error (deprecated)
             :Symbol: $LE_{max}$
             :Unit: \%
             :LatexName: LEMax
         """
 
         return self.linearity()['linearity_error_max']
+
+    @property
+    def LE_mean(self):
+        r"""Linearity error.
+
+        .. emva1288::
+            :Section: linearity
+            :Short: Linearity error
+            :Symbol: $LE$
+            :Unit: \%
+            :LatexName: LEMean
+        """
+
+        return self.linearity()['linearity_error_mean']
 
     @property
     def u_I_var_DN(self):

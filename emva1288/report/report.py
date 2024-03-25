@@ -312,18 +312,26 @@ class Report1288(object):
     def _report(self):
         # Generate the report contents
         report = self.renderer.get_template('report.tex')
-        return report.render(marketing=self.marketing,
+        the_render = report.render(marketing=self.marketing,
                              basic=self.basic,
                              setup=self.setup,
                              operation_points=self.ops,
                              cover_page=self.cover_page)
+        return the_render
+        #return report.render(marketing=self.marketing,
+        #                     basic=self.basic,
+        #                     setup=self.setup,
+        #                     operation_points=self.ops,
+        #                     cover_page=self.cover_page)
 
     def latex(self):
         """Generate report latex files.
         """
 
         self._write_file('emvadatasheet.sty', self._stylesheet())
-        self._write_file('report.tex', self._report())
+        the_report = self._report()
+        self._write_file('report.tex', the_report)
+        #self._write_file('report.tex', self._report())
 
     def _results(self, data):
         return Results1288(data)

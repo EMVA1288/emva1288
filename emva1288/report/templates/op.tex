@@ -144,13 +144,9 @@
 
 \multicolumn{3}{l}{\textbf{Linearity error}} \\
 
-%{{ op.results.linearity.LE_min.symbol %}} &
-%{{ '%.3f' % op.results.linearity.LE_min.value %}} &
-%{{ op.results.linearity.LE_min.unit %}} \\
-
-%{{ op.results.linearity.LE_max.symbol %}} &
-%{{ '%.3f' % op.results.linearity.LE_max.value %}} &
-%{{ op.results.linearity.LE_max.unit %}} \\[3mm]
+%{{ op.results.linearity.LE_mean.symbol %}} &
+%{{ '%.3f' % op.results.linearity.LE_mean.value %}} &
+%{{ op.results.linearity.LE_mean.unit %}} \\[3mm]
 
 \multicolumn{3}{l}{\textbf{Dark current}} \\
 
@@ -175,6 +171,10 @@
 
 %{ if not op.summary_only %}
 %Extra plots
+\newpage
+\begin{center}
+\includegraphics[height=0.45\textheight,keepaspectratio]{%{{ op.plots.PlotStabilityCheck %}}}
+\end{center}
 \newpage
 \begin{center}
 \includegraphics[height=0.45\textheight,keepaspectratio]{%{{ op.plots.PlotSensitivity %}}}

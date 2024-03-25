@@ -194,6 +194,29 @@ class PlotUyDark(Emva1288Plot):
         self.set_legend(ax)
 
 
+class PlotStabilityCheck(Emva1288Plot):
+    ''' Create the stability check plot '''
+    name = 'Stability Check'
+    xlabel = r'gray value [DN]'
+    ylabel = r'difference/std gray value [DN]'
+
+    def plot(self, test):
+        ax = self.ax
+
+        X = test.temporal['u_y'] - test.temporal['u_ydark']
+        Y1 = np.sqrt(test.temporal['s2_y'])
+        Y2 = test.temporal['diff_u_y']
+        ax.plot(X, Y1,
+                label='Std',
+                gid='%d:std' % test.id)
+        ax.plot(X, Y2,
+                label='Difference',
+                marker='.',
+                ls=' ',
+                gid='%d:difference' % test.id)
+        self.set_legend(ax)
+
+
 class PlotPTC(Emva1288Plot):
     '''Create Photon Transfer plot'''
 
@@ -792,6 +815,7 @@ class PlotVerticalProfile(ProfileBase):
 
 EVMA1288plots = [PlotPTC,
                  PlotSNR,
+                 PlotStabilityCheck,
                  PlotSensitivity,
                  PlotUyDark,
                  PlotLinearity,
@@ -812,6 +836,7 @@ EVMA1288plots = [PlotPTC,
 
     - :class:`~emva1288.process.plotting.PlotPTC`
     - :class:`~emva1288.process.plotting.PlotSNR`
+    - :class:`~emva1288.process.plotting.PlotStabilityCheck`
     - :class:`~emva1288.process.plotting.PlotSensitivity`
     - :class:`~emva1288.process.plotting.PlotUyDark`
     - :class:`~emva1288.process.plotting.PlotLinearity`
