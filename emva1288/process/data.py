@@ -54,8 +54,10 @@ class Data1288(object):
         self.data = {}
         self.data['temporal'] = self._get_temporal(data['temporal'])
         self.data['spatial'] = self._get_spatial(data['spatial'])
+        self.data['darkcurrent'] =self._get_temporal(data['darkcurrent'], True)
+        print()
 
-    def _get_temporal(self, data):
+    def _get_temporal(self, data, dark_only=False):
         """Fill the temporal dict, with the stuff that we need.
         Compute the averages and variances from the sums (sum and pvar)
 
@@ -118,7 +120,7 @@ class Data1288(object):
             if 0.0 not in photons:
                 raise ValueError('Every exposure point must have a 0.0 photon')
 
-            if len(photons) < 2:
+            if len(photons) < 2 and not dark_only:
                 raise ValueError('There must be at least one bright photon')
 
             # get data for dark image

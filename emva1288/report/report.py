@@ -334,7 +334,10 @@ class Report1288(object):
         #self._write_file('report.tex', self._report())
 
     def _results(self, data):
-        return Results1288(data)
+        pixel_area = None
+        if self.basic['pixel_size']:
+            pixel_area = self.basic['pixel_size']
+        return Results1288(data, pixel_area)
 
     def _plots(self, results, id_):
         """Create the plots for the report.

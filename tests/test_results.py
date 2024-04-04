@@ -64,8 +64,8 @@ def test_sensitivity(results):
 def test_dark_current(results):
     dataset, parser, loader, data, results = results
     # Test that dark current is actually retrieved from both methods
-    assert dataset.cam._dark_current_ref == pytest.approx(results.u_I_mean, abs=5)
-    assert dataset.cam._dark_current_ref == pytest.approx(results.u_I_var, abs=10)
+    assert dataset.cam._dark_current_ref == pytest.approx(results.u_I_mean['slope'], abs=5)
+    assert dataset.cam._dark_current_ref == pytest.approx(results.u_I_var['slope'], abs=10)
 
 
 def test_saturation(results):

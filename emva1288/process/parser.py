@@ -49,6 +49,7 @@ class ParseEmvaDescriptorFile(object):
         self.format = {}  # bits, witdth, height
         self.version = None
         self.images = {'temporal': {},
+                       'darkcurrent' : {},
                        'spatial': {}}
 
         logging.basicConfig()
@@ -89,7 +90,7 @@ class ParseEmvaDescriptorFile(object):
 
         return fnames
 
-    def _get_kind(self, fnames):
+    def _get_kind(self, fnames, img_type=""):
         """
         Guess what kind of data based on the number of images
         Temporal = 2 images for each measurement point
@@ -97,20 +98,23 @@ class ParseEmvaDescriptorFile(object):
         """
         L = len(fnames)
         if L == 2:
-            kind = 'temporal'
+            if img_type == "dc":
+                kind = 'darkcurrent'
+            else:
+                kind = 'temporal'
         else:
             kind = 'spatial'
 
         return kind
 
-    def _add_pcount(self, exposure, photons, fnames):
-        """Add images to a given exposure/phton
+    def _add_pcount(self, exposure, photons, fnames, img_type=""):
+        """Add images to a given exposure/photon
 
         For a given exposure and photon count
         add the appropiate image filenames to the self.images dict
         """
         # is it temporal or spatial data
-        kind = self._get_kind(fnames)
+        kind = self._get_kind(fnames, img_type)
         # create the exposure time dictionary for this exposure time
         # if it is not already existing
         self.images[kind].setdefault(exposure, {})
@@ -145,7 +149,7 @@ class ParseEmvaDescriptorFile(object):
             # b exposureTime(ns) numberPhotons  (bright image)
             # i relativePathToTheImage
             # d exposureTime(ns)                (dark image)
-
+            
             if l[0] == 'v':
                 # if line starts with 'v', this is the version
                 self.version = l[1]
@@ -189,7 +193,7 @@ class ParseEmvaDescriptorFile(object):
 
                 continue
 
-            if l[0] == 'd':
+            if l[0] in ['d', 'dc']:
                 # For lines that starts with d, there is always 2 elements
                 # d + exposureTime (dark images)
                 if len(l) != 2:  # pragma: no cover
@@ -201,7 +205,7 @@ class ParseEmvaDescriptorFile(object):
                 # For this exposure, get all the corresponding images
                 fnames = self._get_images_filenames()
                 # Add the images path to the images dict.
-                self._add_pcount(exposure, float(0.0), fnames)
+                self._add_pcount(exposure, float(0.0), fnames, l[0])
 
                 continue
 

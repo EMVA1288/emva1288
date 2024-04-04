@@ -194,6 +194,68 @@ class PlotUyDark(Emva1288Plot):
         self.set_legend(ax)
 
 
+class PlotUyDarkCurrent(Emva1288Plot):
+    name = 'Dark Current From Mean'
+    xlabel = 'exposure time [ns]'
+    ylabel = r'$\mu_{y.dark}$ [DN]'
+
+    def plot(self, test):
+        ax = self.ax
+
+        if len(test.darkcurrent['texp']) > 2:
+            data = test.darkcurrent
+        else:
+            data = test.temporal
+
+        X = data['texp']
+
+        ax.plot(X,
+                data['u_ydark'],
+                marker='o',
+                markersize=5,
+                label='Data',
+                gid='%d:data' % test.id)
+        ax.plot(X,
+                test.dark_current_fit_mean()['fit_slope'] *
+                X + test.dark_current_fit_mean()['fit_offset'],
+                linestyle='--',
+                label='Fit',
+                gid='%d:fit' % test.id)
+        ax.ticklabel_format(axis='x', style='sci', scilimits=(1, 4))
+        self.set_legend(ax)
+
+class PlotVaryDarkCurrent(Emva1288Plot):
+    name = 'Dark Current From Variance'
+    xlabel = 'exposure time [ns]'
+    ylabel = r'$\sigma^2_{y.dark}$ [DN$^2$]'
+
+
+    def plot(self, test):
+        ax = self.ax
+
+        if len(test.darkcurrent['texp']) > 2:
+            data = test.darkcurrent
+        else:
+            data = test.temporal
+
+        X = data['texp']
+
+        ax.plot(X,
+                data['s2_ydark'],
+                marker='o',
+                markersize=5,
+                label='Data',
+                gid='%d:data' % test.id)
+        ax.plot(X,
+                test.dark_current_fit_var()['fit_slope'] *
+                X + test.dark_current_fit_var()['fit_offset'],
+                linestyle='--',
+                label='Fit',
+                gid='%d:fit' % test.id)
+        ax.ticklabel_format(axis='x', style='sci', scilimits=(1, 4))
+        self.set_legend(ax)
+
+
 class PlotStabilityCheck(Emva1288Plot):
     ''' Create the stability check plot '''
     name = 'Stability Check'
@@ -820,6 +882,8 @@ EVMA1288plots = [PlotPTC,
                  PlotUyDark,
                  PlotLinearity,
                  PlotDeviationLinearity,
+                 PlotUyDarkCurrent,
+                 PlotVaryDarkCurrent,
                  PlotHorizontalSpectrogramPRNU,
                  PlotHorizontalSpectrogramDSNU,
                  PlotVerticalSpectrogramPRNU,
@@ -841,6 +905,8 @@ EVMA1288plots = [PlotPTC,
     - :class:`~emva1288.process.plotting.PlotUyDark`
     - :class:`~emva1288.process.plotting.PlotLinearity`
     - :class:`~emva1288.process.plotting.PlotDeviationLinearity`
+    - :Class:`~emva1288.process.plotting.PlotUyDarkCurrent`
+    - :Class:`~emva1288.process.plotting.PlotVaryDarkCurrent`
     - :class:`~emva1288.process.plotting.PlotHorizontalSpectrogramPRNU`
     - :class:`~emva1288.process.plotting.PlotHorizontalSpectrogramDSNU`
     - :class:`~emva1288.process.plotting.PlotVerticalSpectrogramPRNU`

@@ -55,6 +55,7 @@ class Results1288(object):
 
         self.temporal = data['temporal']
         self.spatial = data['spatial']
+        self.darkcurrent = data['darkcurrent']
 
         self.pixel_area = pixel_area
         self._s2q = 1.0 / 12.0
@@ -613,6 +614,30 @@ class Results1288(object):
 
         return self.linearity()['linearity_error_mean']
 
+    def dark_current_fit_var(self):
+        r"""Dark Current fit from variance.
+        The keys are:
+
+        - *'fit_slope'* : The slope of the linear fit.
+        - *'fit_offset'* : The offset of the fit.
+        - *'error'*: The error between fit and actual values
+        """
+        if len(np.unique(self.darkcurrent['texp'])) > 2:
+            darkcurrent = self.darkcurrent
+        else:
+            darkcurrent = self.temporal
+
+        if len(np.unique(darkcurrent['texp'])) <= 2:
+            return np.nan
+
+        fit, _error = routines.LinearB(darkcurrent['texp'],
+                                       darkcurrent['s2_ydark'])
+        return  {
+                    'fit_slope': fit[0],
+                    'fit_offset': fit[1],
+                    'error': _error
+                }
+
     @property
     def u_I_var_DN(self):
         r"""Dark Current from variance.
@@ -628,16 +653,12 @@ class Results1288(object):
             :Unit: $DN/s$
             :LatexName: UIVar
         """
-        if len(np.unique(self.temporal['texp'])) <= 2:
-            return np.nan
+        dc = self.dark_current_fit_var()
 
-        fit, _error = routines.LinearB(self.temporal['texp'],
-                                       self.temporal['s2_ydark'])
-
-        if fit[0] < 0:
+        if dc['fit_slope'] < 0:
             return np.nan
         # Multiply by 10^9 because exposure times are in nanoseconds
-        return fit[0] / self.K * 1e9
+        return dc['fit_slope'] / self.K * 1e9
 
     @property
     def u_I_var(self):
@@ -660,6 +681,30 @@ class Results1288(object):
 
         return ui / self.K
 
+    def dark_current_fit_mean(self):
+        r"""Dark Current fit from mean.
+        The keys are:
+
+        - *'fit_slope'* : The slope of the linear fit.
+        - *'fit_offset'* : The offset of the fit.
+        - *'error'*: The error between fit and actual values
+        """
+        if len(np.unique(self.darkcurrent['texp'])) > 2:
+            darkcurrent = self.darkcurrent
+        else:
+            darkcurrent = self.temporal
+
+        if len(np.unique(darkcurrent['texp'])) <= 2:
+            return np.nan
+
+        fit, _error = routines.LinearB(darkcurrent['texp'],
+                                       darkcurrent['u_ydark'])
+        return  {
+                    'fit_slope': fit[0],
+                    'fit_offset': fit[1],
+                    'error': _error
+                }
+
     @property
     def u_I_mean_DN(self):
         r"""Dark Current from mean.
@@ -674,14 +719,11 @@ class Results1288(object):
             :Symbol: $\mu_{I.mean.DN}$
             :Unit: $DN/s$
         """
-
-        if len(np.unique(self.temporal['texp'])) <= 2:
+        dc = self.dark_current_fit_mean()
+        if dc['fit_slope'] < 0:
             return np.nan
-
-        fit, _error = routines.LinearB(self.temporal['texp'],
-                                       self.temporal['u_ydark'])
         # Multiply by 10 ^ 9 because exposure time in nanoseconds
-        return fit[0] * (10 ** 9)
+        return dc['fit_slope'] * (10 ** 9)
 
     @property
     def u_I_mean(self):
