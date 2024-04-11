@@ -64,8 +64,8 @@ def test_sensitivity(results):
 def test_dark_current(results):
     dataset, parser, loader, data, results = results
     # Test that dark current is actually retrieved from both methods
-    assert dataset.cam._dark_current_ref == pytest.approx(results.u_I_mean['slope'], abs=5)
-    assert dataset.cam._dark_current_ref == pytest.approx(results.u_I_var['slope'], abs=10)
+    assert dataset.cam._dark_current_ref == pytest.approx(results.u_I_mean, abs=5)
+    assert dataset.cam._dark_current_ref == pytest.approx(results.u_I_var, abs=10)
 
 
 def test_saturation(results):
@@ -126,7 +126,8 @@ def test_DSNU(results):
                         'avg_var': 0.002,
                         'avg_mean': 1600,
                         'avg_var_cav': 0.01,
-                        'avg_var_rav': 0.01}}
+                        'avg_var_rav': 0.01},
+            'darkcurrent': {}}
     results = Results1288(data)
     # Test that DSNU is sqrt(s2_ydark) / gain
     assert results.DSNU1288 == np.sqrt(results.s_2_y_dark) / results.K
@@ -181,7 +182,8 @@ def test_results_without_pixel_area(data):
 def test_nans():
     # Test that less than 2 texp will yield a NaN for u_I_mean
     data = {'temporal': {'texp': [0, 1]},
-            'spatial': {}}
+            'spatial': {},
+            'darkcurrent': {}}
     r = Results1288(data)
     assert r.u_I_mean is np.nan
 

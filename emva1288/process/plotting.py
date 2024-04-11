@@ -207,22 +207,23 @@ class PlotUyDarkCurrent(Emva1288Plot):
         else:
             data = test.temporal
 
-        X = data['texp']
+        if test.dark_current_fit_mean() is not np.nan:
+            X = data['texp']
 
-        ax.plot(X,
-                data['u_ydark'],
-                marker='o',
-                markersize=5,
-                label='Data',
-                gid='%d:data' % test.id)
-        ax.plot(X,
-                test.dark_current_fit_mean()['fit_slope'] *
-                X + test.dark_current_fit_mean()['fit_offset'],
-                linestyle='--',
-                label='Fit',
-                gid='%d:fit' % test.id)
-        ax.ticklabel_format(axis='x', style='sci', scilimits=(1, 4))
-        self.set_legend(ax)
+            ax.plot(X,
+                    data['u_ydark'],
+                    marker='o',
+                    markersize=5,
+                    label='Data',
+                    gid='%d:data' % test.id)
+            ax.plot(X,
+                    test.dark_current_fit_mean()['fit_slope'] *
+                    X + test.dark_current_fit_mean()['fit_offset'],
+                    linestyle='--',
+                    label='Fit',
+                    gid='%d:fit' % test.id)
+            ax.ticklabel_format(axis='x', style='sci', scilimits=(1, 4))
+            self.set_legend(ax)
 
 class PlotVaryDarkCurrent(Emva1288Plot):
     name = 'Dark Current From Variance'
@@ -238,22 +239,23 @@ class PlotVaryDarkCurrent(Emva1288Plot):
         else:
             data = test.temporal
 
-        X = data['texp']
+        if test.dark_current_fit_var() is not np.nan:
+            X = data['texp']
 
-        ax.plot(X,
-                data['s2_ydark'],
-                marker='o',
-                markersize=5,
-                label='Data',
-                gid='%d:data' % test.id)
-        ax.plot(X,
-                test.dark_current_fit_var()['fit_slope'] *
-                X + test.dark_current_fit_var()['fit_offset'],
-                linestyle='--',
-                label='Fit',
-                gid='%d:fit' % test.id)
-        ax.ticklabel_format(axis='x', style='sci', scilimits=(1, 4))
-        self.set_legend(ax)
+            ax.plot(X,
+                    data['s2_ydark'],
+                    marker='o',
+                    markersize=5,
+                    label='Data',
+                    gid='%d:data' % test.id)
+            ax.plot(X,
+                    test.dark_current_fit_var()['fit_slope'] *
+                    X + test.dark_current_fit_var()['fit_offset'],
+                    linestyle='--',
+                    label='Fit',
+                    gid='%d:fit' % test.id)
+            ax.ticklabel_format(axis='x', style='sci', scilimits=(1, 4))
+            self.set_legend(ax)
 
 
 class PlotStabilityCheck(Emva1288Plot):

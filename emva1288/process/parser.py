@@ -49,7 +49,7 @@ class ParseEmvaDescriptorFile(object):
         self.format = {}  # bits, witdth, height
         self.version = None
         self.images = {'temporal': {},
-                       'darkcurrent' : {},
+                       'darkcurrent': {},
                        'spatial': {}}
 
         logging.basicConfig()

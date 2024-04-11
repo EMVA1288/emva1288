@@ -566,8 +566,8 @@ class Results1288(object):
         lin['fit_slope'] = a
         lin['fit_offset'] = b
         lin['relative_deviation'] = dev
-        lin['linearity_error_min'] = np.min(dev[imin: imax])    # deprecated
-        lin['linearity_error_max'] = np.max(dev[imin: imax])    # deprecated
+        lin['linearity_error_min'] = np.min(dev[imin: imax])  # deprecated
+        lin['linearity_error_max'] = np.max(dev[imin: imax])  # deprecated
         lin['linearity_error_mean'] = np.mean(np.abs(dev))
 
         return lin
@@ -616,13 +616,16 @@ class Results1288(object):
 
     def dark_current_fit_var(self):
         r"""Dark Current fit from variance.
-        The keys are:
 
-        - *'fit_slope'* : The slope of the linear fit.
-        - *'fit_offset'* : The offset of the fit.
-        - *'error'*: The error between fit and actual values
+        Returns
+        -------
+        dict : Linearity dictionary.
+               The keys are:
+                - *'fit_slope'* : The slope of the linear fit.
+                - *'fit_offset'* : The offset of the fit.
+                - *'error'*: The error between fit and actual values
         """
-        if len(np.unique(self.darkcurrent['texp'])) > 2:
+        if ('texp' in self.darkcurrent) and (len(self.darkcurrent['texp']) > 2):
             darkcurrent = self.darkcurrent
         else:
             darkcurrent = self.temporal
@@ -632,11 +635,11 @@ class Results1288(object):
 
         fit, _error = routines.LinearB(darkcurrent['texp'],
                                        darkcurrent['s2_ydark'])
-        return  {
-                    'fit_slope': fit[0],
-                    'fit_offset': fit[1],
-                    'error': _error
-                }
+        return {
+            'fit_slope': fit[0],
+            'fit_offset': fit[1],
+            'error': _error
+        }
 
     @property
     def u_I_var_DN(self):
@@ -655,7 +658,7 @@ class Results1288(object):
         """
         dc = self.dark_current_fit_var()
 
-        if dc['fit_slope'] < 0:
+        if (dc is np.nan) or (dc['fit_slope'] < 0):
             return np.nan
         # Multiply by 10^9 because exposure times are in nanoseconds
         return dc['fit_slope'] / self.K * 1e9
@@ -683,13 +686,16 @@ class Results1288(object):
 
     def dark_current_fit_mean(self):
         r"""Dark Current fit from mean.
-        The keys are:
 
-        - *'fit_slope'* : The slope of the linear fit.
-        - *'fit_offset'* : The offset of the fit.
-        - *'error'*: The error between fit and actual values
+        Returns
+        -------
+        dict : Linearity dictionary.
+               The keys are:
+                - *'fit_slope'* : The slope of the linear fit.
+                - *'fit_offset'* : The offset of the fit.
+                - *'error'*: The error between fit and actual values
         """
-        if len(np.unique(self.darkcurrent['texp'])) > 2:
+        if ('texp' in self.darkcurrent) and (len(self.darkcurrent['texp']) > 2):
             darkcurrent = self.darkcurrent
         else:
             darkcurrent = self.temporal
@@ -699,11 +705,11 @@ class Results1288(object):
 
         fit, _error = routines.LinearB(darkcurrent['texp'],
                                        darkcurrent['u_ydark'])
-        return  {
-                    'fit_slope': fit[0],
-                    'fit_offset': fit[1],
-                    'error': _error
-                }
+        return {
+            'fit_slope': fit[0],
+            'fit_offset': fit[1],
+            'error': _error
+        }
 
     @property
     def u_I_mean_DN(self):
@@ -720,7 +726,7 @@ class Results1288(object):
             :Unit: $DN/s$
         """
         dc = self.dark_current_fit_mean()
-        if dc['fit_slope'] < 0:
+        if dc is np.nan:
             return np.nan
         # Multiply by 10 ^ 9 because exposure time in nanoseconds
         return dc['fit_slope'] * (10 ** 9)
@@ -959,7 +965,7 @@ class Results1288(object):
         M = self.spatial['M']
         N = self.spatial['N']
         para = M * N / (M * N - M - N)
-        s_y_pixel = para*(self.s_2_y - self.s_2_y_cav - self.s_2_y_rav)
+        s_y_pixel = para * (self.s_2_y - self.s_2_y_cav - self.s_2_y_rav)
         return s_y_pixel
 
     @property
@@ -975,7 +981,7 @@ class Results1288(object):
         M = self.spatial['M_dark']
         N = self.spatial['N_dark']
         para = M * N / (M * N - M - N)
-        s_2_y_pixel_dark = para*(self.s_2_y_dark - self.s_2_y_cav_dark - self.s_2_y_rav_dark)
+        s_2_y_pixel_dark = para * (self.s_2_y_dark - self.s_2_y_cav_dark - self.s_2_y_rav_dark)
         return s_2_y_pixel_dark
 
     @property
