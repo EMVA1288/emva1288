@@ -55,6 +55,7 @@ class Results1288(object):
 
         self.temporal = data['temporal']
         self.spatial = data['spatial']
+        self.darkcurrent = data['darkcurrent']
 
         self.pixel_area = pixel_area
         self._s2q = 1.0 / 12.0
@@ -530,6 +531,8 @@ class Results1288(object):
                  relative deviation.
                - *'linearity_error_max'* : The maximal value of the
                  relative deviation.
+               - *'linearity_error_mean'* : In version >= 4.0 the computation
+                 of LE was changed. The v >= 4.0 is represented here
         """
         Y = self.temporal['u_y'] - self.temporal['u_ydark']
         X = self.temporal['u_p']
@@ -563,8 +566,9 @@ class Results1288(object):
         lin['fit_slope'] = a
         lin['fit_offset'] = b
         lin['relative_deviation'] = dev
-        lin['linearity_error_min'] = np.min(dev[imin: imax])
-        lin['linearity_error_max'] = np.max(dev[imin: imax])
+        lin['linearity_error_min'] = np.min(dev[imin: imax])  # deprecated
+        lin['linearity_error_max'] = np.max(dev[imin: imax])  # deprecated
+        lin['linearity_error_mean'] = np.mean(np.abs(dev))
 
         return lin
 
@@ -574,7 +578,7 @@ class Results1288(object):
 
         .. emva1288::
             :Section: linearity
-            :Short: Min Linearity error
+            :Short: Min Linearity error (deprecated)
             :Symbol: $LE_{min}$
             :Unit: \%
             :LatexName: LEMin
@@ -588,13 +592,54 @@ class Results1288(object):
 
         .. emva1288::
             :Section: linearity
-            :Short: Max Linearity error
+            :Short: Max Linearity error (deprecated)
             :Symbol: $LE_{max}$
             :Unit: \%
             :LatexName: LEMax
         """
 
         return self.linearity()['linearity_error_max']
+
+    @property
+    def LE_mean(self):
+        r"""Linearity error.
+
+        .. emva1288::
+            :Section: linearity
+            :Short: Linearity error
+            :Symbol: $LE$
+            :Unit: \%
+            :LatexName: LEMean
+        """
+
+        return self.linearity()['linearity_error_mean']
+
+    def dark_current_fit_var(self):
+        r"""Dark Current fit from variance.
+
+        Returns
+        -------
+        dict : Linearity dictionary.
+               The keys are:
+                - *'fit_slope'* : The slope of the linear fit.
+                - *'fit_offset'* : The offset of the fit.
+                - *'error'*: The error between fit and actual values
+        """
+        if ('texp' in self.darkcurrent) and (len(self.darkcurrent['texp']) > 2):
+            darkcurrent = self.darkcurrent
+        else:
+            darkcurrent = self.temporal
+
+        if len(np.unique(darkcurrent['texp'])) <= 2:
+            return np.nan
+
+        fit, _error = routines.LinearB(darkcurrent['texp'],
+                                       darkcurrent['s2_ydark'])
+        return {
+            'fit_slope': fit[0],
+            'fit_offset': fit[1],
+            'error': _error
+        }
 
     @property
     def u_I_var_DN(self):
@@ -611,16 +656,12 @@ class Results1288(object):
             :Unit: $DN/s$
             :LatexName: UIVar
         """
-        if len(np.unique(self.temporal['texp'])) <= 2:
-            return np.nan
+        dc = self.dark_current_fit_var()
 
-        fit, _error = routines.LinearB(self.temporal['texp'],
-                                       self.temporal['s2_ydark'])
-
-        if fit[0] < 0:
+        if (dc is np.nan) or (dc['fit_slope'] < 0):
             return np.nan
         # Multiply by 10^9 because exposure times are in nanoseconds
-        return fit[0] / self.K * 1e9
+        return dc['fit_slope'] / self.K * 1e9
 
     @property
     def u_I_var(self):
@@ -643,6 +684,33 @@ class Results1288(object):
 
         return ui / self.K
 
+    def dark_current_fit_mean(self):
+        r"""Dark Current fit from mean.
+
+        Returns
+        -------
+        dict : Linearity dictionary.
+               The keys are:
+                - *'fit_slope'* : The slope of the linear fit.
+                - *'fit_offset'* : The offset of the fit.
+                - *'error'*: The error between fit and actual values
+        """
+        if ('texp' in self.darkcurrent) and (len(self.darkcurrent['texp']) > 2):
+            darkcurrent = self.darkcurrent
+        else:
+            darkcurrent = self.temporal
+
+        if len(np.unique(darkcurrent['texp'])) <= 2:
+            return np.nan
+
+        fit, _error = routines.LinearB(darkcurrent['texp'],
+                                       darkcurrent['u_ydark'])
+        return {
+            'fit_slope': fit[0],
+            'fit_offset': fit[1],
+            'error': _error
+        }
+
     @property
     def u_I_mean_DN(self):
         r"""Dark Current from mean.
@@ -657,14 +725,11 @@ class Results1288(object):
             :Symbol: $\mu_{I.mean.DN}$
             :Unit: $DN/s$
         """
-
-        if len(np.unique(self.temporal['texp'])) <= 2:
+        dc = self.dark_current_fit_mean()
+        if dc is np.nan:
             return np.nan
-
-        fit, _error = routines.LinearB(self.temporal['texp'],
-                                       self.temporal['u_ydark'])
         # Multiply by 10 ^ 9 because exposure time in nanoseconds
-        return fit[0] * (10 ** 9)
+        return dc['fit_slope'] * (10 ** 9)
 
     @property
     def u_I_mean(self):
@@ -900,7 +965,7 @@ class Results1288(object):
         M = self.spatial['M']
         N = self.spatial['N']
         para = M * N / (M * N - M - N)
-        s_y_pixel = para*(self.s_2_y - self.s_2_y_cav - self.s_2_y_rav)
+        s_y_pixel = para * (self.s_2_y - self.s_2_y_cav - self.s_2_y_rav)
         return s_y_pixel
 
     @property
@@ -916,7 +981,7 @@ class Results1288(object):
         M = self.spatial['M_dark']
         N = self.spatial['N_dark']
         para = M * N / (M * N - M - N)
-        s_2_y_pixel_dark = para*(self.s_2_y_dark - self.s_2_y_cav_dark - self.s_2_y_rav_dark)
+        s_2_y_pixel_dark = para * (self.s_2_y_dark - self.s_2_y_cav_dark - self.s_2_y_rav_dark)
         return s_2_y_pixel_dark
 
     @property

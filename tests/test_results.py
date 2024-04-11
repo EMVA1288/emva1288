@@ -28,8 +28,8 @@ def test_properties(results):
     # Test that EMVA values are float and positive
     for a in ('s2q', 'R', 'K', 'QE', 'sigma_y_dark', 'sigma_d', 'u_p_min',
               'u_p_min_area', 'u_e_min', 'u_e_min_area', 'u_p_sat',
-              'u_p_sat_area', 'u_e_sat', 'SNR_max', 'DR', 'LE_min',
-              'LE_max', 'u_I_var', 'u_I_mean', 'sigma_2_y_stack',
+              'u_p_sat_area', 'u_e_sat', 'SNR_max', 'DR', 'LE_mean',
+              'u_I_var', 'u_I_mean', 'sigma_2_y_stack',
               'sigma_2_y_stack_dark', 's_2_y_measured', 's_2_y',
               's_2_y_dark', 'DSNU1288', 'PRNU1288'):
         value = getattr(results, a)
@@ -38,7 +38,7 @@ def test_properties(results):
             assert a in results.results
         # except for linearity errors and dark currents,
         # everything always should be positive
-        if a not in ('LE_min', 'LE_max') and value is not np.nan:
+        if a not in ('LE_mean') and value is not np.nan:
             assert value >= 0.0
 
 
@@ -126,7 +126,8 @@ def test_DSNU(results):
                         'avg_var': 0.002,
                         'avg_mean': 1600,
                         'avg_var_cav': 0.01,
-                        'avg_var_rav': 0.01}}
+                        'avg_var_rav': 0.01},
+            'darkcurrent': {}}
     results = Results1288(data)
     # Test that DSNU is sqrt(s2_ydark) / gain
     assert results.DSNU1288 == np.sqrt(results.s_2_y_dark) / results.K
@@ -181,7 +182,8 @@ def test_results_without_pixel_area(data):
 def test_nans():
     # Test that less than 2 texp will yield a NaN for u_I_mean
     data = {'temporal': {'texp': [0, 1]},
-            'spatial': {}}
+            'spatial': {},
+            'darkcurrent': {}}
     r = Results1288(data)
     assert r.u_I_mean is np.nan
 

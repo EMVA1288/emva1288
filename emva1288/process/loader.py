@@ -53,7 +53,7 @@ class LoadImageData(object):
         fload_kwargs : dict, optional
                        The kwargs dictionary for the fload function.
         """
-        self.data = {'temporal': {}, 'spatial': {}}
+        self.data = {'temporal': {}, 'spatial': {}, 'darkcurrent': {}}
         self._fload = fload
         self._fload_args = fload_args
         self._fload_kwargs = fload_kwargs
@@ -72,7 +72,7 @@ class LoadImageData(object):
         the images and fills the temporal and spatial dicts
         """
         # iterate over the kind
-        for kind in ('temporal', 'spatial'):
+        for kind in ('temporal', 'spatial', 'darkcurrent'):
             exposures = set(images[kind].keys())
 
             # iterate over the exposure times for each kind
@@ -85,9 +85,10 @@ class LoadImageData(object):
                     # image with a 0 photon count.
                     raise ValueError('Every exposure must have a 0.0 photons'
                                      ' for dark information')
-                if len(photon_counts) < 2:
+                if len(photon_counts) < 2 and kind != "darkcurrent":
                     # Every exposure time should have at least one dark image
                     # and one bright image.
+                    # NOTE: We can allow only dark values for dark current measurement
                     raise ValueError('All exposure must have at least 2 points'
                                      ' one dark and one bright')
 

@@ -54,8 +54,10 @@ class Data1288(object):
         self.data = {}
         self.data['temporal'] = self._get_temporal(data['temporal'])
         self.data['spatial'] = self._get_spatial(data['spatial'])
+        self.data['darkcurrent'] =self._get_temporal(data['darkcurrent'], True)
+        print()
 
-    def _get_temporal(self, data):
+    def _get_temporal(self, data, dark_only=False):
         """Fill the temporal dict, with the stuff that we need.
         Compute the averages and variances from the sums (sum and pvar)
 
@@ -84,8 +86,10 @@ class Data1288(object):
                time and photon count,
                *'u_ydark'*: the array of the mean digital dark value
                for each exposure time
-               and *'s2_ydark'*: the
-               array of the digital dark value variance for each exposure time.
+               *'s2_ydark'*: the
+               array of the digital dark value variance for each exposure time
+               and *'diff_u_y'*: the difference of the mean values of the images
+               for each exposure time.
 
         Raises
         ------
@@ -106,6 +110,7 @@ class Data1288(object):
         s2_y = []
         u_ydark = []
         s2_ydark = []
+        diff_u_y = []
 
         for t in exposures:
             # photons is a list of photon counts
@@ -115,7 +120,7 @@ class Data1288(object):
             if 0.0 not in photons:
                 raise ValueError('Every exposure point must have a 0.0 photon')
 
-            if len(photons) < 2:
+            if len(photons) < 2 and not dark_only:
                 raise ValueError('There must be at least one bright photon')
 
             # get data for dark image
@@ -129,6 +134,7 @@ class Data1288(object):
                 d = self._get_temporal_data(data[t][p])
                 u_y.append(d['mean'])
                 s2_y.append(d['var'] - d['dmean'])
+                diff_u_y.append(data[t][p]['dmean'])    # we need to use the raw difference here
 
         # Append all data to temporal dict
         temporal['u_p'] = np.asarray(u_p)
@@ -136,6 +142,7 @@ class Data1288(object):
         temporal['s2_y'] = np.asarray(s2_y)
         temporal['u_ydark'] = np.asarray(u_ydark)
         temporal['s2_ydark'] = np.asarray(s2_ydark)
+        temporal['diff_u_y'] = np.asarray(diff_u_y)
 
         # In case we have only one exposure, we need arrays with the
         # same length as the up
