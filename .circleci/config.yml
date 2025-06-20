@@ -4,7 +4,7 @@ version: 2.1
 jobs:
   run-tests-latest-version:
     docker:
-      - image: cimg/python:3.11
+      - image: cimg/python:3.13
     steps: &run-tests
       - checkout
       - run:
@@ -15,12 +15,12 @@ jobs:
 
   run-tests-min-version:
     docker:
-      - image: cimg/python:3.8
+      - image: cimg/python:3.11
     steps: *run-tests
 
   run-examples-latest-version:
     docker:
-      - image: cimg/python:3.11
+      - image: cimg/python:3.13
     steps: &run-examples
       - checkout
       - run:
@@ -38,7 +38,7 @@ jobs:
 
   run-examples-min-version:
     docker:
-      - image: cimg/python:3.8
+      - image: cimg/python:3.11
     steps: *run-examples
 
   compile-report-latest-version:
