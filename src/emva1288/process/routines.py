@@ -70,8 +70,8 @@ def get_int_imgs(imgs):
 
 
 def LinearB0(Xi, Yi):
-    X = np.asfarray(Xi)
-    Y = np.asfarray(Yi)
+    X = np.asarray(Xi, dtype=np.float64)
+    Y = np.asarray(Yi, dtype=np.float64)
 
     # we want a function y = m * x
     def fp(v, x):
@@ -99,8 +99,8 @@ def LinearB0(Xi, Yi):
 
 
 def LinearB(Xi, Yi):
-    X = np.asfarray(Xi)
-    Y = np.asfarray(Yi)
+    X = np.asarray(Xi, dtype=np.float64)
+    Y = np.asarray(Yi, dtype=np.float64)
 
     # we want a function y = m * x + b
     def fp(v, x):
@@ -166,7 +166,7 @@ def FFT1288(img, rotate=False, n=1):
     _rows, cols = GetImgShape(img)
 
     # simply perform fft on x axis
-    img = np.asfarray(img) - np.mean(img)
+    img = np.asarray(img, dtype=np.float64) - np.mean(img)
     fft = np.fft.fft(img, axis=1)
     fft /= np.sqrt(cols)
 
@@ -299,7 +299,7 @@ def Histogram1288(img, Qmax):
 
     H, _b = np.histogram(y, B, range=(ymin, ymax))
 
-    return {'bins': np.asfarray(B[:-1]), 'values': H, 'model': normal}
+    return {'bins': np.asarray(B[:-1], dtype=np.float64), 'values': H, 'model': normal}
 
 
 def cls_1288_info(cls):
@@ -493,7 +493,7 @@ def xml_to_dict(xml):
                     v = value['data'][data]
                     v = v.strip()
                     v = v.split()
-                    d[section][methodname]['data'][data] = np.asfarray(v)
+                    d[section][methodname]['data'][data] = np.asarray(v, dtype=np.float64)
             else:
                 v = value['value']
                 if v in ('None', None, 'none'):

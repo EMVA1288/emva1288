@@ -1,0 +1,19 @@
+[flake8]
+ignore = E203, E501, W503 F401 C901 E226 W504 E126
+max-line-length = 120
+max-complexity = 10
+exclude =
+    build/*,
+    cache/*,
+    dist/*,
+    docs/*,
+    runs/*,
+    data/*,
+    .venv/*,
+    *cache/*,
+    site/*,
+    .github/*,
+    .git/*,
+    tests/fixtures/*,
+    **/*.egg-info/*,
+    **/__pycache__/*,
